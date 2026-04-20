@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hanzi Lab - HSK 4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --text-main: #1d1d1f;
+            --text-accent: #0066cc; 
+            --text-muted: #86868b;
+            --text-teal: #0d9488;
+        }
+
+        body {
+            font-family: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0; padding: 0;
+            background-color: #f5f5f7;
+            background-image: 
+                radial-gradient(at 20% 0%, hsla(190, 100%, 85%, 0.9) 0px, transparent 50%),
+                radial-gradient(at 80% 10%, hsla(210, 100%, 88%, 0.8) 0px, transparent 50%),
+                radial-gradient(at 90% 90%, hsla(160, 100%, 82%, 0.9) 0px, transparent 50%),
+                radial-gradient(at 10% 90%, hsla(250, 100%, 90%, 0.8) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, hsla(280, 100%, 92%, 0.6) 0px, transparent 60%);
+            background-size: 200% 200%;
+            animation: tahoeShift 25s ease-in-out infinite alternate;
+            color: var(--text-main);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @keyframes tahoeShift {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        .chinese-text { font-family: 'Noto Sans SC', sans-serif; }
+
+        /* VIEW NAVIGATION CLASSES */
+        .view-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), backdrop-filter 0.5s ease;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .view-hidden { opacity: 0; pointer-events: none; transform: scale(0.95); }
+        .view-active { opacity: 1; pointer-events: auto; transform: scale(1); z-index: 10; }
+        .view-zoomed { opacity: 0; pointer-events: none; transform: scale(1.05); }
+
+        /* iOS 26 APP ICONS */
+        .app-icon {
+            border-radius: 22.5%;
+            box-shadow: 
+                0 15px 30px rgba(0, 0, 0, 0.1),
+                inset 0 1px 1px rgba(255, 255, 255, 0.9),
+                inset 0 -1px 2px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .app-icon:active { transform: scale(0.95); }
+        
+        .glass-folder-icon {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.3) 100%);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        /* FOLDER OVERLAY GLASS */
+        .folder-overlay {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(50px) saturate(200%);
+            -webkit-backdrop-filter: blur(50px) saturate(200%);
+        }
+        .folder-container {
+            width: 90%; max-width: 800px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 40px; padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 1);
+        }
+        .lesson-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.6), rgba(255,255,255,0.2));
+            backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 28px; padding: 24px; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,1);
+        }
+        .lesson-card:hover { transform: translateY(-4px) scale(1.02); background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(255,255,255,0.4)); box-shadow: 0 20px 40px rgba(0,0,0,0.1), inset 0 1px 1px rgba(255,255,255,1); }
+
+        /* APP MAIN INTERFACE GLASS */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.3) 100%);
+            backdrop-filter: blur(48px) saturate(200%);
+            -webkit-backdrop-filter: blur(48px) saturate(200%);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 32px 64px rgba(0, 0, 0, 0.08), inset 0 1px 1.5px rgba(255, 255, 255, 0.9), inset 0 -1px 1px rgba(255, 255, 255, 0.2);
+        }
+        .glass-inner {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.15) 100%);
+            backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+        }
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(20px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); color: var(--text-main); cursor: pointer;
+        }
+        .glass-btn:hover { transform: translateY(-1px) scale(1.01); background: rgba(255, 255, 255, 0.55); border-color: rgba(255, 255, 255, 0.9); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255, 255, 255, 1); color: var(--text-teal); }
+        .glass-btn-primary { background: linear-gradient(135deg, rgba(204, 251, 241, 0.6) 0%, rgba(204, 251, 241, 0.3) 100%); border: 1px solid rgba(255, 255, 255, 0.8); color: var(--text-teal); font-weight: 700; box-shadow: 0 8px 24px rgba(13, 148, 136, 0.15), inset 0 1px 1px rgba(255, 255, 255, 0.9); transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); }
+        
+        .list-item-glass { transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: inset 0 1px 1px rgba(255,255,255,0.4); color: var(--text-main); }
+        .list-item-glass:hover { background: rgba(255, 255, 255, 0.4); border-color: rgba(255, 255, 255, 0.7); }
+        .list-item-glass.active { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06), inset 0 1px 1px rgba(255,255,255,1); transform: scale(1.02); position: relative; }
+        .list-item-glass.active::before { content: ''; position: absolute; left: -1px; top: 10%; height: 80%; width: 4px; background: var(--text-accent); border-radius: 4px; }
+
+        .mode-tab { transition: all 0.3s ease; border: 1px solid transparent; }
+        .mode-tab:hover { background: rgba(255,255,255,0.3); }
+        .mode-tab.active { background: rgba(255, 255, 255, 0.75); color: var(--text-accent); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), inset 0 1px 1px rgba(255,255,255,0.9); border: 1px solid rgba(255, 255, 255, 0.9); font-weight: 700; }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 10px; }
+
+        .cat-header { cursor: pointer; transition: all 0.2s ease; font-weight: 700; letter-spacing: 0.05em; }
+        .cat-header:hover { color: var(--text-accent); }
+        .cat-list { transition: max-height 0.4s ease-out, opacity 0.4s ease; overflow: hidden; opacity: 1; max-height: 8000px; }
+        .cat-list.collapsed { max-height: 0; opacity: 0; }
+        
+        .drawing-board-container { width: 280px; height: 280px; border-radius: 1.5rem; position: relative; background: linear-gradient(135deg, rgba(255,255,255,0.4), rgba(255,255,255,0.1)); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: inset 0 4px 20px rgba(0,0,0,0.02), 0 15px 35px rgba(0,0,0,0.06), inset 0 1px 1px rgba(255,255,255,0.9); overflow: hidden; flex-shrink: 0; transition: background-size 0.3s ease; }
+        .grid-bg-standard { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><rect x="15" y="15" width="250" height="250" fill="none" stroke="%2386868b" stroke-width="1.5" stroke-opacity="0.3" rx="8"/><line x1="15" y1="15" x2="265" y2="265" stroke="%2386868b" stroke-width="1" stroke-dasharray="4,4" opacity="0.3"/><line x1="265" y1="15" x2="15" y2="265" stroke="%2386868b" stroke-width="1" stroke-dasharray="4,4" opacity="0.3"/><line x1="140" y1="15" x2="140" y2="265" stroke="%2386868b" stroke-width="1" stroke-dasharray="4,4" opacity="0.3"/><line x1="15" y1="140" x2="265" y2="140" stroke="%2386868b" stroke-width="1" stroke-dasharray="4,4" opacity="0.3"/></svg>'); background-size: cover; background-position: center; }
+        .drawing-board-container svg { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; z-index: 10; cursor: crosshair; }
+        
+        .sidebar-transition { transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), width 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease; }
+        @media (min-width: 768px) { .desktop-closed { width: 0 !important; opacity: 0 !important; border-width: 0 !important; overflow: hidden !important; padding: 0 !important;} }
+        input::placeholder { color: #86868b; }
+        input:focus { background: rgba(255,255,255,0.8) !important; box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.2); }
+    </style>
+</head>
+<body>
+
+    <div id="view-home" class="view-layer view-active flex-col justify-center items-center">
+        <div class="flex flex-col items-center gap-5 cursor-pointer group" onclick="openFolder()">
+            <div class="app-icon glass-folder-icon w-28 h-28 md:w-36 md:h-36 transition-all duration-300 group-hover:scale-105 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] border-2">
+                <div class="grid grid-cols-2 gap-2 p-2.5 w-full h-full">
+                    <div class="w-full h-full bg-teal-500/80 rounded-2xl shadow-sm"></div>
+                    <div class="w-full h-full bg-blue-500/80 rounded-2xl shadow-sm"></div>
+                    <div class="w-full h-full bg-purple-500/80 rounded-2xl shadow-sm"></div>
+                    <div class="w-full h-full bg-rose-500/80 rounded-2xl shadow-sm"></div>
+                </div>
+            </div>
+            <span class="text-2xl font-bold text-slate-800/90 tracking-wide" style="text-shadow: 0 2px 8px rgba(255,255,255,0.9);">HSK 4</span>
+        </div>
+    </div>
+
+    <div id="view-folder" class="view-layer view-zoomed folder-overlay">
+        <button onclick="goHome()" class="absolute top-8 left-8 p-3 rounded-full bg-white/30 backdrop-blur-md border border-white/60 text-slate-700 hover:bg-white/50 transition shadow-sm z-50">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
+        <div class="folder-container flex flex-col items-center">
+            <h2 class="text-3xl font-bold text-slate-800 mb-8 tracking-tight">HSK 4 <span class="text-lg font-medium text-slate-500">/ Conteúdo</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+                <div class="lesson-card group" onclick="openLesson(1)">
+                    <div class="w-12 h-12 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center mb-4 border border-teal-200 group-hover:scale-110 transition-transform shadow-sm">
+                        <i data-lucide="book-open" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1 chinese-text">第一课</h3>
+                    <p class="text-sm text-slate-500 font-semibold tracking-wide uppercase">Lição 1</p>
+                </div>
+                <div class="lesson-card group" onclick="openLesson(2)">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-4 border border-blue-200 group-hover:scale-110 transition-transform shadow-sm">
+                        <i data-lucide="book-open" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1 chinese-text">第二课</h3>
+                    <p class="text-sm text-slate-500 font-semibold tracking-wide uppercase">Lição 2</p>
+                </div>
+                <div class="lesson-card group" onclick="openLesson(3)">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center mb-4 border border-purple-200 group-hover:scale-110 transition-transform shadow-sm">
+                        <i data-lucide="book-open" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1 chinese-text">第三课</h3>
+                    <p class="text-sm text-slate-500 font-semibold tracking-wide uppercase">Lição 3</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-app" class="view-layer view-hidden p-2 md:p-6">
+        <div class="flex flex-col md:flex-row w-full h-full glass-panel md:rounded-[2.5rem] overflow-hidden relative z-10 shadow-2xl">
+            
+            <div class="md:hidden flex items-center justify-between p-4 bg-white/30 backdrop-blur-3xl border-b border-white/40 z-20 shrink-0 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="goFolder()" class="p-2 rounded-xl glass-btn text-slate-600">
+                        <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                    </button>
+                    <h1 id="mobile-lesson-title" class="font-bold text-[#1d1d1f] flex items-center gap-2 text-lg tracking-tight">Lição X</h1>
+                </div>
+                <button type="button" onclick="toggleMobileSidebar()" class="p-2 rounded-xl glass-btn text-slate-600">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div id="mobile-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/10 backdrop-blur-md z-30 opacity-0 pointer-events-none transition-opacity duration-300 md:hidden"></div>
+
+            <aside id="sidebar" class="sidebar-transition absolute md:relative z-40 h-full w-[290px] sm:w-[320px] bg-white/20 backdrop-blur-3xl border-r border-white/40 flex flex-col shrink-0 transform -translate-x-full md:translate-x-0 md:w-[340px]">
+                
+                <button type="button" onclick="toggleMobileSidebar()" class="md:hidden absolute top-4 right-4 p-2 rounded-full text-slate-600 bg-white/50 shadow-md border border-white/60 hover:bg-white transition">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+
+                <div class="p-6 border-b border-white/30 w-full min-w-[280px] shrink-0">
+                    <div class="hidden md:flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <button type="button" onclick="goFolder()" class="p-2 rounded-xl glass-btn shrink-0" title="Voltar para as Lições">
+                                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                            </button>
+                            <h1 id="desktop-lesson-title" class="text-xl font-bold text-[#1d1d1f] tracking-tight">Lição X</h1>
+                        </div>
+                        <button type="button" onclick="toggleDesktopSidebar()" class="p-2 rounded-xl glass-btn shrink-0">
+                            <i data-lucide="panel-left-close" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="glass-inner p-1.5 rounded-2xl flex flex-col gap-1 mb-5">
+                        <button onclick="setMode('practice')" id="tab-practice" class="mode-tab w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 flex items-center gap-3 active">
+                            <i data-lucide="edit-3" class="w-4 h-4"></i> Prática de Traços
+                        </button>
+                        <button onclick="setMode('structure')" id="tab-structure" class="mode-tab w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 flex items-center gap-3">
+                            <i data-lucide="layout-template" class="w-4 h-4"></i> Estruturas
+                        </button>
+                        <button onclick="setMode('strokes')" id="tab-strokes" class="mode-tab w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 flex items-center gap-3">
+                            <i data-lucide="list" class="w-4 h-4"></i> Tabela de Traços
+                        </button>
+                    </div>
+                    
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3 text-[#86868b]"></i>
+                        <input type="text" id="searchInput" placeholder="Buscar palavra, pinyin..." class="w-full bg-white/40 border border-white/60 rounded-xl py-2.5 pl-10 pr-4 text-sm font-medium text-[#1d1d1f] focus:outline-none transition shadow-inner">
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto p-4 w-full min-w-[280px] pb-12" id="listContainer"></div>
+            </aside>
+
+            <main class="flex-1 flex flex-col bg-transparent overflow-y-auto overflow-x-hidden relative">
+                
+                <button type="button" id="btn-reopen-desktop" onclick="toggleDesktopSidebar()" class="hidden absolute top-6 left-6 p-3 rounded-xl glass-btn z-10 transition">
+                    <i data-lucide="panel-left-open" class="w-5 h-5"></i>
+                </button>
+
+                <div class="flex-1 p-4 md:p-10 flex flex-col max-w-4xl mx-auto w-full justify-center">
+                    
+                    <div class="glass-inner rounded-3xl p-6 md:p-8 mb-8 shrink-0 z-10 relative">
+
+                        <div id="header-words" class="flex flex-col">
+                            <div class="flex flex-col sm:flex-row justify-between items-start gap-4">
+                                <div>
+                                    <div class="flex items-end gap-3 md:gap-4 mb-2 flex-wrap">
+                                        <h2 id="word-hanzi" class="text-4xl md:text-5xl chinese-text font-bold text-[#1d1d1f] leading-none tracking-tight"></h2>
+                                        <button type="button" onclick="playAudioText('word-hanzi')" class="text-teal-600 p-2 rounded-xl glass-btn transition" title="Ouvir palavra">
+                                            <i data-lucide="volume-2" class="w-6 h-6"></i>
+                                        </button>
+                                        <span id="word-pinyin" class="text-xl md:text-2xl text-[#0066cc] font-semibold mb-1 ml-1 tracking-wide"></span>
+                                    </div>
+                                    <p id="word-trans" class="text-base md:text-lg text-[#86868b] font-medium uppercase tracking-widest"></p>
+                                </div>
+                                <span id="word-category" class="px-4 py-1.5 bg-white/50 text-[#1d1d1f] text-xs font-bold rounded-full uppercase tracking-widest border border-white/80 whitespace-nowrap shadow-sm"></span>
+                            </div>
+
+                            <div id="grammar-container" class="mt-6 p-5 glass-panel rounded-2xl hidden relative bg-purple-50/30 border-purple-200/50">
+                                <p class="text-xs font-bold text-purple-700 uppercase mb-3 flex items-center gap-1.5"><i data-lucide="book" class="w-4 h-4"></i> Nota Gramatical</p>
+                                <p id="grammar-text" class="text-sm md:text-base text-[#1d1d1f] leading-relaxed"></p>
+                            </div>
+
+                            <div id="example-container" class="mt-6 p-5 glass-panel rounded-2xl hidden relative border-teal-200/50 bg-teal-50/20">
+                                <button type="button" onclick="playAudioText('example-ch')" class="absolute top-4 right-4 text-[#86868b] hover:text-teal-600 p-2 rounded-lg glass-btn transition" title="Ouvir exemplo">
+                                    <i data-lucide="volume-2" class="w-4 h-4"></i>
+                                </button>
+                                <p class="text-xs font-bold text-teal-700 uppercase mb-3 flex items-center gap-1.5"><i data-lucide="message-circle" class="w-4 h-4"></i> Contexto / Exemplo</p>
+                                <p id="example-ch" class="chinese-text text-lg md:text-xl text-[#1d1d1f] font-medium mb-1 leading-relaxed pr-8"></p>
+                                <p id="example-py" class="text-sm text-[#0066cc] mb-1 font-medium"></p>
+                                <p id="example-pt" class="text-sm text-[#86868b] italic"></p>
+                            </div>
+
+                            <div class="mt-8 border-t border-white/40 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs font-bold text-[#86868b] uppercase tracking-widest bg-white/30 px-3 py-1.5 rounded-full border border-white/50">Focar em:</span>
+                                    <div id="char-tabs" class="flex flex-wrap gap-2 justify-center"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="header-strokes" class="hidden flex-col items-center text-center">
+                            <span class="px-4 py-1.5 bg-white/50 text-[#1d1d1f] text-xs font-bold rounded-full uppercase tracking-widest border border-white/80 mb-4 shadow-sm inline-block">Estudo de Traço</span>
+                            <div class="flex items-center justify-center gap-4 mb-2">
+                                <h2 id="stroke-name" class="text-4xl md:text-5xl chinese-text font-bold text-[#1d1d1f]"></h2>
+                                <span id="stroke-py" class="text-xl md:text-2xl text-[#0066cc] font-semibold tracking-wide"></span>
+                            </div>
+                            <p id="stroke-pt" class="text-base md:text-lg text-[#86868b] font-medium uppercase tracking-widest"></p>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 flex flex-col w-full animate-[fadeIn_0.4s_ease-out]">
+                        
+                        <div id="struct-info-box" class="w-full glass-inner rounded-3xl p-5 mb-8 hidden">
+                            <p class="text-xs font-bold text-teal-700 uppercase mb-3 flex items-center gap-1.5">
+                                <i data-lucide="layout-template" class="w-4 h-4"></i> Estrutura Morfológica
+                            </p>
+                            <div class="flex flex-col sm:flex-row items-baseline gap-3 mb-1">
+                                <h3 id="struct-ch" class="chinese-text text-xl font-bold text-[#1d1d1f]"></h3>
+                                <span id="struct-py" class="text-sm text-[#0066cc] font-semibold bg-white/50 px-2 py-0.5 rounded-lg border border-white/80"></span>
+                            </div>
+                            <p id="struct-pt" class="text-sm text-[#86868b] italic mt-1"></p>
+                        </div>
+
+                        <div class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 w-full flex-1">
+                            
+                            <div class="flex flex-col items-center">
+                                <div id="character-target" class="drawing-board-container grid-bg-standard"></div>
+                                <div id="feedback-msg" class="text-[#86868b] min-h-[44px] max-w-[280px] text-sm md:text-base font-semibold mt-6 text-center transition-all flex items-center justify-center w-full px-4 py-2 bg-white/30 rounded-xl shadow-sm border border-white/60">
+                                    Aguardando interação...
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 md:flex md:flex-col gap-4 w-full md:w-auto max-w-[280px] md:max-w-none">
+                                <button type="button" onclick="animateCharacter()" class="glass-btn px-6 py-4 rounded-2xl flex items-center justify-center gap-3 group">
+                                    <div class="bg-white/50 text-[#86868b] p-2 rounded-xl group-hover:bg-white group-hover:text-[#0066cc] transition-colors shadow-sm border border-white/80">
+                                        <i data-lucide="play-circle" class="w-5 h-5"></i>
+                                    </div>
+                                    <span class="text-sm font-bold uppercase tracking-wider">Animar</span>
+                                </button>
+                                
+                                <button type="button" id="btn-practice" onclick="startQuiz()" class="glass-btn-primary px-6 py-4 rounded-2xl flex items-center justify-center gap-3 group pulse-light">
+                                    <div class="bg-teal-500/20 text-teal-700 p-2 rounded-xl group-hover:bg-teal-500 group-hover:text-white transition-colors border border-teal-500/30">
+                                        <i data-lucide="edit-3" class="w-5 h-5"></i>
+                                    </div>
+                                    <span class="text-sm font-bold uppercase tracking-wider text-[#1d1d1f]">Praticar</span>
+                                </button>
+                                
+                                <div class="col-span-2 hidden md:block h-px bg-white/40 w-full my-2"></div>
+                                
+                                <div class="col-span-2 flex gap-4">
+                                    <button type="button" onclick="showOutline()" class="glass-btn flex-1 py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-[#1d1d1f]">
+                                        <i data-lucide="eye" class="w-4 h-4 text-teal-600"></i> Guia On
+                                    </button>
+                                    <button type="button" onclick="hideOutline()" class="glass-btn flex-1 py-3 rounded-xl flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-[#86868b]">
+                                        <i data-lucide="eye-off" class="w-4 h-4"></i> Guia Off
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // BANCO DE DADOS DEFINITIVO: 100% EXCLUSIVO - Nenhuma frase se repete. Todo item da gramática também possui exemplo separado em ex_ch, ex_py, ex_pt.
+        const database = [
+            // ================== LIÇÃO 1 ==================
+            { w: "法律", p: "fǎlǜ", t: "lei", c: "Substantivos", l: 1, ex_ch: "他在大学学习法律专业。", ex_py: "Tā zài dàxué xuéxí fǎlǜ zhuānyè.", ex_pt: "Ele estuda a graduação em direito na universidade." },
+            { w: "俩", p: "liǎ", t: "dois ou ambos", c: "Substantivos", l: 1, ex_ch: "他们俩是很好的朋友。", ex_py: "Tāmen liǎ shì hěn hǎo de péngyou.", ex_pt: "Eles dois são muito bons amigos." },
+            { w: "印象", p: "yìnxiàng", t: "impressão", c: "Substantivos", l: 1, ex_ch: "北京给我留下了深刻的印象。", ex_py: "Běijīng gěi wǒ liúxià le shēnkè de yìnxiàng.", ex_pt: "Pequim me deixou uma impressão profunda." },
+            { w: "性格", p: "xìnggé", t: "caráter ou personalidade", c: "Substantivos", l: 1, ex_ch: "妹妹的性格非常开朗。", ex_py: "Mèimei de xìnggé fēicháng kāilǎng.", ex_pt: "A personalidade da irmã mais nova é muito alegre." },
+            { w: "孙月", p: "Sūn Yuè", t: "Sun Yue", c: "Substantivos", l: 1, ex_ch: "孙月昨天买了一本新书。", ex_py: "Sūn Yuè zuótiān mǎi le yì běn xīn shū.", ex_pt: "Sun Yue comprou um livro novo ontem." },
+            { w: "王静", p: "Wáng Jìng", t: "Wang Jing", c: "Substantivos", l: 1, ex_ch: "王静是我们班最聪明的学生。", ex_py: "Wáng Jìng shì wǒmen bān zuì cōngming de xuésheng.", ex_pt: "Wang Jing é a aluna mais inteligente da nossa turma." },
+            { w: "李进", p: "Lǐ Jìn", t: "Li Jin", c: "Substantivos", l: 1, ex_ch: "听说李进马上要结婚了。", ex_py: "Tīngshuō Lǐ Jìn mǎshàng yào jiéhūn le.", ex_pt: "Ouvi dizer que Li Jin vai se casar em breve." },
+            { w: "班", p: "bān", t: "turma ou classe", c: "Substantivos", l: 1, ex_ch: "我们班一共有二十个留学生。", ex_py: "Wǒmen bān yígòng yǒu èrshí ge liúxuéshēng.", ex_pt: "Nossa turma tem ao todo vinte estudantes estrangeiros." },
+            { w: "新闻", p: "xīnwén", t: "notícias ou jornalismo", c: "Substantivos", l: 1, ex_ch: "我每天早上都会看新闻。", ex_py: "Wǒ měitiān zǎoshang dōu huì kàn xīnwén.", ex_pt: "Eu assisto às notícias todas as manhãs." },
+            { w: "足球", p: "zúqiú", t: "futebol", c: "Substantivos", l: 1, ex_ch: "哥哥周末经常去公园踢足球。", ex_py: "Gēge zhōumò jīngcháng qù gōngyuán tī zúqiú.", ex_pt: "Meu irmão mais velho frequentemente vai ao parque jogar futebol nos finais de semana." },
+            { w: "比赛", p: "bǐsài", t: "jogo ou competição", c: "Substantivos", l: 1, ex_ch: "今天的篮球比赛太精彩了！", ex_py: "Jīntiān de lánqiú bǐsài tài jīngcǎi le!", ex_pt: "O jogo de basquete de hoje foi muito empolgante!" },
+            { w: "球", p: "qiú", t: "bola ou gol", c: "Substantivos", l: 1, ex_ch: "那个球飞得特别远。", ex_py: "Nàge qiú fēi de tèbié yuǎn.", ex_pt: "Aquela bola voou especialmente longe." },
+            { w: "时间", p: "shíjiān", t: "tempo", c: "Substantivos", l: 1, ex_ch: "我们没有足够的时间完成工作。", ex_py: "Wǒmen méiyǒu zúgòu de shíjiān wánchéng gōngzuò.", ex_pt: "Nós não temos tempo suficiente para terminar o trabalho." },
+            { w: "兴趣", p: "xìngqù", t: "interesse", c: "Substantivos", l: 1, ex_ch: "他对中国历史很感兴趣。", ex_py: "Tā duì Zhōngguó lìshǐ hěn gǎn xìngqù.", ex_pt: "Ele tem muito interesse em história da China." },
+            { w: "爱好", p: "àihào", t: "hobby ou passatempo", c: "Substantivos", l: 1, ex_ch: "除了看书，你还有什么爱好？", ex_py: "Chúle kànshū, nǐ hái yǒu shénme àihào?", ex_pt: "Além de ler, que outro passatempo você tem?" },
+            { w: "生活", p: "shēnghuó", t: "vida", c: "Substantivos", l: 1, ex_ch: "这里的生活节奏很慢。", ex_py: "Zhèlǐ de shēnghuó jiézòu hěn màn.", ex_pt: "O ritmo de vida aqui é bem lento." },
+            { w: "妻子", p: "qīzi", t: "esposa", c: "Substantivos", l: 1, ex_ch: "他的妻子是一名优秀的医生。", ex_py: "Tā de qīzi shì yì míng yōuxiù de yīshēng.", ex_pt: "A esposa dele é uma excelente médica." },
+            { w: "丈夫", p: "zhàngfu", t: "marido", c: "Substantivos", l: 1, ex_ch: "她丈夫每天都工作到很晚。", ex_py: "Tā zhàngfu měitiān dōu gōngzuò dào hěn wǎn.", ex_pt: "O marido dela trabalha até bem tarde todos os dias." },
+            { w: "浪漫", p: "làngmàn", t: "romance", c: "Substantivos", l: 1, ex_ch: "女孩子都向往浪漫的爱情。", ex_py: "Nǚháizi dōu xiàngwǎng làngmàn de àiqíng.", ex_pt: "As garotas todas anseiam por um amor com romance." },
+            { w: "新鲜感", p: "xīnxiāngǎn", t: "sensação de novidade", c: "Substantivos", l: 1, ex_ch: "旅行能给生活带来新鲜感。", ex_py: "Lǚxíng néng gěi shēnghuó dàilái xīnxiāngǎn.", ex_pt: "Viajar pode trazer uma sensação de novidade para a vida." },
+            { w: "缺点", p: "quēdiǎn", t: "defeito ou ponto fraco", c: "Substantivos", l: 1, ex_ch: "每个人都有自己的缺点。", ex_py: "Měi ge rén dōu yǒu zìjǐ de quēdiǎn.", ex_pt: "Todo mundo tem seus próprios defeitos." },
+            { w: "高", p: "Gāo", t: "Gao (sobrenome)", c: "Substantivos", l: 1, ex_ch: "高老师教我们数学。", ex_py: "Gāo lǎoshī jiāo wǒmen shùxué.", ex_pt: "O professor Gao nos ensina matemática." },
+            { w: "李", p: "Lǐ", t: "Li (sobrenome)", c: "Substantivos", l: 1, ex_ch: "李先生在一家外贸公司上班。", ex_py: "Lǐ xiānsheng zài yì jiā wàimào gōngsī shàngbān.", ex_pt: "O Sr. Li trabalha em uma empresa de comércio exterior." },
+            { w: "爱情", p: "àiqíng", t: "amor", c: "Substantivos", l: 1, ex_ch: "真正的爱情需要互相包容。", ex_py: "Zhēnzhèng de àiqíng xūyào hùxiāng bāoróng.", ex_pt: "O verdadeiro amor precisa de tolerância mútua." },
+            { w: "星星", p: "xīngxing", t: "estrela", c: "Substantivos", l: 1, ex_ch: "今晚天上的星星特别多。", ex_py: "Jīnwǎn tiānshàng de xīngxing tèbié duō.", ex_pt: "As estrelas no céu esta noite estão especialmente numerosas." },
+            { w: "月亮", p: "yuèliang", t: "lua", c: "Substantivos", l: 1, ex_ch: "中秋节的月亮又圆又亮。", ex_py: "Zhōngqiū jié de yuèliang yòu yuán yòu liàng.", ex_pt: "A lua do Festival do Meio Outono é redonda e brilhante." },
+            { w: "灯", p: "dēng", t: "lâmpada ou luz", c: "Substantivos", l: 1, ex_ch: "太暗了，请把灯打开。", ex_py: "Tài àn le, qǐng bǎ dēng dǎkāi.", ex_pt: "Está muito escuro, por favor, acenda a luz." },
+            { w: "原因", p: "yuányīn", t: "motivo ou razão", c: "Substantivos", l: 1, ex_ch: "你能告诉我迟到的原因吗？", ex_py: "Nǐ néng gàosu wǒ chídào de yuányīn ma?", ex_pt: "Você pode me dizer o motivo do atraso?" },
+            { w: "脾气", p: "píqi", t: "temperamento ou gênio", c: "Substantivos", l: 1, ex_ch: "我爸爸脾气有时候很暴躁。", ex_py: "Wǒ bàba píqi yǒushíhou hěn bàozào.", ex_pt: "O temperamento do meu pai às vezes é muito irritadiço." },
+            { w: "身高", p: "shēngāo", t: "altura", c: "Substantivos", l: 1, ex_ch: "他现在的身高是一米八。", ex_py: "Tā xiànzài de shēngāo shì yì mǐ bā.", ex_pt: "A altura dele agora é de um metro e oitenta." },
+            { w: "体重", p: "tǐzhòng", t: "peso", c: "Substantivos", l: 1, ex_ch: "冬天我经常不运动，体重增加了。", ex_py: "Dōngtiān wǒ jīngcháng bú yùndòng, tǐzhòng zēngjiā le.", ex_pt: "No inverno não costumo me exercitar, meu peso aumentou." },
+            { w: "头发", p: "tóufa", t: "cabelo", c: "Substantivos", l: 1, ex_ch: "她昨天去理发店剪了头发。", ex_py: "Tā zuótiān qù lǐfàdiàn jiǎn le tóufa.", ex_pt: "Ela foi ao cabeleireiro cortar o cabelo ontem." },
+            { w: "眼睛", p: "yǎnjing", t: "olhos", c: "Substantivos", l: 1, ex_ch: "那个小女孩的眼睛大大的。", ex_py: "Nàge xiǎo nǚhái de yǎnjing dàda de.", ex_pt: "Os olhos daquela garotinha são grandes." },
+            { w: "单眼皮", p: "dānyǎnpí", t: "pálpebra única", c: "Substantivos", l: 1, ex_ch: "很多亚洲人是单眼皮。", ex_py: "Hěnduō Yàzhōu rén shì dānyǎnpí.", ex_pt: "Muitos asiáticos têm pálpebra única." },
+            { w: "双眼皮", p: "shuāngyǎnpí", t: "pálpebra dupla", c: "Substantivos", l: 1, ex_ch: "她做了一个双眼皮手术。", ex_py: "Tā zuò le yí ge shuāngyǎnpí shǒushù.", ex_pt: "Ela fez uma cirurgia de pálpebra dupla." },
+            { w: "西雅图未眠夜", p: "Xīyǎtú Wèi Mián Yè", t: "Sintonia de Amor (Filme)", c: "Substantivos", l: 1, ex_ch: "《西雅图未眠夜》是一部经典的爱情电影。", ex_py: "«Xīyǎtú Wèi Mián Yè» shì yí bù jīngdiǎn de àiqíng diànyǐng.", ex_pt: "'Sintonia de Amor' é um clássico filme de romance." },
+            { w: "诺丁山", p: "Nuòdīngshān", t: "Um Lugar Chamado Notting Hill", c: "Substantivos", l: 1, ex_ch: "我非常喜欢看《诺丁山》。", ex_py: "Wǒ fēicháng xǐhuan kàn «Nuòdīngshān».", ex_pt: "Eu gosto muito de assistir a 'Um Lugar Chamado Notting Hill'." },
+            { w: "当男人爱上女人", p: "Dāng Nánrén Àishang Nǚrén", t: "Quando um Homem Ama uma Mulher", c: "Substantivos", l: 1, ex_ch: "《当男人爱上女人》很感人。", ex_py: "«Dāng Nánrén Àishang Nǚrén» hěn gǎnrén.", ex_pt: "'Quando um Homem Ama uma Mulher' é muito emocionante." },
+            { w: "罗马假日", p: "Luómǎ Jiàrì", t: "A Princesa e o Plebeu", c: "Substantivos", l: 1, ex_ch: "《罗马假日》的女主角很美。", ex_py: "«Luómǎ Jiàrì» de nǚzhǔjué hěn měi.", ex_pt: "A protagonista de 'A Princesa e o Plebeu' é linda." },
+            { w: "罗密欧与朱丽叶", p: "Luómiòǔ yǔ Zhūlìyè", t: "Romeu e Julieta", c: "Substantivos", l: 1, ex_ch: "他们演了《罗密欧与朱丽叶》。", ex_py: "Tāmen yǎn le «Luómiòǔ yǔ Zhūlìyè».", ex_pt: "Eles atuaram em 'Romeu e Julieta'." },
+            { w: "泰坦尼克号", p: "Tàitǎnníkè Hào", t: "Titanic", c: "Substantivos", l: 1, ex_ch: "《泰坦尼克号》的故事大家都知道。", ex_py: "«Tàitǎnníkè Hào» de gùshi dàjiā dōu zhīdào.", ex_pt: "Todo mundo conhece a história do 'Titanic'." },
+            { w: "七夕节", p: "Qīxī Jié", t: "Festival Qixi ou Dia dos Namorados Chinês", c: "Substantivos", l: 1, ex_ch: "七夕节是中国的情人节。", ex_py: "Qīxī Jié shì Zhōngguó de qíngrén jié.", ex_pt: "O Festival Qixi é o Dia dos Namorados da China." },
+            { w: "乞巧节", p: "Qǐqiǎo Jié", t: "Festival para pedir habilidades", c: "Substantivos", l: 1, ex_ch: "乞巧节也是七夕节的传统名字。", ex_py: "Qǐqiǎo Jié yě shì Qīxī Jié de chuántǒng míngzi.", ex_pt: "O Festival de Pedir Habilidades também é um nome tradicional para o Festival Qixi." },
+            { w: "少女节", p: "Shàonǚ Jié", t: "Festival das Moças", c: "Substantivos", l: 1, ex_ch: "以前有人叫它少女节。", ex_py: "Yǐqián yǒu rén jiào tā Shàonǚ Jié.", ex_pt: "Antigamente algumas pessoas o chamavam de Festival das Moças." },
+            { w: "女儿节", p: "Nǚ'ér Jié", t: "Festival das Filhas", c: "Substantivos", l: 1, ex_ch: "女儿节有很多传统的活动。", ex_py: "Nǚ'ér Jié yǒu hěnduō chuántǒng de huódòng.", ex_pt: "O Festival das Filhas tem muitas atividades tradicionais." },
+            { w: "农历", p: "nónglì", t: "calendário lunar", c: "Substantivos", l: 1, ex_ch: "春节在农历的正月初一。", ex_py: "Chūnjié zài nónglì de zhēngyuè chūyī.", ex_pt: "O Festival da Primavera é no primeiro dia do primeiro mês do calendário lunar." },
+            { w: "牛郎", p: "Niúláng", t: "O Vaqueiro (personagem)", c: "Substantivos", l: 1, ex_ch: "牛郎的故事很古老。", ex_py: "Niúláng de gùshi hěn gǔlǎo.", ex_pt: "A história do Vaqueiro é bem antiga." },
+            { w: "织女", p: "Zhīnǚ", t: "A Tecelã (personagem)", c: "Substantivos", l: 1, ex_ch: "织女是天上的仙女。", ex_py: "Zhīnǚ shì tiānshàng de xiānnǚ.", ex_pt: "A Tecelã é uma fada no céu." },
+            { w: "米", p: "mǐ", t: "metro", c: "Substantivos", l: 1, ex_ch: "这座桥有一千多米长。", ex_py: "Zhè zuò qiáo yǒu yì qiān duō mǐ cháng.", ex_pt: "Esta ponte tem mais de mil metros de comprimento." },
+            { w: "厘米", p: "límǐ", t: "centímetro", c: "Substantivos", l: 1, ex_ch: "我比去年高了两厘米。", ex_py: "Wǒ bǐ qùnián gāo le liǎng límǐ.", ex_pt: "Estou dois centímetros mais alto que no ano passado." },
+            { w: "百", p: "bǎi", t: "cem", c: "Substantivos", l: 1, ex_ch: "一百块钱可以买很多水果。", ex_py: "Yì bǎi kuài qián kěyǐ mǎi hěnduō shuǐguǒ.", ex_pt: "Cem yuans podem comprar muitas frutas." },
+            { w: "公斤", p: "gōngjīn", t: "quilo", c: "Substantivos", l: 1, ex_ch: "买两公斤苹果吧。", ex_py: "Mǎi liǎng gōngjīn píngguǒ ba.", ex_pt: "Compre dois quilos de maçãs." },
+            { w: "音乐", p: "yīnyuè", t: "música", c: "Substantivos", l: 1, ex_ch: "听音乐能让人放松。", ex_py: "Tīng yīnyuè néng ràng rén fàngsōng.", ex_pt: "Ouvir música consegue relaxar as pessoas." },
+            { w: "身体", p: "shēntǐ", t: "corpo / saúde", c: "Substantivos", l: 1, ex_ch: "爷爷的身体越来越好了。", ex_py: "Yéye de shēntǐ yuèláiyuè hǎo le.", ex_pt: "A saúde do vovô está cada vez melhor." },
+            { w: "健康", p: "jiànkāng", t: "saúde", c: "Substantivos", l: 1, ex_ch: "健康比什么都重要。", ex_py: "Jiànkāng bǐ shénme dōu zhòngyào.", ex_pt: "Saúde é mais importante do que tudo." },
+            { w: "故事", p: "gùshi", t: "história", c: "Substantivos", l: 1, ex_ch: "奶奶给小孙子讲了一个故事。", ex_py: "Nǎinai gěi xiǎo sūnzi jiǎng le yí ge gùshi.", ex_pt: "A vovó contou uma história para o netinho." },
+            { w: "歌唱", p: "gēchàng", t: "canção", c: "Substantivos", l: 1, ex_ch: "大家都喜欢听他的歌唱。", ex_py: "Dàjiā dōu xǐhuan tīng tā de gēchàng.", ex_pt: "Todo mundo gosta de ouvir as canções dele." },
+            { w: "菜", p: "cài", t: "prato", c: "Substantivos", l: 1, ex_ch: "今天晚上的菜真好吃。", ex_py: "Jīntiān wǎnshang de cài zhēn hǎochī.", ex_pt: "Os pratos desta noite estão muito saborosos." },
+            { w: "想法", p: "xiǎngfǎ", t: "ideia", c: "Substantivos", l: 1, ex_ch: "关于这件事，你有什么想法？", ex_py: "Guānyú zhè jiàn shì, nǐ yǒu shénme xiǎngfǎ?", ex_pt: "Sobre este assunto, que ideias você tem?" },
+            { w: "大学", p: "dàxué", t: "universidade", c: "Substantivos", l: 1, ex_ch: "他明年就要考大学了。", ex_py: "Tā míngnián jiù yào kǎo dàxué le.", ex_pt: "Ele fará as provas para a universidade no ano que vem." },
+            { w: "学校", p: "xuéxiào", t: "escola", c: "Substantivos", l: 1, ex_ch: "我们的学校很大也很漂亮。", ex_py: "Wǒmen de xuéxiào hěn dà yě hěn piàoliang.", ex_pt: "Nossa escola é bem grande e também muito bonita." },
+            { w: "专业", p: "zhuānyè", t: "curso (faculdade)", c: "Substantivos", l: 1, ex_ch: "你大学学的是什么专业？", ex_py: "Nǐ dàxué xué de shì shénme zhuānyè?", ex_pt: "Qual curso você estudou na universidade?" },
+            { w: "理想", p: "lǐxiǎng", t: "ideais / ideal", c: "Substantivos", l: 1, ex_ch: "他的理想是当一名老师。", ex_py: "Tā de lǐxiǎng shì dāng yì míng lǎoshī.", ex_pt: "O ideal dele é se tornar um professor." },
+
+            { w: "深", p: "shēn", t: "profundo", c: "Adjetivos", l: 1, ex_ch: "这条河的水很深。", ex_py: "Zhè tiáo hé de shuǐ hěn shēn.", ex_pt: "A água deste rio é bem profunda." },
+            { w: "共同", p: "gòngtóng", t: "comum / compartilhado", c: "Adjetivos", l: 1, ex_ch: "我们有共同的兴趣和爱好。", ex_py: "Wǒmen yǒu gòngtóng de xìngqù hé àihào.", ex_pt: "Temos interesses e passatempos em comum." },
+            { w: "幸福", p: "xìngfú", t: "feliz (plenitude)", c: "Adjetivos", l: 1, ex_ch: "祝你们新婚幸福！", ex_py: "Zhù nǐmen xīnhūn xìngfú!", ex_pt: "Desejo a vocês felicidades no novo casamento!" },
+            { w: "浪漫", p: "làngmàn", t: "romântico", c: "Adjetivos", l: 1, ex_ch: "这部法国电影真的很浪漫。", ex_py: "Zhè bù Fǎguó diànyǐng zhēn de hěn làngmàn.", ex_pt: "Este filme francês é realmente romântico." },
+            { w: "新鲜", p: "xīnxiān", t: "novo ou fresco", c: "Adjetivos", l: 1, ex_ch: "早上的空气特别新鲜。", ex_py: "Zǎoshang de kōngqì tèbié xīnxiān.", ex_pt: "O ar da manhã é especialmente fresco." },
+            { w: "幽默", p: "yōumò", t: "bem-humorado", c: "Adjetivos", l: 1, ex_ch: "我的新同事非常幽默。", ex_py: "Wǒ de xīn tóngshì fēicháng yōumò.", ex_pt: "Meu novo colega de trabalho é muito bem-humorado." },
+            { w: "普通", p: "pǔtōng", t: "comum ou ordinário", c: "Adjetivos", l: 1, ex_ch: "他只是一个普通公司的职员。", ex_py: "Tā zhǐ shì yí ge pǔtōng gōngsī de zhíyuán.", ex_pt: "Ele é apenas um funcionário de uma empresa comum." },
+            { w: "亮", p: "liàng", t: "brilhante ou aceso", c: "Adjetivos", l: 1, ex_ch: "房间里的灯太亮了。", ex_py: "Fángjiān lǐ de dēng tài liàng le.", ex_pt: "A luz no quarto está muito brilhante." },
+            { w: "长发", p: "chángfà", t: "cabelo comprido", c: "Adjetivos", l: 1, ex_ch: "那个留着长发的女孩是我妹妹。", ex_py: "Nàge liúzhe chángfà de nǚhái shì wǒ mèimei.", ex_pt: "Aquela garota que tem cabelo comprido é minha irmã mais nova." },
+            { w: "短发", p: "duǎnfà", t: "cabelo curto", c: "Adjetivos", l: 1, ex_ch: "夏天留短发比较凉快。", ex_py: "Xiàtiān liú duǎnfà bǐjiào liángkuai.", ex_pt: "Manter o cabelo curto no verão é mais fresco." },
+            { w: "直发", p: "zhífà", t: "cabelo liso", c: "Adjetivos", l: 1, ex_ch: "她本来是直发，后来去烫了卷发。", ex_py: "Tā běnlái shì zhífà, hòulái qù tàng le juǎnfà.", ex_pt: "Ela originalmente tinha cabelo liso, depois foi fazer permanente para cachear." },
+            { w: "卷发", p: "juǎnfà", t: "cabelo cacheado", c: "Adjetivos", l: 1, ex_ch: "你觉得卷发适合我吗？", ex_py: "Nǐ juéde juǎnfà shìhé wǒ ma?", ex_pt: "Você acha que cabelo cacheado combina comigo?" },
+            { w: "大", p: "dà", t: "grande", c: "Adjetivos", l: 1, ex_ch: "这个苹果真大！", ex_py: "Zhège píngguǒ zhēn dà!", ex_pt: "Esta maçã é realmente grande!" },
+            { w: "小", p: "xiǎo", t: "pequeno", c: "Adjetivos", l: 1, ex_ch: "他的力气太小了。", ex_py: "Tā de lìqì tài xiǎo le.", ex_pt: "A força dele é muito pequena." },
+            { w: "可爱", p: "kě'ài", t: "fofo ou adorável", c: "Adjetivos", l: 1, ex_ch: "你的小狗太可爱了！", ex_py: "Nǐ de xiǎo gǒu tài kě'ài le!", ex_pt: "Seu cachorrinho é fofo demais!" },
+            { w: "安静", p: "ānjìng", t: "quieto ou calmo", c: "Adjetivos", l: 1, ex_ch: "图书馆里需要保持安静。", ex_py: "Túshūguǎn lǐ xūyào bǎochí ānjìng.", ex_pt: "É preciso manter a quietude dentro da biblioteca." },
+            { w: "认真", p: "rènzhēn", t: "sério / aplicado", c: "Adjetivos", l: 1, ex_ch: "他工作的时候总是很认真。", ex_py: "Tā gōngzuò de shíhou zǒngshì hěn rènzhēn.", ex_pt: "Quando ele trabalha, é sempre muito aplicado." },
+            { w: "长", p: "cháng", t: "longo", c: "Adjetivos", l: 1, ex_ch: "这条裙子有点儿太长了。", ex_py: "Zhè tiáo qúnzi yǒudiǎnr tài cháng le.", ex_pt: "Esta saia está um pouquinho comprida demais." },
+            { w: "短", p: "duǎn", t: "curto", c: "Adjetivos", l: 1, ex_ch: "时间太短，我来不及写完。", ex_py: "Shíjiān tài duǎn, wǒ láibují xiě wán.", ex_pt: "O tempo é curto demais, não consigo terminar de escrever a tempo." },
+            { w: "双", p: "shuāng", t: "par", c: "Adjetivos", l: 1, ex_ch: "买了一双新鞋子。", ex_py: "Mǎi le yì shuāng xīn xiézi.", ex_pt: "Comprei um par de sapatos novos." },
+            { w: "简单", p: "jiǎndān", t: "simples", c: "Adjetivos", l: 1, ex_ch: "我觉得这道题并不简单。", ex_py: "Wǒ juéde zhè dào tí bìng bù jiǎndān.", ex_pt: "Acho que essa questão não é nada simples." },
+            { w: "重要", p: "zhòngyào", t: "importante", c: "Adjetivos", l: 1, ex_ch: "这是一次非常重要的会议。", ex_py: "Zhè shì yí cì fēicháng zhòngyào de huìyì.", ex_pt: "Esta é uma reunião extremamente importante." },
+            { w: "容易", p: "róngyì", t: "fácil", c: "Adjetivos", l: 1, ex_ch: "学好一门外语不容易。", ex_py: "Xuéhǎo yì mén wàiyǔ bù róngyì.", ex_pt: "Aprender bem um idioma estrangeiro não é fácil." },
+            { w: "难", p: "nán", t: "difícil", c: "Adjetivos", l: 1, ex_ch: "这个汉字很难写。", ex_py: "Zhège hànzì hěn nán xiě.", ex_pt: "Este ideograma é difícil de escrever." },
+            { w: "特别", p: "tèbié", t: "especial", c: "Adjetivos", l: 1, ex_ch: "今天是个特别的日子。", ex_py: "Jīntiān shì ge tèbié de rìzi.", ex_pt: "Hoje é um dia especial." },
+            { w: "最大", p: "zuìdà", t: "maior", c: "Adjetivos", l: 1, ex_ch: "这是世界上最大的博物馆。", ex_py: "Zhè shì shìjiè shàng zuìdà de bówùguǎn.", ex_pt: "Este é o maior museu do mundo." },
+
+            { w: "不仅", p: "bùjǐn", t: "não apenas", c: "Advérbios / Conjunções", l: 1, ex_ch: "他不仅会说英语，还会说法语。", ex_py: "Tā bùjǐn huì shuō Yīngyǔ, hái huì shuō Fǎyǔ.", ex_pt: "Ele não apenas sabe falar inglês, como também sabe francês." },
+            { w: "从来", p: "cónglái", t: "sempre ou nunca", c: "Advérbios / Conjunções", l: 1, ex_ch: "我从来没去过欧洲。", ex_py: "Wǒ cónglái méi qù guò Ōuzhōu.", ex_pt: "Eu nunca estive na Europa." },
+            { w: "最好", p: "zuìhǎo", t: "seria melhor / idealmente", c: "Advérbios / Conjunções", l: 1, ex_ch: "外面下雨了，你最好带上伞。", ex_py: "Wàimiàn xiàyǔ le, nǐ zuìhǎo dài shàng sǎn.", ex_pt: "Está chovendo lá fora, é melhor você levar um guarda-chuva." },
+            { w: "刚", p: "gāng", t: "acabado de / há pouco", c: "Advérbios / Conjunções", l: 1, ex_ch: "爸爸刚回到家就去做饭了。", ex_py: "Bàba gāng huídào jiā jiù qù zuò fàn le.", ex_pt: "Papai mal chegou em casa e já foi cozinhar." },
+            { w: "刚才", p: "gāngcái", t: "agora há pouco", c: "Advérbios / Conjunções", l: 1, ex_ch: "你刚才去哪儿了？我一直在找你。", ex_py: "Nǐ gāngcái qù nǎr le? Wǒ yìzhí zài zhǎo nǐ.", ex_pt: "Onde você foi agora há pouco? Eu estava o tempo todo te procurando." },
+            { w: "即使", p: "jíshǐ", t: "mesmo que", c: "Advérbios / Conjunções", l: 1, ex_ch: "即使很累，他也要把作业写完。", ex_py: "Jíshǐ hěn lèi, tā yě yào bǎ zuòyè xiě wán.", ex_pt: "Mesmo muito cansado, ele ainda quer terminar o dever de casa." },
+            { w: "也", p: "yě", t: "também", c: "Advérbios / Conjunções", l: 1, ex_ch: "我喜欢吃草莓，他也喜欢。", ex_py: "Wǒ xǐhuan chī cǎoméi, tā yě xǐhuan.", ex_pt: "Eu gosto de comer morangos, ele também gosta." },
+            { w: "还", p: "hái", t: "ainda ou também", c: "Advérbios / Conjunções", l: 1, ex_ch: "这么晚了，你怎么还在看电视？", ex_py: "Zhème wǎn le, nǐ zěnme hái zài kàn diànshì?", ex_pt: "Tão tarde, como você ainda está assistindo TV?" },
+            { w: "而且", p: "érqiě", t: "além disso / mas também", c: "Advérbios / Conjunções", l: 1, ex_ch: "这件衣服很便宜，而且质量很好。", ex_py: "Zhè jiàn yīfu hěn piányi, érqiě zhìliàng hěn hǎo.", ex_pt: "Esta roupa é barata, e além disso a qualidade é muito boa." },
+            { w: "自然", p: "zìrán", t: "naturalmente / certamente", c: "Advérbios / Conjunções", l: 1, ex_ch: "只要努力，成绩自然会提高。", ex_py: "Zhǐyào nǔlì, chéngjì zìrán huì tígāo.", ex_pt: "Basta se esforçar, e as notas subirão naturalmente." },
+            { w: "互相", p: "hùxiāng", t: "mutuamente", c: "Advérbios / Conjunções", l: 1, ex_ch: "同学们应该互相帮助。", ex_py: "Tóngxuémen yīnggāi hùxiāng bāngzhù.", ex_pt: "Os colegas de classe devem se ajudar mutuamente." },
+            { w: "虽然", p: "suīrán", t: "embora", c: "Advérbios / Conjunções", l: 1, ex_ch: "虽然外面很冷，但他还是去跑步了。", ex_py: "Suīrán wàimiàn hěn lěng, dàn tā háishì qù pǎobù le.", ex_pt: "Embora estivesse frio lá fora, ele ainda foi correr." },
+            { w: "但是", p: "dànshì", t: "mas", c: "Advérbios / Conjunções", l: 1, ex_ch: "我本来想买，但是没带钱。", ex_py: "Wǒ běnlái xiǎng mǎi, dànshì méi dài qián.", ex_pt: "Eu originalmente queria comprar, mas não trouxe dinheiro." },
+            { w: "其实", p: "qíshí", t: "na verdade", c: "Advérbios / Conjunções", l: 1, ex_ch: "大家都觉得他很凶，其实他很温柔。", ex_py: "Dàjiā dōu juéde tā hěn xiōng, qíshí tā hěn wēnróu.", ex_pt: "Todo mundo acha que ele é agressivo, na verdade ele é muito gentil." },
+            { w: "经常", p: "jīngcháng", t: "frequentemente", c: "Advérbios / Conjunções", l: 1, ex_ch: "我经常去那家咖啡馆看书。", ex_py: "Wǒ jīngcháng qù nà jiā kāfēiguǎn kànshū.", ex_pt: "Eu frequentemente vou àquela cafeteria para ler." },
+
+            { w: "开玩笑", p: "kāi wánxiào", t: "estar brincando / fazer piada", c: "Expressões e Compostos", l: 1, ex_ch: "别生气，我只是在跟你开玩笑。", ex_py: "Bié shēngqì, wǒ zhǐshì zài gēn nǐ kāi wánxiào.", ex_pt: "Não fique com raiva, estou apenas brincando com você." },
+            { w: "加班", p: "jiā bān", t: "fazer hora extra", c: "Expressões e Compostos", l: 1, ex_ch: "昨天晚上公司很多人都在加班。", ex_py: "Zuótiān wǎnshang gōngsī hěnduō rén dōu zài jiābān.", ex_pt: "Ontem à noite muitas pessoas na empresa estavam fazendo hora extra." },
+            { w: "感兴趣", p: "gǎn xìngqù", t: "interessar-se por", c: "Expressões e Compostos", l: 1, ex_ch: "弟弟对电脑游戏特别感兴趣。", ex_py: "Dìdi duì diànnǎo yóuxì tèbié gǎn xìngqù.", ex_pt: "O irmão mais novo se interessa especialmente por jogos de computador." },
+            { w: "说不完的话", p: "shuō bù wán de huà", t: "conversas intermináveis", c: "Expressões e Compostos", l: 1, ex_ch: "好朋友见面总是有说不完的话。", ex_py: "Hǎopéngyou jiànmiàn zǒngshì yǒu shuō bù wán de huà.", ex_pt: "Quando bons amigos se encontram sempre têm conversas intermináveis." },
+            { w: "红过脸", p: "hóngguo liǎn", t: "brigar ou discutir feio", c: "Expressões e Compostos", l: 1, ex_ch: "结婚十年，他们从来没红过脸。", ex_py: "Jiéhūn shí nián, tāmen cónglái méi hóngguo liǎn.", ex_pt: "Casados há dez anos, eles nunca brigaram feio." },
+            { w: "慢慢变老", p: "mànmàn biàn lǎo", t: "envelhecer lentamente", c: "Expressões e Compostos", l: 1, ex_ch: "我希望能陪着你慢慢变老。", ex_py: "Wǒ xīwàng néng péizhe nǐ mànmàn biàn lǎo.", ex_pt: "Espero poder te acompanhar envelhecendo lentamente." },
+            { w: "说的话", p: "shuō de huà", t: "as palavras / os dizeres", c: "Expressões e Compostos", l: 1, ex_ch: "你昨天说的话到底是什么意思？", ex_py: "Nǐ zuótiān shuō de huà dàodǐ shì shénme yìsi?", ex_pt: "O que você quis dizer com as palavras de ontem, afinal?" },
+            { w: "理想中", p: "lǐxiǎng zhōng", t: "no ideal", c: "Expressões e Compostos", l: 1, ex_ch: "她终于买到了理想中的大房子。", ex_py: "Tā zhōngyú mǎidào le lǐxiǎng zhōng de dà fángzi.", ex_pt: "Ela finalmente comprou a casa grande do seu ideal." },
+            { w: "大学中认识的", p: "dàxué zhōng rènshi de", t: "conhecidos na universidade", c: "Expressões e Compostos", l: 1, ex_ch: "我们是大学中认识的同学。", ex_py: "Wǒmen shì dàxué zhōng rènshi de tóngxué.", ex_pt: "Nós somos colegas que se conheceram na universidade." },
+            { w: "同一个", p: "tóng yí ge", t: "o mesmo", c: "Expressões e Compostos", l: 1, ex_ch: "我们从小就在同一个班学习。", ex_py: "Wǒmen cóng xiǎo jiù zài tóng yí ge bān xuéxí.", ex_pt: "Desde pequenos estudamos na mesma turma." },
+
+            { w: "熟悉", p: "shúxi", t: "estar familiarizado com", c: "Verbos", l: 1, ex_ch: "我对这里的环境还不太熟悉。", ex_py: "Wǒ duì zhèlǐ de huánjìng hái bú tài shúxi.", ex_pt: "Ainda não estou muito familiarizado com o ambiente daqui." },
+            { w: "适合", p: "shìhé", t: "adequar-se / servir", c: "Verbos", l: 1, ex_ch: "这件毛衣颜色很适合你。", ex_py: "Zhè jiàn máoyī yánsè hěn shìhé nǐ.", ex_pt: "A cor deste suéter combina muito com você." },
+            { w: "生活", p: "shēnghuó", t: "viver", c: "Verbos", l: 1, ex_ch: "你想去国外生活吗？", ex_py: "Nǐ xiǎng qù guówài shēnghuó ma?", ex_pt: "Você gostaria de viver no exterior?" },
+            { w: "够", p: "gòu", t: "ser suficiente", c: "Verbos", l: 1, ex_ch: "这些钱够买两张电影票了。", ex_py: "Zhèxiē qián gòu mǎi liǎng zhāng diànyǐngpiào le.", ex_pt: "Esse dinheiro é suficiente para comprar dois ingressos de cinema." },
+            { w: "接受", p: "jiēshòu", t: "aceitar", c: "Verbos", l: 1, ex_ch: "请接受我诚挚的道歉。", ex_py: "Qǐng jiēshòu wǒ chéngzhì de dàoqiàn.", ex_pt: "Por favor, aceite minhas sinceras desculpas." },
+            { w: "羡慕", p: "xiànmù", t: "invejar / admirar", c: "Verbos", l: 1, ex_ch: "大家都非常羡慕他的好运气。", ex_py: "Dàjiā dōu fēicháng xiànmù tā de hǎo yùnqì.", ex_pt: "Todos admiram/invejam imensamente a boa sorte dele." },
+            { w: "感动", p: "gǎndòng", t: "emocionar / comover", c: "Verbos", l: 1, ex_ch: "这个真实的故事让我很感动。", ex_py: "Zhège zhēnshí de gùshi ràng wǒ hěn gǎndòng.", ex_pt: "Essa história real me deixou muito emocionado." },
+            { w: "吸引", p: "xīyǐn", t: "atrair", c: "Verbos", l: 1, ex_ch: "精彩的表演吸引了很多人。", ex_py: "Jīngcǎi de biǎoyǎn xīyǐn le hěnduō rén.", ex_pt: "A apresentação excelente atraiu muitas pessoas." },
+            { w: "听说", p: "tīngshuō", t: "ouvir dizer", c: "Verbos", l: 1, ex_ch: "听说你下个月要回国了，是真的吗？", ex_py: "Tīngshuō nǐ xià ge yuè yào huíguó le, shì zhēn de ma?", ex_pt: "Ouvi dizer que você volta ao seu país mês que vem, é verdade?" },
+            { w: "学习", p: "xuéxí", t: "estudar", c: "Verbos", l: 1, ex_ch: "每天坚持学习才能进步。", ex_py: "Měitiān jiānchí xuéxí cái néng jìnbù.", ex_pt: "Apenas insistindo em estudar todos os dias pode-se progredir." },
+            { w: "认识", p: "rènshi", t: "conhecer", c: "Verbos", l: 1, ex_ch: "很高兴能认识你们。", ex_py: "Hěn gāoxìng néng rènshi nǐmen.", ex_pt: "Estou muito feliz em poder conhecê-los." },
+            { w: "踢", p: "tī", t: "chutar", c: "Verbos", l: 1, ex_ch: "他不小心踢到了桌腿。", ex_py: "Tā bù xiǎoxīn tī dào le zhuōtuǐ.", ex_pt: "Ele acidentalmente chutou a perna da mesa." },
+            { w: "喜欢", p: "xǐhuan", t: "gostar", c: "Verbos", l: 1, ex_ch: "我不喜欢吃太辣的菜。", ex_py: "Wǒ bù xǐhuan chī tài là de cài.", ex_pt: "Não gosto de comer pratos muito apimentados." },
+            { w: "结婚", p: "jiéhūn", t: "casar-se", c: "Verbos", l: 1, ex_ch: "他们打算明年秋天结婚。", ex_py: "Tāmen dǎsuàn míngnián qiūtiān jiéhūn.", ex_pt: "Eles planejam se casar no outono do ano que vem." },
+            { w: "打球", p: "dǎqiú", t: "jogar bola", c: "Verbos", l: 1, ex_ch: "下午我们一起去体育馆打球吧。", ex_py: "Xiàwǔ wǒmen yìqǐ qù tǐyùguǎn dǎqiú ba.", ex_pt: "Vamos juntos ao ginásio jogar bola à tarde." },
+            { w: "唱歌", p: "chànggē", t: "cantar", c: "Verbos", l: 1, ex_ch: "朋友过生日，我们去KTV唱歌庆祝。", ex_py: "Péngyou guò shēngrì, wǒmen qù KTV chànggē qìngzhù.", ex_pt: "Aniversário de amigo, vamos ao KTV cantar para celebrar." },
+            { w: "做菜", p: "zuòcài", t: "cozinhar", c: "Verbos", l: 1, ex_ch: "妈妈正在厨房里做菜。", ex_py: "Māma zhèngzài chúfáng lǐ zuòcài.", ex_pt: "A mamãe está cozinhando na cozinha agora." },
+            { w: "找到", p: "zhǎodào", t: "encontrar", c: "Verbos", l: 1, ex_ch: "终于找到了我的钥匙！", ex_py: "Zhōngyú zhǎodào le wǒ de yàoshi!", ex_pt: "Finalmente encontrei minha chave!" },
+            { w: "觉得", p: "juéde", t: "achar / sentir", c: "Verbos", l: 1, ex_ch: "你觉得这个计划怎么样？", ex_py: "Nǐ juéde zhège jìhuà zěnmeyàng?", ex_pt: "O que você acha deste plano?" },
+            { w: "解决", p: "jiějué", t: "resolver", c: "Verbos", l: 1, ex_ch: "这个问题必须马上解决。", ex_py: "Zhège wèntí bìxū mǎshàng jiějué.", ex_pt: "Este problema deve ser resolvido imediatamente." },
+            { w: "参加", p: "cānjiā", t: "participar", c: "Verbos", l: 1, ex_ch: "很多人来参加今天的会议。", ex_py: "Hěnduō rén lái cānjiā jīntiān de huìyì.", ex_pt: "Muitas pessoas vieram participar da reunião de hoje." },
+            { w: "游泳", p: "yóuyǒng", t: "nadar", c: "Verbos", l: 1, ex_ch: "夏天去海边游泳最舒服了。", ex_py: "Xiàtiān qù hǎibiān yóuyǒng zuì shūfu le.", ex_pt: "Ir nadar na praia no verão é o mais confortável." },
+            { w: "感到", p: "gǎndào", t: "sentir-se", c: "Verbos", l: 1, ex_ch: "听到这个坏消息，我感到很难过。", ex_py: "Tīngdào zhège huài xiāoxi, wǒ gǎndào hěn nánguò.", ex_pt: "Ao ouvir essa má notícia, me senti muito triste." },
+            { w: "感冒", p: "gǎnmào", t: "resfriar-se", c: "Verbos", l: 1, ex_ch: "注意保暖，别感冒了。", ex_py: "Zhùyì bǎonuǎn, bié gǎnmào le.", ex_pt: "Preste atenção para se manter aquecido e não se resfriar." },
+            { w: "了解", p: "liǎojiě", t: "compreender", c: "Verbos", l: 1, ex_ch: "我们要多了解客户的需求。", ex_py: "Wǒmen yào duō liǎojiě kèhù de xūqiú.", ex_pt: "Precisamos compreender mais as necessidades dos clientes." },
+            { w: "发现", p: "fāxiàn", t: "descobrir", c: "Verbos", l: 1, ex_ch: "我突然发现钱包不见了。", ex_py: "Wǒ tūrán fāxiàn qiánbāo bú jiàn le.", ex_pt: "De repente descobri que a carteira sumiu." },
+            { w: "改变", p: "gǎibiàn", t: "mudar", c: "Verbos", l: 1, ex_ch: "科技改变了我们的生活方式。", ex_py: "Kējì gǎibiàn le wǒmen de shēnghuó fāngshì.", ex_pt: "A tecnologia mudou nosso estilo de vida." },
+            { w: "需要", p: "xūyào", t: "precisar", c: "Verbos", l: 1, ex_ch: "如果你需要帮助，请随时告诉我。", ex_py: "Rúguǒ nǐ xūyào bāngzhù, qǐng suíshí gàosu wǒ.", ex_pt: "Se você precisar de ajuda, por favor me avise a qualquer momento." },
+
+            { w: "不仅……也/还/而且……", p: "bùjǐn... yě/hái/érqiě...", t: "Gramática", c: "Gramática", l: 1, gram_desc: "Indica que além do que foi dito na primeira oração, há uma informação adicional.", ex_ch: "他不仅足球踢得好，性格也不错。", ex_py: "Tā bùjǐn zúqiú tī de hǎo, xìnggé yě búcuò.", ex_pt: "Ele não apenas joga futebol bem, como também tem boa personalidade." },
+            { w: "从来", p: "cónglái", t: "Gramática", c: "Gramática", l: 1, gram_desc: "Advérbio para indicar constância do passado ao presente. Usado com bù ou méi para significar nunca.", ex_ch: "我从来没这么快乐过。", ex_py: "Wǒ cónglái méi zhème kuàilè guò.", ex_pt: "Eu nunca fui tão feliz assim em toda a minha vida." },
+            { w: "刚", p: "gāng", t: "Gramática", c: "Gramática", l: 1, gram_desc: "Advérbio para ações que acabaram de acontecer. Posicionado após o sujeito e antes do verbo. Aceita duração.", ex_ch: "我刚下课，马上就去食堂。", ex_py: "Wǒ gāng xiàkè, mǎshàng jiù qù shítáng.", ex_pt: "Acabei de sair da aula, vou imediatamente ao refeitório." },
+            { w: "刚才", p: "gāngcái", t: "Gramática", c: "Gramática", l: 1, gram_desc: "Substantivo de tempo para o momento imediatamente anterior. Pode vir antes ou depois do sujeito.", ex_ch: "刚才你去哪儿了？我找了你半天。", ex_py: "Gāngcái nǐ qù nǎr le? Wǒ zhǎo le nǐ bàntiān.", ex_pt: "Onde você foi agora há pouco? Te procurei um tempão." },
+            { w: "即使……也……", p: "jíshǐ... yě...", t: "Gramática", c: "Gramática", l: 1, gram_desc: "Conjunção para introduzir condição hipotética ou extrema.", ex_ch: "即使星期天，他也在加班。", ex_py: "Jíshǐ xīngqītiān, tā yě zài jiābān.", ex_pt: "Mesmo sendo domingo, ele também está fazendo hora extra." },
+            { w: "(在) ……上", p: "(zài) ... shàng", t: "Gramática", c: "Gramática", l: 1, gram_desc: "Estrutura para limitar o escopo ou aspecto de um assunto. Pode ser traduzido como 'em termos de'.", ex_ch: "在饮食上，南北方有什么不同？", ex_py: "Zài yǐnshí shàng, nánběifāng yǒu shénme bùtóng?", ex_pt: "Em termos de alimentação, qual a diferença entre norte e sul?" },
+
+            // ================== LIÇÃO 2 ==================
+            { w: "聚会", p: "jùhuì", t: "reunião social", c: "Substantivos", l: 2, ex_ch: "明天晚上有一个大学同学的聚会。", ex_py: "Míngtiān wǎnshang yǒu yí ge dàxué tóngxué de jùhuì.", ex_pt: "Amanhã à noite há uma reunião de colegas da faculdade." },
+            { w: "购物", p: "gòuwù", t: "compras", c: "Substantivos", l: 2, ex_ch: "周末很多人去市中心购物。", ex_py: "Zhōumò hěnduō rén qù shìzhōngxīn gòuwù.", ex_pt: "No fim de semana muitas pessoas vão ao centro fazer compras." },
+            { w: "运动", p: "yùndòng", t: "esporte / exercício", c: "Substantivos", l: 2, ex_ch: "游泳是一项非常好的运动。", ex_py: "Yóuyǒng shì yí xiàng fēicháng hǎo de yùndòng.", ex_pt: "Nadar é um esporte muito bom." },
+            { w: "学习", p: "xuéxí", t: "estudo", c: "Substantivos", l: 2, ex_ch: "在学习上遇到困难是很正常的。", ex_py: "Zài xuéxí shàng yùdào kùnnan shì hěn zhèngcháng de.", ex_pt: "Encontrar dificuldades no estudo é muito normal." },
+            { w: "聊天儿", p: "liáo tiānr", t: "bate-papo", c: "Substantivos", l: 2, ex_ch: "下午我们在咖啡馆聊天儿，度过了愉快的时光。", ex_py: "Xiàwǔ wǒmen zài kāfēiguǎn liáo tiānr, dùguò le yúkuài de shíguāng.", ex_pt: "À tarde estivemos batendo-papo no café, passamos um tempo agradável." },
+            { w: "旅行", p: "lǚxíng", t: "viagem", c: "Substantivos", l: 2, ex_ch: "这次欧洲旅行花了不少钱。", ex_py: "Zhè cì Ōuzhōu lǚxíng huā le bù shǎo qián.", ex_pt: "Esta viagem para a Europa gastou bastante dinheiro." },
+            { w: "名字", p: "míngzi", t: "nome", c: "Substantivos", l: 2, ex_ch: "抱歉，我又忘了你的名字。", ex_py: "Bàoqiàn, wǒ yòu wàng le nǐ de míngzi.", ex_pt: "Desculpe, esqueci seu nome de novo." },
+            { w: "地方", p: "dìfang", t: "lugar / local", c: "Substantivos", l: 2, ex_ch: "这个地方的风景真美。", ex_py: "Zhège dìfang de fēngjǐng zhēn měi.", ex_pt: "A paisagem deste lugar é muito bonita." },
+            { w: "事情", p: "shìqing", t: "coisa / assunto", c: "Substantivos", l: 2, ex_ch: "今天有很多重要的事情要处理。", ex_py: "Jīntiān yǒu hěnduō zhòngyào de shìqing yào chǔlǐ.", ex_pt: "Hoje há muitos assuntos importantes para tratar." },
+            { w: "小夏", p: "Xiǎo Xià", t: "Xiao Xia (Nome)", c: "Substantivos", l: 2, ex_ch: "小夏是个很幽默的女孩。", ex_py: "Xiǎo Xià shì ge hěn yōumò de nǚhái.", ex_pt: "Xiao Xia é uma garota muito bem-humorada." },
+            { w: "马克", p: "Mǎkè", t: "Mark (Nome)", c: "Substantivos", l: 2, ex_ch: "马克来自美国，他的中文很好。", ex_py: "Mǎkè láizì Měiguó, tā de Zhōngwén hěn hǎo.", ex_pt: "Mark vem dos EUA, o chinês dele é muito bom." },
+            { w: "中国", p: "Zhōngguó", t: "China", c: "Substantivos", l: 2, ex_ch: "中国是一个有着悠久历史的国家。", ex_py: "Zhōngguó shì yí ge yǒuzhe yōujiǔ lìshǐ de guójiā.", ex_pt: "A China é um país que possui uma longa história." },
+            { w: "图书馆", p: "túshūguǎn", t: "biblioteca", c: "Substantivos", l: 2, ex_ch: "学校的图书馆里有很多新书。", ex_py: "Xuéxiào de túshūguǎn lǐ yǒu hěnduō xīn shū.", ex_pt: "A biblioteca da escola tem muitos livros novos." },
+            { w: "书", p: "shū", t: "livro", c: "Substantivos", l: 2, ex_ch: "这本书非常值得一读。", ex_py: "Zhè běn shū fēicháng zhídé yì dú.", ex_pt: "Este livro vale muito a pena ser lido." },
+            { w: "短信", p: "duǎnxìn", t: "SMS / mensagem", c: "Substantivos", l: 2, ex_ch: "我已经把地址发短信给你了。", ex_py: "Wǒ yǐjīng bǎ dìzhǐ fā duǎnxìn gěi nǐ le.", ex_pt: "Eu já te enviei o endereço por mensagem de texto." },
+            { w: "小李", p: "Xiǎo Lǐ", t: "Xiao Li (Nome)", c: "Substantivos", l: 2, ex_ch: "请问小李在办公室吗？", ex_py: "Qǐngwèn Xiǎo Lǐ zài bàngōngshì ma?", ex_pt: "Com licença, Xiao Li está no escritório?" },
+            { w: "小林", p: "Xiǎo Lín", t: "Xiao Lin (Nome)", c: "Substantivos", l: 2, ex_ch: "小林帮我解决了电脑的问题。", ex_py: "Xiǎo Lín bāng wǒ jiějué le diànnǎo de wèntí.", ex_pt: "Xiao Lin me ajudou a resolver o problema do computador." },
+            { w: "同学", p: "tóngxué", t: "colega de classe", c: "Substantivos", l: 2, ex_ch: "多年不见的老同学终于聚在一起了。", ex_py: "Duō nián bú jiàn de lǎo tóngxué zhōngyú jù zài yìqǐ le.", ex_pt: "Os velhos colegas de classe que não se viam há anos finalmente se reuniram." },
+            { w: "张远", p: "Zhāng Yuǎn", t: "Zhang Yuan (Nome)", c: "Substantivos", l: 2, ex_ch: "张远是我们公司的销售经理。", ex_py: "Zhāng Yuǎn shì wǒmen gōngsī de xiāoshòu jīnglǐ.", ex_pt: "Zhang Yuan é o gerente de vendas da nossa empresa." },
+            { w: "国外", p: "guówài", t: "exterior", c: "Substantivos", l: 2, ex_ch: "他每年都要去国外出差几次。", ex_py: "Tā měi nián dōu yào qù guówài chūchāi jǐ cì.", ex_pt: "Todo ano ele tem que ir ao exterior a negócios várias vezes." },
+            { w: "地铁站", p: "dìtiězhàn", t: "estação de metrô", c: "Substantivos", l: 2, ex_ch: "我家离地铁站很近，走路五分钟就到了。", ex_py: "Wǒ jiā lí dìtiězhàn hěn jìn, zǒulù wǔ fēnzhōng jiù dào le.", ex_pt: "Minha casa é bem perto da estação de metrô, cinco minutos caminhando e já chega." },
+            { w: "上海", p: "Shànghǎi", t: "Xangai", c: "Substantivos", l: 2, ex_ch: "上海是一座非常现代化的城市。", ex_py: "Shànghǎi shì yí zuò fēicháng xiàndàihuà de chéngshì.", ex_pt: "Xangai é uma cidade extremamente moderna." },
+            { w: "门口", p: "ménkǒu", t: "entrada / porta", c: "Substantivos", l: 2, ex_ch: "有人在门口按门铃。", ex_py: "Yǒu rén zài ménkǒu àn ménlíng.", ex_pt: "Tem alguém tocando a campainha na porta." },
+            { w: "饭店", p: "fàndiàn", t: "restaurante", c: "Substantivos", l: 2, ex_ch: "今晚我们去那家新开的饭店吃饭吧。", ex_py: "Jīnwǎn wǒmen qù nà jiā xīn kāi de fàndiàn chīfàn ba.", ex_pt: "Esta noite vamos comer naquele restaurante recém-aberto." },
+            { w: "照片", p: "zhàopiàn", t: "foto", c: "Substantivos", l: 2, ex_ch: "这张老照片让我想起了童年。", ex_py: "Zhè zhāng lǎo zhàopiàn ràng wǒ xiǎngqǐ le tóngnián.", ex_pt: "Esta velha foto me fez lembrar da infância." },
+            { w: "日子", p: "rìzi", t: "dias / tempo", c: "Substantivos", l: 2, ex_ch: "过去的那段日子真是让人怀念。", ex_py: "Guòqù de nà duàn rìzi zhēnshi ràng rén huáiniàn.", ex_pt: "Aqueles dias do passado realmente deixam saudades." },
+            { w: "校园", p: "xiàoyuán", t: "campus", c: "Substantivos", l: 2, ex_ch: "秋天的校园铺满了金黄的落叶。", ex_py: "Qiūtiān de xiàoyuán pūmǎn le jīn huáng de luòyè.", ex_pt: "O campus no outono se cobre de folhas caídas douradas." },
+            { w: "话", p: "huà", t: "fala / palavras", c: "Substantivos", l: 2, ex_ch: "他的话虽然不多，但很有道理。", ex_py: "Tā de huà suīrán bù duō, dàn hěn yǒu dàolǐ.", ex_pt: "As palavras dele embora não sejam muitas, fazem muito sentido." },
+            { w: "南方", p: "nánfāng", t: "sul", c: "Substantivos", l: 2, ex_ch: "中国南方的气候比较湿润。", ex_py: "Zhōngguó nánfāng de qìhòu bǐjiào shīrùn.", ex_pt: "O clima do sul da China é mais úmido." },
+            { w: "电话", p: "diànhuà", t: "telefone", c: "Substantivos", l: 2, ex_ch: "你刚才有个未接电话。", ex_py: "Nǐ gāngcái yǒu ge wèi jiē diànhuà.", ex_pt: "Você teve uma chamada não atendida agora há pouco." },
+            { w: "友谊", p: "yǒuyì", t: "amizade", c: "Substantivos", l: 2, ex_ch: "真正的友谊是经得起考验的。", ex_py: "Zhēnzhèng de yǒuyì shì jīng de qǐ kǎoyàn de.", ex_pt: "A verdadeira amizade resiste a provações." },
+            { w: "苹果", p: "píngguǒ", t: "maçã", c: "Substantivos", l: 2, ex_ch: "这些苹果又红又甜，你要尝一个吗？", ex_py: "Zhèxiē píngguǒ yòu hóng yòu tián, nǐ yào cháng yí ge ma?", ex_pt: "Estas maçãs são vermelhas e doces, você quer provar uma?" },
+            { w: "西瓜", p: "xīguā", t: "melancia", c: "Substantivos", l: 2, ex_ch: "夏天吃冰镇西瓜太解暑了。", ex_py: "Xiàtiān chī bīngzhèn xīguā tài jiěshǔ le.", ex_pt: "Comer melancia gelada no verão alivia muito o calor." },
+            { w: "钱包", p: "qiánbāo", t: "carteira", c: "Substantivos", l: 2, ex_ch: "糟糕，我出门忘了带钱包！", ex_py: "Zāogāo, wǒ chūmén wàng le dài qiánbāo!", ex_pt: "Droga, saí de casa e esqueci de levar a carteira!" },
+            { w: "词典", p: "cídiǎn", t: "dicionário", c: "Substantivos", l: 2, ex_ch: "遇到不认识的字可以查词典。", ex_py: "Yùdào bú rènshi de zì kěyǐ chá cídiǎn.", ex_pt: "Quando encontrar um ideograma desconhecido, você pode consultar o dicionário." },
+            { w: "女儿", p: "nǚ'ér", t: "filha", c: "Substantivos", l: 2, ex_ch: "他的女儿今年刚上小学。", ex_py: "Tā de nǚ'ér jīnnián gāng shàng xiǎoxué.", ex_pt: "A filha dele acabou de entrar no ensino fundamental este ano." },
+            { w: "哥哥", p: "gēge", t: "irmão mais velho", c: "Substantivos", l: 2, ex_ch: "哥哥对我总是很照顾。", ex_py: "Gēge duì wǒ zǒngshì hěn zhàogù.", ex_pt: "O irmão mais velho sempre cuida muito bem de mim." },
+            { w: "礼物", p: "lǐwù", t: "presente", c: "Substantivos", l: 2, ex_ch: "这是我专门为你准备的生日礼物。", ex_py: "Zhè shì wǒ zhuānmén wèi nǐ zhǔnbèi de shēngrì lǐwù.", ex_pt: "Este é o presente de aniversário que preparei especialmente para você." },
+            { w: "男朋友", p: "nánpéngyou", t: "namorado", c: "Substantivos", l: 2, ex_ch: "她的男朋友又高又帅。", ex_py: "Tā de nánpéngyou yòu gāo yòu shuài.", ex_pt: "O namorado dela é alto e bonito." },
+            { w: "叔叔", p: "shūshu", t: "tio", c: "Substantivos", l: 2, ex_ch: "王叔叔是个热心肠的人。", ex_py: "Wáng shūshu shì ge rèxīncháng de rén.", ex_pt: "O tio Wang é uma pessoa de bom coração." },
+            { w: "习惯", p: "xíguàn", t: "hábito / costume", c: "Substantivos", l: 2, ex_ch: "早睡早起是个好习惯。", ex_py: "Zǎo shuì zǎo qǐ shì ge hǎo xíguàn.", ex_pt: "Dormir cedo e acordar cedo é um bom hábito." },
+            { w: "一生", p: "yìshēng", t: "uma vida", c: "Substantivos", l: 2, ex_ch: "他一生都在为教育事业做贡献。", ex_py: "Tā yìshēng dōu zài wèi jiàoyù shìyè zuò gòngxiàn.", ex_pt: "Ele passou a vida inteira contribuindo para a educação." },
+            { w: "镜子", p: "jìngzi", t: "espelho", c: "Substantivos", l: 2, ex_ch: "她站在镜子前整理了一下头发。", ex_py: "Tā zhàn zài jìngzi qián zhěnglǐ le yíxià tóufa.", ex_pt: "Ela parou diante do espelho e arrumou o cabelo um pouco." },
+            { w: "困难", p: "kùnnan", t: "dificuldade", c: "Substantivos", l: 2, ex_ch: "遇到困难不要轻易放弃。", ex_py: "Yùdào kùnnan bú yào qīngyì fàngqì.", ex_pt: "Ao encontrar dificuldades, não desista facilmente." },
+            { w: "太阳", p: "tàiyáng", t: "sol", c: "Substantivos", l: 2, ex_ch: "早上的太阳还不怎么刺眼。", ex_py: "Zǎoshang de tàiyáng hái bù zěnme cìyǎn.", ex_pt: "O sol da manhã ainda não ofusca tanto os olhos." },
+            { w: "经理", p: "jīnglǐ", t: "gerente", c: "Substantivos", l: 2, ex_ch: "刘经理今天下午要去开会。", ex_py: "Liú jīnglǐ jīntiān xiàwǔ yào qù kāihuì.", ex_pt: "O gerente Liu vai a uma reunião hoje à tarde." },
+            { w: "医院", p: "yīyuàn", t: "hospital", c: "Substantivos", l: 2, ex_ch: "爷爷生病了，现在在医院住院。", ex_py: "Yéye shēngbìng le, xiànzài zài yīyuàn zhùyuàn.", ex_pt: "O vovô adoeceu, agora está internado no hospital." },
+            { w: "关系", p: "guānxi", t: "relação", c: "Substantivos", l: 2, ex_ch: "他们两家人的关系一直很好。", ex_py: "Tāmen liǎng jiā rén de guānxi yìzhí hěn hǎo.", ex_pt: "A relação entre as duas famílias deles sempre foi muito boa." },
+            { w: "舞会", p: "wǔhuì", t: "baile", c: "Substantivos", l: 2, ex_ch: "大家盛装打扮去参加周末的舞会。", ex_py: "Dàjiā shèngzhuāng dǎbàn qù cānjiā zhōumò de wǔhuì.", ex_pt: "Todo mundo se arrumou para participar do baile no fim de semana." },
+            { w: "父母", p: "fùmǔ", t: "pais", c: "Substantivos", l: 2, ex_ch: "不要总是让父母为你担心。", ex_py: "Bú yào zǒngshì ràng fùmǔ wèi nǐ dānxīn.", ex_pt: "Não faça sempre os pais se preocuparem com você." },
+            { w: "学问", p: "xuéwèn", t: "conhecimento", c: "Substantivos", l: 2, ex_ch: "那位老教授非常有学问。", ex_py: "Nà wèi lǎo jiàoshòu fēicháng yǒu xuéwèn.", ex_pt: "Aquele velho professor tem muito conhecimento." },
+            { w: "立场", p: "lìchǎng", t: "ponto de vista", c: "Substantivos", l: 2, ex_ch: "在这件事情上，我的立场很坚定。", ex_py: "Zài zhè jiàn shìqing shàng, wǒ de lìchǎng hěn jiāndìng.", ex_pt: "Neste assunto, meu ponto de vista é muito firme." },
+
+            { w: "幽默", p: "yōumò", t: "bem-humorado", c: "Adjetivos", l: 2, ex_ch: "幽默的人总是能给大家带来欢乐。", ex_py: "Yōumò de rén zǒngshì néng gěi dàjiā dàilái huānlè.", ex_pt: "Pessoas bem-humoradas sempre conseguem trazer alegria para todos." },
+            { w: "年轻", p: "niánqīng", t: "jovem", c: "Adjetivos", l: 2, ex_ch: "他虽然六十岁了，但看起来很年轻。", ex_py: "Tā suīrán liùshí suì le, dàn kàn qǐlái hěn niánqīng.", ex_pt: "Embora ele tenha sessenta anos, parece bem jovem." },
+            { w: "快乐", p: "kuàilè", t: "alegre / feliz", c: "Adjetivos", l: 2, ex_ch: "祝你生日快乐，天天开心！", ex_py: "Zhù nǐ shēngrì kuàilè, tiāntiān kāixīn!", ex_pt: "Desejo feliz aniversário, que fique alegre todos os dias!" },
+            { w: "真正", p: "zhēnzhèng", t: "verdadeiro", c: "Adjetivos", l: 2, ex_ch: "真正的朋友会在你困难时伸出援手。", ex_py: "Zhēnzhèng de péngyou huì zài nǐ kùnnan shí shēn chū yuánshǒu.", ex_pt: "Um verdadeiro amigo estenderá a mão quando você tiver dificuldades." },
+            { w: "忙", p: "máng", t: "ocupado", c: "Adjetivos", l: 2, ex_ch: "这几天工作特别忙，都没时间休息。", ex_py: "Zhè jǐ tiān gōngzuò tèbié máng, dōu méi shíjiān xiūxi.", ex_pt: "Nesses dias o trabalho está especialmente corrido, não tive nem tempo de descansar." },
+            { w: "无聊", p: "wúliáo", t: "entediante / chato", c: "Adjetivos", l: 2, ex_ch: "这个周末一直下雨，待在家里真无聊。", ex_py: "Zhège zhōumò yìzhí xiàyǔ, dāi zài jiālǐ zhēn wúliáo.", ex_pt: "Este final de semana choveu direto, ficar em casa é muito chato." },
+            { w: "讨厌", p: "tǎoyàn", t: "detestável", c: "Adjetivos", l: 2, ex_ch: "那种不守信用的人真让人讨厌。", ex_py: "Nà zhǒng bù shǒu xìnyòng de rén zhēn ràng rén tǎoyàn.", ex_pt: "Aquele tipo de pessoa que não cumpre promessas é realmente detestável." },
+            { w: "难过", p: "nánguò", t: "triste", c: "Adjetivos", l: 2, ex_ch: "猫咪生病了，妹妹很难过地哭了。", ex_py: "Māomī shēngbìng le, mèimei hěn nánguò de kū le.", ex_pt: "O gatinho adoeceu, a irmã mais nova chorou muito triste." },
+            { w: "清楚", p: "qīngchu", t: "claro / nítido", c: "Adjetivos", l: 2, ex_ch: "你刚才说的话我没听清楚，能再说一遍吗？", ex_py: "Nǐ gāngcái shuō de huà wǒ méi tīng qīngchu, néng zài shuō yí biàn ma?", ex_pt: "Não ouvi claro o que você disse agora há pouco, poderia repetir?" },
+            { w: "瘦", p: "shòu", t: "magro", c: "Adjetivos", l: 2, ex_ch: "几个月不见，你怎么变得这么瘦了？", ex_py: "Jǐ ge yuè bú jiàn, nǐ zěnme biàn de zhème shòu le?", ex_pt: "Meses sem nos ver, como você ficou tão magro assim?" },
+            { w: "方便", p: "fāngbiàn", t: "conveniente", c: "Adjetivos", l: 2, ex_ch: "现在用手机支付非常方便。", ex_py: "Xiànzài yòng shǒujī zhīfù fēicháng fāngbiàn.", ex_pt: "Agora usar o celular para pagar é muito conveniente." },
+
+            { w: "慢慢", p: "mànmàn", t: "vagarosamente", c: "Advérbios / Conjunções", l: 2, ex_ch: "天黑路滑，你要慢慢开车。", ex_py: "Tiān hēi lù huá, nǐ yào mànmàn kāichē.", ex_pt: "O céu escureceu e a pista está escorregadia, você deve dirigir vagarosamente." },
+            { w: "最近", p: "zuìjìn", t: "recentemente", c: "Advérbios / Conjunções", l: 2, ex_ch: "最近天气变化大，容易感冒。", ex_py: "Zuìjìn tiānqì biànhuà dà, róngyì gǎnmào.", ex_pt: "Recentemente o tempo tem mudado muito, é fácil pegar um resfriado." },
+            { w: "平时", p: "píngshí", t: "normalmente", c: "Advérbios / Conjunções", l: 2, ex_ch: "平时我不怎么喝咖啡，只喝茶。", ex_py: "Píngshí wǒ bù zěnme hē kāfēi, zhǐ hē chá.", ex_pt: "Normalmente eu não bebo muito café, bebo só chá." },
+            { w: "常常", p: "chángcháng", t: "frequentemente", c: "Advérbios / Conjunções", l: 2, ex_ch: "小时候我常常在院子里玩耍。", ex_py: "Xiǎoshíhou wǒ chángcháng zài yuànzi lǐ wánshuǎ.", ex_pt: "Quando criança eu frequentemente brincava no quintal." },
+            { w: "有时候", p: "yǒushíhou", t: "às vezes", c: "Advérbios / Conjunções", l: 2, ex_ch: "有时候一个人静静地看书也挺好的。", ex_py: "Yǒushíhou yí ge rén jìngjìng de kànshū yě tǐng hǎo de.", ex_pt: "Às vezes ler um livro sozinho em silêncio também é muito bom." },
+            { w: "正好", p: "zhènghǎo", t: "exatamente (adv/adj)", c: "Advérbios / Conjunções", l: 2, ex_ch: "这件毛衣的大小正好合适。", ex_py: "Zhè jiàn máoyī de dàxiǎo zhènghǎo héshì.", ex_pt: "O tamanho deste suéter está exatamente perfeito." },
+            { w: "差不多", p: "chàbuduō", t: "quase / aprox.", c: "Advérbios / Conjunções", l: 2, ex_ch: "这两个词的意思差不多。", ex_py: "Zhè liǎng ge cí de yìsi chàbuduō.", ex_pt: "O significado dessas duas palavras é quase o mesmo." },
+            { w: "专门", p: "zhuānmén", t: "especificamente", c: "Advérbios / Conjunções", l: 2, ex_ch: "他是专门为了看你才飞过来的。", ex_py: "Tā shì zhuānmén wèi le kàn nǐ cái fēi guòlái de.", ex_pt: "Ele voou para cá especificamente para te ver." },
+            { w: "几乎", p: "jīhū", t: "praticamente", c: "Advérbios / Conjunções", l: 2, ex_ch: "大家都走了，办公室里几乎没人了。", ex_py: "Dàjiā dōu zǒu le, bàngōngshì lǐ jīhū méi rén le.", ex_pt: "Todos já saíram, praticamente não tem mais ninguém no escritório." },
+            { w: "尽管", p: "jǐnguǎn", t: "embora", c: "Advérbios / Conjunções", l: 2, ex_ch: "尽管下着大雨，球赛还是照常进行。", ex_py: "Jǐnguǎn xiàzhe dà yǔ, qiúsài háishì zhàocháng jìnxíng.", ex_pt: "Apesar de estar chovendo forte, o jogo continuou normalmente." },
+            { w: "可是", p: "kěshì", t: "contudo / mas", c: "Advérbios / Conjunções", l: 2, ex_ch: "我很想帮忙，可是我真的不会做。", ex_py: "Wǒ hěn xiǎng bāngmáng, kěshì wǒ zhēn de bú huì zuò.", ex_pt: "Eu queria muito ajudar, mas eu realmente não sei como fazer." },
+            { w: "却", p: "què", t: "entretanto", c: "Advérbios / Conjunções", l: 2, ex_ch: "别人都同意了，他却反对。", ex_py: "Biérén dōu tóngyì le, tā què fǎnduì.", ex_pt: "Os outros concordaram, ele entretanto se opôs." },
+            { w: "还是", p: "háishi", t: "ainda assim", c: "Advérbios / Conjunções", l: 2, ex_ch: "尽管失败了多次，他还是没有放弃。", ex_py: "Jǐnguǎn shībài le duō cì, tā háishì méiyǒu fàngqì.", ex_pt: "Apesar de ter falhado várias vezes, ele ainda assim não desistiu." },
+            { w: "重新", p: "chóngxīn", t: "de novo", c: "Advérbios / Conjunções", l: 2, ex_ch: "写错了没关系，拿张纸重新写吧。", ex_py: "Xiě cuò le méi guānxi, ná zhāng zhǐ chóngxīn xiě ba.", ex_pt: "Não tem problema ter escrito errado, pegue um papel e escreva de novo." },
+            { w: "及时", p: "jíshí", t: "a tempo", c: "Advérbios / Conjunções", l: 2, ex_ch: "如果发现错误，要及时修改。", ex_py: "Rúguǒ fāxiàn cuòwù, yào jíshí xiūgǎi.", ex_pt: "Se descobrir o erro, é preciso corrigir a tempo." },
+            { w: "而", p: "ér", t: "e / mas", c: "Advérbios / Conjunções", l: 2, ex_ch: "北方冬天很冷，而南方却比较暖和。", ex_py: "Běifāng dōngtiān hěn lěng, ér nánfāng què bǐjiào nuǎnhuo.", ex_pt: "O inverno no norte é frio, mas o sul é mais quentinho." },
+            { w: "愿意", p: "yuànyì", t: "estar disposto a", c: "Advérbios / Conjunções", l: 2, ex_ch: "只要你愿意学，我就愿意教。", ex_py: "Zhǐyào nǐ yuànyì xué, wǒ jiù yuànyì jiāo.", ex_pt: "Desde que você esteja disposto a aprender, eu estarei disposto a ensinar." },
+            { w: "果然", p: "guǒrán", t: "como esperado", c: "Advérbios / Conjunções", l: 2, ex_ch: "天气预报说有雨，下午果然下雨了。", ex_py: "Tiānqì yùbào shuō yǒu yǔ, xiàwǔ guǒrán xiàyǔ le.", ex_pt: "A previsão disse que choveria, de fato choveu de tarde." },
+
+            { w: "没问题", p: "méi wèntí", t: "sem problemas", c: "Expressões e Compostos", l: 2, ex_ch: "只要按计划进行，肯定没问题。", ex_py: "Zhǐyào àn jìhuà jìnxíng, kěndìng méi wèntí.", ex_pt: "Contanto que sigamos o plano, com certeza será sem problemas." },
+            { w: "交朋友", p: "jiāo péngyou", t: "fazer amigos", c: "Expressões e Compostos", l: 2, ex_ch: "在国外留学的日子里，我交了很多朋友。", ex_py: "Zài guówài liúxué de rìzi lǐ, wǒ jiāo le hěnduō péngyou.", ex_pt: "Nos dias estudando no exterior, eu fiz muitos amigos." },
+            { w: "逛街", p: "guàng jiē", t: "passear / comprar", c: "Expressões e Compostos", l: 2, ex_ch: "女孩子们周末最喜欢结伴去逛街。", ex_py: "Nǚháizi men zhōumò zuì xǐhuan jiébàn qù guàng jiē.", ex_pt: "As garotas adoram ir passear/fazer compras juntas nos fins de semana." },
+            { w: "踢足球", p: "tī zúqiú", t: "jogar futebol", c: "Expressões e Compostos", l: 2, ex_ch: "下课后，男孩子们都跑到操场上去踢足球了。", ex_py: "Xiàkè hòu, nánháizi men dōu pǎo dào cāochǎng shàng qù tī zúqiú le.", ex_pt: "Após a aula, os garotos todos correram para a quadra jogar futebol." },
+            { w: "打电话", p: "dǎ diànhuà", t: "fazer ligação", c: "Expressões e Compostos", l: 2, ex_ch: "到了酒店记得先给妈妈打电话报平安。", ex_py: "Dào le jiǔdiàn jìde xiān gěi māma dǎ diànhuà bào píng'ān.", ex_pt: "Quando chegar ao hotel lembre-se de ligar para a mãe primeiro para avisar que está bem." },
+            { w: "发短信", p: "fā duǎnxìn", t: "enviar SMS", c: "Expressões e Compostos", l: 2, ex_ch: "如果不方便接电话，就给我发短信吧。", ex_py: "Rúguǒ bù fāngbiàn jiē diànhuà, jiù gěi wǒ fā duǎnxìn ba.", ex_pt: "Se não for conveniente atender a ligação, me envie um SMS." },
+            { w: "同学聚会", p: "tóngxué jùhuì", t: "reencontro escolar", c: "Expressões e Compostos", l: 2, ex_ch: "毕业二十年的同学聚会，大家都变了模样。", ex_py: "Bìyè èrshí nián de tóngxué jùhuì, dàjiā dōu biàn le múyàng.", ex_pt: "No reencontro de vinte anos de formatura, todo mundo mudou de aparência." },
+            { w: "想办法", p: "xiǎng bànfǎ", t: "buscar uma solução", c: "Expressões e Compostos", l: 2, ex_ch: "遇到难题别着急，我们一起想办法解决。", ex_py: "Yùdào nántí bié zháojí, wǒmen yìqǐ xiǎng bànfǎ jiějué.", ex_pt: "Não se desespere com problemas difíceis, vamos buscar uma solução juntos." },
+            { w: "站出来", p: "zhàn chūlái", t: "dar passo à frente", c: "Expressões e Compostos", l: 2, ex_ch: "危急时刻，他勇敢地站出来保护了大家。", ex_py: "Wēijí shíkè, tā yǒnggǎn de zhàn chūlái bǎohù le dàjiā.", ex_pt: "No momento crítico, ele corajosamente deu um passo à frente e protegeu a todos." },
+            { w: "有福同享，有难同当", p: "yǒu fú tóng xiǎng, yǒu nàn tóng dāng", t: "na alegria e tristeza", c: "Expressões e Compostos", l: 2, ex_ch: "好兄弟就是要做到有福同享，有难同当。", ex_py: "Hǎo xiōngdì jiù shì yào zuòdào yǒu fú tóng xiǎng, yǒu nàn tóng dāng.", ex_pt: "Bons irmãos devem conseguir compartilhar alegrias e sofrimentos juntos." },
+            { w: "在家靠父母，出门靠朋友", p: "zài jiā kào fùmǔ, chū mén kào péngyou", t: "apoio da família e amigos", c: "Expressões e Compostos", l: 2, ex_ch: "俗话说“在家靠父母，出门靠朋友”，交际很重要。", ex_py: "Súhuà shuō “zài jiā kào fùmǔ, chū mén kào péngyou”, jiāojì hěn zhòngyào.", ex_pt: "Como diz o ditado: 'em casa apoie-se nos pais, fora apoie-se nos amigos', socializar é importante." },
+
+            { w: "适应", p: "shìyìng", t: "adaptar-se", c: "Verbos", l: 2, ex_ch: "你适应这儿的天气了吗？", ex_py: "Nǐ shìyìng zhèr de tiānqì le ma?", ex_pt: "Você já se adaptou ao clima daqui?" },
+            { w: "交", p: "jiāo", t: "fazer amigos / entregar", c: "Verbos", l: 2, ex_ch: "把这份文件交给经理。", ex_py: "Bǎ zhè fèn wénjiàn jiāo gěi jīnglǐ.", ex_pt: "Entregue este documento ao gerente." },
+            { w: "讲", p: "jiǎng", t: "contar / falar", c: "Verbos", l: 2, ex_ch: "老师讲的课非常生动。", ex_py: "Lǎoshī jiǎng de kè fēicháng shēngdòng.", ex_pt: "A aula que o professor falou/deu é muito vívida." },
+            { w: "逛", p: "guàng", t: "passear", c: "Verbos", l: 2, ex_ch: "吃完晚饭去公园里逛逛吧。", ex_py: "Chī wán wǎnfàn qù gōngyuán lǐ guàngguang ba.", ex_pt: "Após o jantar vamos passear um pouco no parque." },
+            { w: "发", p: "fā", t: "enviar", c: "Verbos", l: 2, ex_ch: "我已经把邮件发给你了，查收一下。", ex_py: "Wǒ yǐjīng bǎ yóujiàn fā gěi nǐ le, cháshōu yíxià.", ex_pt: "Já te enviei o e-mail, verifique." },
+            { w: "介绍", p: "jièshào", t: "apresentar", c: "Verbos", l: 2, ex_ch: "让我来介绍一下我们公司的新产品。", ex_py: "Ràng wǒ lái jièshào yíxià wǒmen gōngsī de xīn chǎnpǐn.", ex_pt: "Deixe-me apresentar o novo produto de nossa empresa." },
+            { w: "联系", p: "liánxì", t: "entrar em contato", c: "Verbos", l: 2, ex_ch: "大家毕业后也要保持联系啊！", ex_py: "Dàjiā bìyè hòu yě yào bǎochí liánxì a!", ex_pt: "Pessoal, depois da formatura também vamos manter contato!" },
+            { w: "飞", p: "fēi", t: "voar", c: "Verbos", l: 2, ex_ch: "小鸟在天空中自由地飞来飞去。", ex_py: "Xiǎo niǎo zài tiānkōng zhōng zìyóu de fēi lái fēi qù.", ex_pt: "O passarinho voa livremente para lá e para cá no céu." },
+            { w: "遇到", p: "yùdào", t: "deparar-se", c: "Verbos", l: 2, ex_ch: "刚才在街上遇到了一个老朋友。", ex_py: "Gāngcái zài jiē shàng yùdào le yí ge lǎo péngyou.", ex_pt: "Agora há pouco na rua me deparei com um velho amigo." },
+            { w: "工作", p: "gōngzuò", t: "trabalhar", c: "Verbos", l: 2, ex_ch: "他每天努力工作，希望能早点买房。", ex_py: "Tā měitiān nǔlì gōngzuò, xīwàng néng zǎo diǎn mǎi fáng.", ex_pt: "Ele trabalha duro todo dia na esperança de comprar casa mais cedo." },
+            { w: "旅游", p: "lǚyóu", t: "viajar", c: "Verbos", l: 2, ex_ch: "秋天是去北京旅游的最佳季节。", ex_py: "Qiūtiān shì qù Běijīng lǚyóu de zuì jiā jìjié.", ex_pt: "O outono é a melhor estação para ir a Pequim viajar." },
+            { w: "迟到", p: "chídào", t: "atrasar-se", c: "Verbos", l: 2, ex_ch: "开会不能迟到，请准时出席。", ex_py: "Kāihuì bù néng chídào, qǐng zhǔnshí chūxí.", ex_pt: "Não se pode atrasar para a reunião, por favor compareça pontualmente." },
+            { w: "放心", p: "fàngxīn", t: "ficar tranquilo", c: "Verbos", l: 2, ex_ch: "有他在，你就一百个放心吧。", ex_py: "Yǒu tā zài, nǐ jiù yì bǎi ge fàngxīn ba.", ex_pt: "Com ele aqui, fique cem por cento tranquilo." },
+            { w: "想起", p: "xiǎngqǐ", t: "lembrar-se", c: "Verbos", l: 2, ex_ch: "看到这幅画，我就想起了故乡。", ex_py: "Kàndào zhè fú huà, wǒ jiù xiǎngqǐ le gùxiāng.", ex_pt: "Ao ver essa pintura eu logo me lembro da terra natal." },
+            { w: "借", p: "jiè", t: "emprestar", c: "Verbos", l: 2, ex_ch: "我能借你的笔用一下吗？", ex_py: "Wǒ néng jiè nǐ de bǐ yòng yíxià ma?", ex_pt: "Posso pegar sua caneta emprestada um instante?" },
+            { w: "卖光", p: "màiguāng", t: "esgotar", c: "Verbos", l: 2, ex_ch: "演唱会的门票十分钟就卖光了。", ex_py: "Yǎnchànghuì de ménpiào shí fēnzhōng jiù mài guāng le.", ex_pt: "Os ingressos para o show esgotaram em dez minutos." },
+            { w: "复习", p: "fùxí", t: "revisar", c: "Verbos", l: 2, ex_ch: "明天要考试，今晚得好好复习。", ex_py: "Míngtiān yào kǎoshì, jīnwǎn děi hǎohǎo fùxí.", ex_pt: "Amanhã tem prova, tenho que revisar bem hoje à noite." },
+            { w: "丰富", p: "fēngfù", t: "enriquecer", c: "Verbos", l: 2, ex_ch: "课外阅读可以丰富我们的知识。", ex_py: "Kèwài yuèdú kěyǐ fēngfù wǒmen de zhīshi.", ex_pt: "A leitura extracurricular pode enriquecer nosso conhecimento." },
+            { w: "生气", p: "shēngqì", t: "irritar-se", c: "Verbos", l: 2, ex_ch: "他骗了我，我真的很生气。", ex_py: "Tā piàn le wǒ, wǒ zhēn de hěn shēngqì.", ex_pt: "Ele me enganou, eu estou realmente com raiva." },
+            { w: "交流", p: "jiāoliú", t: "trocar ideias", c: "Verbos", l: 2, ex_ch: "学习语言需要多与人交流。", ex_py: "Xuéxí yǔyán xūyào duō yǔ rén jiāoliú.", ex_pt: "Aprender idiomas requer trocar muitas ideias com as pessoas." },
+            { w: "理解", p: "lǐjiě", t: "entender", c: "Verbos", l: 2, ex_ch: "你能理解我的意思吗？", ex_py: "Nǐ néng lǐjiě wǒ de yìsi ma?", ex_pt: "Você consegue entender o que eu quero dizer?" },
+            { w: "帮助", p: "bāngzhù", t: "ajudar", c: "Verbos", l: 2, ex_ch: "非常感谢你对我的帮助。", ex_py: "Fēicháng gǎnxiè nǐ duì wǒ de bāngzhù.", ex_pt: "Agradeço imensamente pela sua ajuda." },
+            { w: "陪", p: "péi", t: "acompanhar", c: "Verbos", l: 2, ex_ch: "晚上我想陪妈妈去看一场电影。", ex_py: "Wǎnshang wǒ xiǎng péi māma qù kàn yì chǎng diànyǐng.", ex_pt: "À noite quero acompanhar minha mãe para ver um filme." },
+            { w: "锻炼", p: "duànliàn", t: "exercitar-se", c: "Verbos", l: 2, ex_ch: "经常锻炼身体不容易生病。", ex_py: "Jīngcháng duànliàn shēntǐ bù róngyì shēngbìng.", ex_pt: "Exercitar-se frequentemente não adoece fácil." },
+            { w: "照顾", p: "zhàogù", t: "cuidar", c: "Verbos", l: 2, ex_ch: "小狗生病了，我需要好好照顾它。", ex_py: "Xiǎo gǒu shēngbìng le, wǒ xūyào hǎohǎo zhàogù tā.", ex_pt: "O cachorrinho ficou doente, eu preciso cuidar bem dele." },
+            { w: "靠", p: "kào", t: "apoiar-se em", c: "Verbos", l: 2, ex_ch: "这辆旧自行车靠在墙边。", ex_py: "Zhè liàng jiù zìxíngchē kào zài qiáng biān.", ex_pt: "Esta velha bicicleta está encostada ao lado da parede." },
+            { w: "分享", p: "fēnxiǎng", t: "compartilhar", c: "Verbos", l: 2, ex_ch: "好消息要和好朋友一起分享。", ex_py: "Hǎo xiāoxi yào hé hǎo péngyou yìqǐ fēnxiǎng.", ex_pt: "Boas notícias devem ser compartilhadas com bons amigos." },
+            { w: "毕业", p: "bìyè", t: "formar-se", c: "Verbos", l: 2, ex_ch: "大学毕业后，他选择留在北京工作。", ex_py: "Dàxué bìyè hòu, tā xuǎnzé liú zài Běijīng gōngzuò.", ex_pt: "Depois de se formar na universidade, ele escolheu ficar em Pequim para trabalhar." },
+
+            { w: "正好", p: "zhènghǎo", t: "Gramática", c: "Gramática", l: 2, gram_desc: "Pode ser adjetivo (exatamente certo) ou advérbio (coincidência).", ex_ch: "我们正要找你，你来得正好。", ex_py: "Wǒmen zhèng yào zhǎo nǐ, nǐ lái de zhènghǎo.", ex_pt: "Nós estávamos justamente te procurando, você chegou em boa hora." },
+            { w: "差不多", p: "chàbuduō", t: "Gramática", c: "Gramática", l: 2, gram_desc: "Adjetivo/advérbio indicando diferença pequena ou proximidade. Pode ser predicado.", ex_ch: "他们俩差不多高，很难分清谁更高。", ex_py: "Tāmen liǎ chàbuduō gāo, hěn nán fēnqīng shéi gèng gāo.", ex_pt: "Eles dois têm quase a mesma altura, é difícil distinguir quem é mais alto." },
+            { w: "几乎", p: "jīhū", t: "Gramática", c: "Gramática", l: 2, gram_desc: "Advérbio de proximidade. Não pode ser predicado e é usado para algo que quase aconteceu.", ex_ch: "太忙了，我几乎忘了吃午饭。", ex_py: "Tài máng le, wǒ jīhū wàng le chī wǔfàn.", ex_pt: "Estava tão ocupado que quase esqueci de almoçar." },
+            { w: "尽管", p: "jǐnguǎn", t: "Gramática", c: "Gramática", l: 2, gram_desc: "Conjunção que significa 'embora', seguida por dànshì/háishi na oração seguinte.", ex_ch: "尽管很难，但我绝对不会放弃。", ex_py: "Jǐnguǎn hěn nán, dàn wǒ juéduì bú huì fàngqì.", ex_pt: "Embora seja muito difícil, eu definitivamente não vou desistir." },
+            { w: "却", p: "què", t: "Gramática", c: "Gramática", l: 2, gram_desc: "Advérbio de contraste que sempre vem logo após o sujeito (e nunca antes).", ex_ch: "台下人很多，他却一点都不紧张。", ex_py: "Táixià rén hěnduō, tā què yìdiǎn dōu bù jǐnzhāng.", ex_pt: "Havia muita gente na plateia, ele entretanto não estava nem um pouco nervoso." },
+            { w: "而", p: "ér", t: "Gramática", c: "Gramática", l: 2, gram_desc: "Conjunção ligando duas orações (adição ou contraste suave).", ex_ch: "哥哥喜欢运动，而弟弟更喜欢看书。", ex_py: "Gēge xǐhuan yùndòng, ér dìdi gèng xǐhuan kànshū.", ex_pt: "O irmão mais velho gosta de esportes, enquanto o mais novo gosta mais de ler." },
+
+            // ================== LIÇÃO 3 ==================
+            { w: "经理", p: "jīnglǐ", t: "gerente", c: "Substantivos", l: 3, ex_ch: "新来的经理很有管理经验。", ex_py: "Xīn lái de jīnglǐ hěn yǒu guǎnlǐ jīngyàn.", ex_pt: "O novo gerente tem muita experiência de gestão." },
+            { w: "面试", p: "miànshì", t: "entrevista", c: "Substantivos", l: 3, ex_ch: "明天的面试你准备好了吗？", ex_py: "Míngtiān de miànshì nǐ zhǔnbèi hǎo le ma?", ex_pt: "Você está preparado para a entrevista de amanhã?" },
+            { w: "律师", p: "lǜshī", t: "advogado", c: "Substantivos", l: 3, ex_ch: "这件案子需要请个好律师来处理。", ex_py: "Zhè jiàn ànzi xūyào qǐng ge hǎo lǜshī lái chǔlǐ.", ex_pt: "Este caso requer a contratação de um bom advogado para resolvê-lo." },
+            { w: "笔试", p: "bǐshì", t: "prova escrita", c: "Substantivos", l: 3, ex_ch: "这次招聘既有笔试，也有面试。", ex_py: "Zhè cì zhāopìn jì yǒu bǐshì, yě yǒu miànshì.", ex_pt: "Esta contratação tem tanto prova escrita quanto entrevista." },
+            { w: "通知", p: "tōngzhī", t: "aviso", c: "Substantivos", l: 3, ex_ch: "公司发了一个关于中秋节放假的通知。", ex_py: "Gōngsī fā le yí ge guānyú zhōngqiū jié fàngjià de tōngzhī.", ex_pt: "A empresa emitiu um aviso sobre as folgas do Festival do Meio Outono." },
+            { w: "收入", p: "shōurù", t: "renda", c: "Substantivos", l: 3, ex_ch: "这几年，这个家庭的年收入越来越高。", ex_py: "Zhè jǐ nián, zhège jiātíng de nián shōurù yuèláiyuè gāo.", ex_pt: "Nestes últimos anos, a renda anual dessa família está cada vez mais alta." },
+            { w: "同事", p: "tóngshì", t: "colega", c: "Substantivos", l: 3, ex_ch: "我和办公室里的同事们相处得很好。", ex_py: "Wǒ hé bàngōngshì lǐ de tóngshì men xiāngchǔ de hěn hǎo.", ex_pt: "Eu me dou muito bem com os colegas no escritório." },
+            { w: "交通", p: "jiāotōng", t: "transporte", c: "Substantivos", l: 3, ex_ch: "北京的公共交通非常发达。", ex_py: "Běijīng de gōnggòng jiāotōng fēicháng fādá.", ex_pt: "O transporte público de Pequim é extremamente desenvolvido." },
+            { w: "地铁", p: "dìtiě", t: "metrô", c: "Substantivos", l: 3, ex_ch: "坐地铁上班不用担心堵车。", ex_py: "Zuò dìtiě shàngbān búyòng dānxīn dǔchē.", ex_pt: "Ir de metrô pro trabalho não precisa se preocupar com trânsito." },
+            { w: "公共汽车", p: "gōnggòng qìchē", t: "ônibus", c: "Substantivos", l: 3, ex_ch: "雨太大了，我们还是坐公共汽车回去吧。", ex_py: "Yǔ tài dà le, wǒmen háishì zuò gōnggòng qìchē huíqù ba.", ex_pt: "A chuva está forte demais, é melhor voltarmos de ônibus." },
+            { w: "上班时间", p: "shàngbān shíjiān", t: "horário de expediente", c: "Substantivos", l: 3, ex_ch: "这家公司的上班时间是早上九点。", ex_py: "Zhè jiā gōngsī de shàngbān shíjiān shì zǎoshang jiǔ diǎn.", ex_pt: "O horário de expediente desta empresa é às nove da manhã." },
+            { w: "信心", p: "xìnxīn", t: "confiança", c: "Substantivos", l: 3, ex_ch: "不管做什么，自信心都很重要。", ex_py: "Bùguǎn zuò shénme, zìxìnxīn dōu hěn zhòngyào.", ex_pt: "Não importa o que faça, a autoconfiança é sempre muito importante." },
+            { w: "能力", p: "nénglì", t: "capacidade", c: "Substantivos", l: 3, ex_ch: "他在语言方面有着惊人的学习能力。", ex_py: "Tā zài yǔyán fāngmiàn yǒuzhe jīngrén de xuéxí nénglì.", ex_pt: "Ele tem uma capacidade de aprendizado incrível na área de idiomas." },
+            { w: "招聘会", p: "zhāopìnhuì", t: "feira de empregos", c: "Substantivos", l: 3, ex_ch: "很多应届毕业生去参加了春季招聘会。", ex_py: "Hěnduō yīngjiè bìyèshēng qù cānjiā le chūnjì zhāopìnhuì.", ex_pt: "Muitos recém-formados foram participar da feira de empregos de primavera." },
+            { w: "机会", p: "jīhuì", t: "oportunidade", c: "Substantivos", l: 3, ex_ch: "这是一个千载难逢的好机会，你要抓住。", ex_py: "Zhè shì yí ge qiān zǎi nán féng de hǎo jīhuì, nǐ yào zhuāzhù.", ex_pt: "Esta é uma ótima oportunidade rara, você precisa aproveitá-la." },
+            { w: "材料", p: "cáiliào", t: "material / docs", c: "Substantivos", l: 3, ex_ch: "申请签证需要准备哪些材料？", ex_py: "Shēnqǐng qiānzhèng xūyào zhǔnbèi nǎxiē cáiliào?", ex_pt: "Quais documentos são necessários para solicitar o visto?" },
+            { w: "办公室", p: "bàngōngshì", t: "escritório", c: "Substantivos", l: 3, ex_ch: "老板的办公室在走廊尽头。", ex_py: "Lǎobǎn de bàngōngshì zài zǒuláng jìntóu.", ex_pt: "O escritório do chefe fica no final do corredor." },
+            { w: "要求", p: "yāoqiú", t: "exigência", c: "Substantivos", l: 3, ex_ch: "客户对这批产品的质量要求非常高。", ex_py: "Kèhù duì zhè pī chǎnpǐn de zhìliàng yāoqiú fēicháng gāo.", ex_pt: "As exigências de qualidade do cliente para este lote de produtos são bem altas." },
+            { w: "环境", p: "huánjìng", t: "ambiente", c: "Substantivos", l: 3, ex_ch: "这所学校的学习环境很好。", ex_py: "Zhè suǒ xuéxiào de xuéxí huánjìng hěn hǎo.", ex_pt: "O ambiente de estudos dessa escola é muito bom." },
+            { w: "范围", p: "fànwéi", t: "escopo", c: "Substantivos", l: 3, ex_ch: "这次考试的范围主要是前三课的内容。", ex_py: "Zhè cì kǎoshì de fànwéi zhǔyào shì qián sān kè de nèiróng.", ex_pt: "O escopo desta prova é principalmente o conteúdo das três primeiras lições." },
+            { w: "数量", p: "shùliàng", t: "quantidade", c: "Substantivos", l: 3, ex_ch: "今年进口汽车的数量比去年翻了一倍。", ex_py: "Jīnnián jìnkǒu qìchē de shùliàng bǐ qùnián fān le yí bèi.", ex_pt: "A quantidade de carros importados este ano dobrou em relação ao ano passado." },
+            { w: "名词", p: "míngcí", t: "substantivo", c: "Substantivos", l: 3, ex_ch: "“电脑”是一个名词。", ex_py: "“Diànnǎo” shì yí ge míngcí.", ex_pt: "'Computador' é um substantivo." },
+            { w: "空调", p: "kōngtiáo", t: "ar-condicionado", c: "Substantivos", l: 3, ex_ch: "夏天天气太热，家里一直开着空调。", ex_py: "Xiàtiān tiānqì tài rè, jiālǐ yìzhí kāizhe kōngtiáo.", ex_pt: "No verão é muito quente, o ar-condicionado em casa fica sempre ligado." },
+            { w: "意见", p: "yìjiàn", t: "opinião", c: "Substantivos", l: 3, ex_ch: "大家对这个新方案有什么意见吗？", ex_py: "Dàjiā duì zhège xīn fāng'àn yǒu shénme yìjiàn ma?", ex_pt: "Alguém tem alguma opinião sobre este novo projeto?" },
+            { w: "体育馆", p: "tǐyùguǎn", t: "ginásio", c: "Substantivos", l: 3, ex_ch: "学校刚建了一个现代化的室内体育馆。", ex_py: "Xuéxiào gāng jiàn le yí ge xiàndàihuà de shìnèi tǐyùguǎn.", ex_pt: "A escola acabou de construir um ginásio moderno coberto." },
+            { w: "面试者", p: "miànshìzhě", t: "entrevistador", c: "Substantivos", l: 3, ex_ch: "面试者问了我几个专业问题。", ex_py: "Miànshìzhě wèn le wǒ jǐ ge zhuānyè wèntí.", ex_pt: "O entrevistador me fez algumas perguntas técnicas." },
+            { w: "感觉", p: "gǎnjué", t: "sensação", c: "Substantivos", l: 3, ex_ch: "我感觉今天会有好事发生。", ex_py: "Wǒ gǎnjué jīntiān huì yǒu hǎoshì fāshēng.", ex_pt: "Eu tenho a sensação de que algo bom acontecerá hoje." },
+            { w: "判断", p: "pànduàn", t: "julgamento", c: "Substantivos", l: 3, ex_ch: "他的商业判断一直很准确。", ex_py: "Tā de shāngyè pànduàn yìzhí hěn zhǔnquè.", ex_pt: "O julgamento comercial dele sempre foi muito preciso." },
+            { w: "顾客", p: "gùkè", t: "cliente", c: "Substantivos", l: 3, ex_ch: "商店应该提供优质的服务来吸引顾客。", ex_py: "Shāngdiàn yīnggāi tígōng yōuzhì de fúwù lái xīyǐn gùkè.", ex_pt: "A loja deve fornecer um serviço de qualidade para atrair clientes." },
+            { w: "时候", p: "shíhou", t: "momento", c: "Substantivos", l: 3, ex_ch: "困难的时候，家人总是在我身边。", ex_py: "Kùnnan de shíhou, jiārén zǒngshì zài wǒ shēnbiān.", ex_pt: "Nos momentos de dificuldade, a família sempre esteve ao meu lado." },
+            { w: "翻译", p: "fānyì", t: "tradutor", c: "Substantivos", l: 3, ex_ch: "我们需要请一位专业的英语翻译。", ex_py: "Wǒmen xūyào qǐng yí wèi zhuānyè de Yīngyǔ fānyì.", ex_pt: "Nós precisamos contratar um tradutor de inglês profissional." },
+            { w: "销售", p: "xiāoshòu", t: "área de vendas", c: "Substantivos", l: 3, ex_ch: "他在一家大公司做销售工作。", ex_py: "Tā zài yì jiā dà gōngsī zuò xiāoshòu gōngzuò.", ex_pt: "Ele trabalha na área de vendas de uma grande empresa." },
+            { w: "小雨", p: "Xiǎo Yǔ", t: "Xiaoyu (Nome)", c: "Substantivos", l: 3, ex_ch: "小雨是个非常努力的员工。", ex_py: "Xiǎo Yǔ shì ge fēicháng nǔlì de yuángōng.", ex_pt: "Xiaoyu é uma funcionária muito esforçada." },
+            { w: "马", p: "Mǎ", t: "Ma (Sobrenome)", c: "Substantivos", l: 3, ex_ch: "马经理对大家的要求一直很严格。", ex_py: "Mǎ jīnglǐ duì dàjiā de yāoqiú yìzhí hěn yángé.", ex_pt: "O gerente Ma sempre foi muito rigoroso com as exigências para todos." },
+
+            { w: "不错", p: "búcuò", t: "bom / nada mau", c: "Adjetivos", l: 3, ex_ch: "这家餐厅的菜味道很不错。", ex_py: "Zhè jiā cāntīng de cài wèidào hěn búcuò.", ex_pt: "O sabor da comida deste restaurante é muito bom." },
+            { w: "紧张", p: "jǐnzhāng", t: "nervoso / tenso", c: "Adjetivos", l: 3, ex_ch: "第一次上台演讲，我非常紧张。", ex_py: "Dì yí cì shàngtái yǎnjiǎng, wǒ fēicháng jǐnzhāng.", ex_pt: "Na primeira vez discursando no palco, fiquei muito nervoso." },
+            { w: "容易", p: "róngyì", t: "fácil", c: "Adjetivos", l: 3, ex_ch: "这道题看起来不难，但做对并不容易。", ex_py: "Zhè dào tí kàn qǐlái bù nán, dàn zuò duì bìng bù róngyì.", ex_pt: "Esta questão parece não ser difícil, mas acertar não é nem um pouco fácil." },
+            { w: "满意", p: "mǎnyì", t: "satisfeito", c: "Adjetivos", l: 3, ex_ch: "老板对这份市场调查报告非常满意。", ex_py: "Lǎobǎn duì zhè fèn shìchǎng diàochá bàogào fēicháng mǎnyì.", ex_pt: "O chefe ficou muito satisfeito com este relatório de pesquisa de mercado." },
+            { w: "干净", p: "gānjìng", t: "limpo", c: "Adjetivos", l: 3, ex_ch: "把房间打扫干净才能出门玩。", ex_py: "Bǎ fángjiān dǎsǎo gānjìng cái néng chūmén wán.", ex_pt: "Só pode sair para brincar depois de limpar o quarto." },
+            { w: "顺利", p: "shùnlì", t: "tranquilo / sucesso", c: "Adjetivos", l: 3, ex_ch: "祝你的手术一切顺利！", ex_py: "Zhù nǐ de shǒushù yìqiè shùnlì!", ex_pt: "Desejo que a sua cirurgia corra com muito sucesso!" },
+            { w: "正式", p: "zhèngshì", t: "formal", c: "Adjetivos", l: 3, ex_ch: "参加晚宴应该穿得正式一点。", ex_py: "Cānjiā wǎnyàn yīnggāi chuān de zhèngshì yìdiǎn.", ex_pt: "Para ir a um banquete você deveria se vestir de forma um pouco mais formal." },
+            { w: "诚实", p: "chéngshí", t: "honesto", c: "Adjetivos", l: 3, ex_ch: "做人最重要的是要诚实可靠。", ex_py: "Zuòrén zuì zhòngyào de shì yào chéngshí kěkào.", ex_pt: "O mais importante no caráter de uma pessoa é ser honesta e confiável." },
+            { w: "坏", p: "huài", t: "ruim / mau", c: "Adjetivos", l: 3, ex_ch: "电脑坏了，我没法发邮件。", ex_py: "Diànnǎo huài le, wǒ méi fǎ fā yóujiàn.", ex_pt: "O computador quebrou, não tenho como mandar o e-mail." },
+            { w: "准时", p: "zhǔnshí", t: "pontual", c: "Adjetivos", l: 3, ex_ch: "火车准时到达了北京站。", ex_py: "Huǒchē zhǔnshí dàodá le Běijīng zhàn.", ex_pt: "O trem chegou pontualmente na estação de Pequim." },
+
+            { w: "挺", p: "tǐng", t: "bem / bastante", c: "Advérbios / Conjunções", l: 3, ex_ch: "这件毛衣的颜色挺好看的。", ex_py: "Zhè jiàn máoyī de yánsè tǐng hǎokàn de.", ex_pt: "A cor desse suéter é bastante bonita." },
+            { w: "本来", p: "běnlái", t: "originalmente", c: "Advérbios / Conjunções", l: 3, ex_ch: "我们本来打算去爬山，可是下雨了。", ex_py: "Wǒmen běnlái dǎsuàn qù páshān, kěshì xiàyǔ le.", ex_pt: "Nós a princípio planejávamos escalar a montanha, mas choveu." },
+            { w: "另外", p: "lìngwài", t: "além disso", c: "Advérbios / Conjunções", l: 3, ex_ch: "这个计划不错。另外，成本也很低。", ex_py: "Zhège jìhuà búcuò. Lìngwài, chéngběn yě hěn dī.", ex_pt: "Este plano é bom. Além disso, o custo também é baixo." },
+            { w: "另", p: "lìng", t: "outro", c: "Advérbios / Conjunções", l: 3, ex_ch: "如果你不喜欢这本，我再去另找一本。", ex_py: "Rúguǒ nǐ bù xǐhuan zhè běn, wǒ zài qù lìng zhǎo yì běn.", ex_pt: "Se você não gostar deste, vou procurar algum outro." },
+            { w: "首先", p: "shǒuxiān", t: "primeiramente", c: "Advérbios / Conjunções", l: 3, ex_ch: "首先，我们要确定这个项目的目标。", ex_py: "Shǒuxiān, wǒmen yào quèdìng zhège xiàngmù de mùbiāo.", ex_pt: "Primeiramente, precisamos determinar o objetivo deste projeto." },
+            { w: "其次", p: "qícì", t: "em segundo lugar", c: "Advérbios / Conjunções", l: 3, ex_ch: "首先是质量，其次才是价格。", ex_py: "Shǒuxiān shì zhìliàng, qícì cái shì jiàgé.", ex_pt: "Primeiro vem a qualidade, só em segundo lugar o preço." },
+            { w: "不管", p: "bùguǎn", t: "não importa", c: "Advérbios / Conjunções", l: 3, ex_ch: "不管多难，我都会坚持到底。", ex_py: "Bùguǎn duō nán, wǒ dōu huì jiānchí dàodǐ.", ex_pt: "Não importa o quão difícil, eu insistirei até o fim." },
+            { w: "总是", p: "zǒngshì", t: "sempre", c: "Advérbios / Conjunções", l: 3, ex_ch: "他总是把别人的事情放在第一位。", ex_py: "Tā zǒngshì bǎ biérén de shìqing fàng zài dì-yī wèi.", ex_pt: "Ele sempre coloca as coisas dos outros em primeiro lugar." },
+            { w: "非常", p: "fēicháng", t: "extremamente", c: "Advérbios / Conjunções", l: 3, ex_ch: "我对这次合作感到非常满意。", ex_py: "Wǒ duì zhè cì hézuò gǎndào fēicháng mǎnyì.", ex_pt: "Sinto-me extremamente satisfeito com esta cooperação." },
+            { w: "马上", p: "mǎshàng", t: "imediatamente", c: "Advérbios / Conjunções", l: 3, ex_ch: "客人们马上就要到了，快准备一下。", ex_py: "Kèrén men mǎshàng jiù yào dào le, kuài zhǔnbèi yíxià.", ex_pt: "Os convidados vão chegar imediatamente, vá preparar rápido." },
+
+            { w: "万事开头难", p: "wàn shì kāitóu nán", t: "tudo é difícil no começo", c: "Expressões e Compostos", l: 3, ex_ch: "别灰心，俗话说万事开头难，之后会好起来的。", ex_py: "Bié huīxīn, súhuà shuō wàn shì kāitóu nán, zhīhòu huì hǎo qǐlái de.", ex_pt: "Não desanime, o ditado diz que tudo é difícil no começo, depois vai melhorar." },
+            { w: "第一印象", p: "dì-yī yìnxiàng", t: "primeira impressão", c: "Expressões e Compostos", l: 3, ex_ch: "良好的第一印象在面试中起着关键作用。", ex_py: "Liánghǎo de dì-yī yìnxiàng zài miànshì zhōng qǐzhe guānjiàn zuòyòng.", ex_pt: "Uma boa primeira impressão exerce papel chave na entrevista." },
+            { w: "不用坐班", p: "búyòng zuòbān", t: "não cumprir horário fixo", c: "Expressões e Compostos", l: 3, ex_ch: "有些自由职业者是不用坐班的。", ex_py: "Yǒuxiē zìyóu zhíyèzhě shì búyòng zuòbān de.", ex_pt: "Alguns freelancers não precisam cumprir horário fixo de escritório." },
+            { w: "打车", p: "dǎchē", t: "pegar táxi", c: "Expressões e Compostos", l: 3, ex_ch: "现在太晚了，没有公交车，只能打车回家。", ex_py: "Xiànzài tài wǎn le, méiyǒu gōngjiāochē, zhǐnéng dǎchē huíjiā.", ex_pt: "Agora é tarde demais, não tem ônibus, só dá pra pegar táxi para ir pra casa." },
+            { w: "发电子邮件", p: "fā diànzǐ yóujiàn", t: "enviar e-mail", c: "Expressões e Compostos", l: 3, ex_ch: "我一会儿发电子邮件把资料传给你。", ex_py: "Wǒ yíhuìr fā diànzǐ yóujiàn bǎ zīliào chuán gěi nǐ.", ex_pt: "Logo mais te enviarei um e-mail para transmitir os documentos." },
+            { w: "刮大风", p: "guā dà fēng", t: "ventar muito", c: "Expressões e Compostos", l: 3, ex_ch: "昨晚刮大风，把院子里的树都吹倒了。", ex_py: "Zuówǎn guā dà fēng, bǎ yuànzi lǐ de shù dōu chuīdǎo le.", ex_pt: "Ontem à noite ventou forte e derrubou as árvores do quintal." },
+
+            { w: "应聘", p: "yìngpìn", t: "candidatar-se", c: "Verbos", l: 3, ex_ch: "有很多应届生来我们公司应聘。", ex_py: "Yǒu hěnduō yīngjièshēng lái wǒmen gōngsī yìngpìn.", ex_pt: "Muitos recém-formados vieram se candidatar em nossa empresa." },
+            { w: "聊天", p: "liáotiān", t: "conversar", c: "Verbos", l: 3, ex_ch: "大家坐在一起喝茶聊天，感觉很轻松。", ex_py: "Dàjiā zuò zài yìqǐ hē chá liáotiān, gǎnjué hěn qīngsōng.", ex_pt: "Todo mundo sentou junto tomando chá e conversando, sentindo-se bem relaxados." },
+            { w: "决定", p: "juédìng", t: "decidir", c: "Verbos", l: 3, ex_ch: "我已经决定明年去国外读研究生了。", ex_py: "Wǒ yǐjīng juédìng míngnián qù guówài dú yánjiūshēng le.", ex_pt: "Já decidi ir fazer mestrado no exterior no ano que vem." },
+            { w: "招聘", p: "zhāopìn", t: "recrutar", c: "Verbos", l: 3, ex_ch: "这家互联网公司今年招聘五百名新员工。", ex_py: "Zhè jiā hùliánwǎng gōngsī jīnnián zhāopìn wǔ bǎi míng xīn yuángōng.", ex_pt: "Essa empresa de internet vai contratar quinhentos funcionários novos este ano." },
+            { w: "提供", p: "tígōng", t: "oferecer / fornecer", c: "Verbos", l: 3, ex_ch: "学校为学生提供了良好的食宿条件。", ex_py: "Xuéxiào wèi xuésheng tígōng le liánghǎo de shísù tiáojiàn.", ex_pt: "A escola ofereceu boas condições de alojamento e alimentação aos alunos." },
+            { w: "负责", p: "fùzé", t: "ser responsável por", c: "Verbos", l: 3, ex_ch: "王经理负责公司北美市场的销售。", ex_py: "Wáng jīnglǐ fùzé gōngsī Běiměi shìchǎng de xiāoshòu.", ex_pt: "O gerente Wang é responsável pelas vendas do mercado norte-americano da empresa." },
+            { w: "生病", p: "shēngbìng", t: "adoecer", c: "Verbos", l: 3, ex_ch: "他连续加班太累，结果生病了。", ex_py: "Tā liánxù jiābān tài lèi, jiéguǒ shēngbìng le.", ex_pt: "Ele fez muitas horas extras contínuas e se cansou, o resultado foi que adoeceu." },
+            { w: "住院", p: "zhùyuàn", t: "internar-se", c: "Verbos", l: 3, ex_ch: "医生建议他马上住院接受手术治疗。", ex_py: "Yīshēng jiànyì tā mǎshàng zhùyuàn jiēshòu shǒushù zhìliáo.", ex_pt: "O médico recomendou que ele se interne imediatamente para receber cirurgia." },
+            { w: "经过", p: "jīngguò", t: "passar por / após", c: "Verbos", l: 3, ex_ch: "经过几个月的努力，项目终于上线了。", ex_py: "Jīngguò jǐ ge yuè de nǔlì, xiàngmù zhōngyú shàngxiàn le.", ex_pt: "Após meses de esforço, o projeto finalmente foi ao ar." },
+            { w: "符合", p: "fúhé", t: "corresponder a", c: "Verbos", l: 3, ex_ch: "这件产品的设计完全符合我们的标准。", ex_py: "Zhè jiàn chǎnpǐn de shèjì wánquán fúhé wǒmen de biāozhǔn.", ex_pt: "O design deste produto atende perfeitamente aos nossos padrões." },
+            { w: "当", p: "dāng", t: "trabalhar como", c: "Verbos", l: 3, ex_ch: "我从小就想当一名飞行员。", ex_py: "Wǒ cóng xiǎo jiù xiǎng dāng yì míng fēixíngyuán.", ex_pt: "Desde pequeno eu já queria ser piloto." },
+            { w: "安排", p: "ānpái", t: "arranjar / programar", c: "Verbos", l: 3, ex_ch: "公司下周会安排我们去考察市场。", ex_py: "Gōngsī xià zhōu huì ānpái wǒmen qù kǎochá shìchǎng.", ex_pt: "A empresa vai arranjar para inspecionarmos o mercado semana que vem." },
+            { w: "留", p: "liú", t: "deixar / manter", c: "Verbos", l: 3, ex_ch: "出门前请给我留一张字条。", ex_py: "Chūmén qián qǐng gěi wǒ liú yì zhāng zìtiáo.", ex_pt: "Por favor, me deixe um bilhete antes de sair." },
+            { w: "约会", p: "yuēhuì", t: "ter um encontro", c: "Verbos", l: 3, ex_ch: "今晚我要和女朋友去高级餐厅约会。", ex_py: "Jīnwǎn wǒ yào hé nǚpéngyou qù gāojí cāntīng yuēhuì.", ex_pt: "Hoje à noite vou ter um encontro com minha namorada em um restaurante chique." },
+            { w: "相信", p: "xiāngxìn", t: "acreditar", c: "Verbos", l: 3, ex_ch: "我相信只要坚持就能取得成功。", ex_py: "Wǒ xiāngxìn zhǐyào jiānchí jiù néng qǔdé chénggōng.", ex_pt: "Eu acredito que basta persistir e alcançará o sucesso." },
+            { w: "注意", p: "zhùyì", t: "prestar atenção", c: "Verbos", l: 3, ex_ch: "过马路时一定要注意安全。", ex_py: "Guò mǎlù shí yídìng yào zhùyì ānquán.", ex_pt: "Ao atravessar a rua é indispensável prestar atenção à segurança." },
+
+            { w: "挺", p: "tǐng", t: "Gramática", c: "Gramática", l: 3, gram_desc: "Advérbio que significa 'muito' ou 'bem'. Geralmente é usado na estrutura 挺……的.", ex_ch: "我觉得那个问题挺容易的。", ex_py: "Wǒ juéde nàge wèntí tǐng róngyì de.", ex_pt: "Eu acho que aquela pergunta é bem fácil." },
+            { w: "本来", p: "běnlái", t: "Gramática", c: "Gramática", l: 3, gram_desc: "Advérbio que indica que naturalmente ou pela lógica deveria ser assim, ou que a princípio era de certa forma.", ex_ch: "这本书本来是借给你的。", ex_py: "Zhè běn shū běnlái shì jiè gěi nǐ de.", ex_pt: "Este livro, a princípio, era para ter sido emprestado a você." },
+            { w: "另外", p: "lìngwài", t: "Gramática", c: "Gramática", l: 3, gram_desc: "Pode atuar como pronome, advérbio ou conjunção para expressar 'além disso' ou 'outro(a)'.", ex_ch: "这件衣服太小，我另外买了一件。", ex_py: "Zhè jiàn yīfu tài xiǎo, wǒ lìngwài mǎi le yí jiàn.", ex_pt: "Esta roupa é muito pequena, eu comprei uma outra (além dessa)." },
+            { w: "另", p: "lìng", t: "Gramática", c: "Gramática", l: 3, gram_desc: "Pronome ou advérbio para expressar 'outro'. Diferente de 另外, nunca usa 的 e costuma modificar verbos curtos diretamente.", ex_ch: "今天太晚了，我们另找时间谈吧。", ex_py: "Jīntiān tài wǎn le, wǒmen lìng zhǎo shíjiān tán ba.", ex_pt: "Hoje está muito tarde, vamos achar outra hora para conversar." },
+            { w: "首先……其次……", p: "shǒuxiān... qícì...", t: "Gramática", c: "Gramática", l: 3, gram_desc: "Usados em conjunto para enumerar pontos de argumentação: primeiramente... e em segundo lugar...", ex_ch: "首先要注意健康，其次才是工作。", ex_py: "Shǒuxiān yào zhùyì jiànkāng, qícì cái shì gōngzuò.", ex_pt: "Primeiramente preste atenção à saúde, só em segundo lugar vem o trabalho." },
+            { w: "不管", p: "bùguǎn", t: "Gramática", c: "Gramática", l: 3, gram_desc: "Conjunção que significa 'não importa se'. É quase sempre seguido por 都 ou 也 na oração seguinte.", ex_ch: "不管天气多冷，他都去跑步。", ex_py: "Bùguǎn tiānqì duō lěng, tā dōu qù pǎobù.", ex_pt: "Não importa quão frio esteja o tempo, ele sempre vai correr." }
+        ];
+
+        const charStructures = {
+            '法':'lr', '律':'lr', '俩':'lr', '性':'lr', '格':'lr', '静':'lr', '孙':'lr', '新':'lr', '球':'lr', '比':'lr', '时':'lr', '好':'lr', '活':'lr', '浪':'lr', '漫':'lr', '鲜':'lr', '缺':'lr', '情':'lr', '灯':'lr', '脾':'lr', '体':'lr', '眼':'lr', '睛':'lr', '双':'lr', '雅':'lr', '眠':'lr', '诺':'lr', '欧':'lr', '坦':'lr', '巧':'lr', '郎':'lr', '织':'lr', '购':'lr', '物':'lr', '动':'lr', '聊':'lr', '旅':'lr', '地':'lr', '铁':'lr', '站':'lr', '海':'lr', '校':'lr', '饭':'lr', '话':'lr', '谊':'lr', '钱':'lr', '词':'lr', '礼':'lr', '叔':'lr', '惯':'lr', '镜':'lr', '难':'lr', '经':'lr', '理':'lr', '院':'lr', '场':'lr', '深':'lr', '福':'lr', '默':'lr', '认':'lr', '刚':'lr', '即':'lr', '使':'lr', '但':'lr', '慢':'lr', '候':'lr', '却':'lr', '玩':'lr', '加':'lr', '红':'lr', '朋':'lr', '够':'lr', '接':'lr', '引':'lr', '听':'lr', '说':'lr', '踢':'lr', '欢':'lr', '结':'lr', '婚':'lr', '唱':'lr', '歌':'lr', '找':'lr', '得':'lr', '解':'lr', '决':'lr', '泳':'lr', '放':'lr', '助':'lr', '陪':'lr', '锻':'lr', '炼':'lr', '顾':'lr', '睡':'lr', '影':'lr', '姐':'lr', '妹':'lr', '试':'lr', '师':'lr', '知':'lr', '收':'lr', '信':'lr', '能':'lr', '招':'lr', '聘':'lr', '机':'lr', '材':'lr', '料':'lr', '环':'lr', '境':'lr', '数':'lr', '调':'lr', '判':'lr', '断':'lr', '翻':'lr', '译':'lr', '销':'lr', '错':'lr', '张':'lr', '满':'lr', '净':'lr', '顺':'lr', '利':'lr', '诚':'lr', '坏':'lr', '准':'lr', '挺':'lr', '外':'lr', '次':'lr', '非':'lr', '印':'lr', '打':'lr', '邮':'lr', '件':'lr', '刮':'lr', '提':'lr', '供':'lr', '住':'lr', '联':'lr', '排':'lr', '改':'lr', '约':'lr', '相':'lr', '注':'lr', '期':'lr', '论':'lr', '初':'lr', '报':'lr', '纸':'lr', '特':'lr', '别':'lr', '作':'lr', '服':'lr', '馆':'lr', '假':'lr', '行':'lr', '的':'lr', '没':'lr', '脸':'lr', '叶':'lr', '仅':'lr', '对':'lr', '她':'lr', '识':'lr', '语':'lr', '些':'lr',
+            '象':'tb', '李':'tb', '足':'tb', '赛':'tb', '兴':'tb', '妻':'tb', '感':'tb', '点':'tb', '星':'tb', '亮':'tb', '单':'tb', '重':'tb', '夜':'tb', '当':'tb', '男':'tb', '罗':'tb', '密':'tb', '朱':'tb', '丽':'tb', '泰':'tb', '克':'tb', '号':'tb', '节':'tb', '乞':'tb', '少':'tb', '农':'tb', '百':'tb', '公':'tb', '聚':'tb', '会':'tb', '学':'tb', '名':'tb', '字':'tb', '事':'tb', '夏':'tb', '照':'tb', '南':'tb', '苹':'tb', '果':'tb', '典':'tb', '哥':'tb', '关':'tb', '系':'tb', '舞':'tb', '幸':'tb', '普':'tb', '竖':'tb', '直':'tb', '卷':'tb', '真':'tb', '然':'tb', '虽':'tb', '实':'tb', '最':'tb', '常':'tb', '差':'tb', '尽':'tb', '管':'tb', '笑':'tb', '完':'tb', '变':'tb', '老':'tb', '交':'tb', '走':'tb', '步':'tb', '享':'tb', '靠':'tb', '受':'tb', '羡':'tb', '慕':'tb', '菜':'tb', '觉':'tb', '参':'tb', '冒':'tb', '卖':'tb', '光':'tb', '复':'tb', '帮':'tb', '毕':'tb', '音':'tb', '息':'tb', '思':'tb', '答':'tb', '笔':'tb', '共':'tb', '汽':'tb', '室':'tb', '要':'tb', '范':'tb', '量':'tb', '空':'tb', '见':'tb', '育':'tb', '者':'tb', '客':'tb', '售':'tb', '紧':'tb', '容':'tb', '易':'tb', '安':'tb', '另':'tb', '是':'tb', '首':'tb', '先':'tb', '总':'tb', '第':'tb', '坐':'tb', '负':'tb', '责':'tb', '符':'tb', '合':'tb', '表':'tb', '望':'tb', '薪':'tb', '定':'tb', '意':'tb', '想':'tb', '全':'tb', '多':'tb', '留':'tb', '有':'tb', '家':'tb', '零':'tb', '个':'tb',
+            '班':'lmr', '游':'lmr', '谢':'lmr', '街':'lmr', '树':'lmr', '做':'lmr', '哪':'lmr',
+            '黄':'tmb', '赢':'tmb', '曼':'tmb', '画':'tmb', '爱':'tmb', '高':'tmb', '等':'tmb', '茶':'tmb',
+            '进':'semi_lb', '起':'semi_lb', '还':'semi_lb', '题':'semi_lb', '趣':'semi_lb', '运':'semi_lb', '远':'semi_lb', '近':'semi_lb', '适':'semi_lb', '遇':'semi_lb', '迟':'semi_lb', '建':'semi_lb', '这':'semi_lb', '道':'semi_lb', '过':'semi_lb', '连':'semi_lb', '通':'semi_lb', '边':'semi_lb', '送':'semi_lb', '迎':'semi_lb', '逛':'semi_lb',
+            '店':'semi_tl', '原':'semi_tl', '尼':'semi_tl', '历':'semi_tl', '厘':'semi_tl', '友':'semi_tl', '医':'semi_tl', '愿':'semi_tl', '层':'semi_tl', '压':'semi_tl', '病':'semi_tl', '瘦':'semi_tl', '厌':'semi_tl', '应':'semi_tl', '座':'semi_tl', '局':'semi_tl', '房':'semi_tl', '床':'semi_tl', '在':'semi_tl',
+            '气':'semi_tr', '包':'semi_tr', '句':'semi_tr', '可':'semi_tr', '司':'semi_tr', '式':'semi_tr', '我':'semi_tr',
+            '间':'semi_out', '闻':'semi_out', '同':'semi_out', '问':'semi_out', '幽':'semi_out', '网':'semi_out', '风':'semi_out', '用':'semi_out', '向':'semi_out',
+            '因':'full', '图':'full', '国':'full', '园':'full', '困':'full', '回':'full', '四':'full', '围':'full', '团':'full',
+            '月':'single', '水':'single', '王':'single', '生':'single', '子':'single', '丈':'single', '夫':'single', '身':'single', '头':'single', '发':'single', '西':'single', '未':'single', '丁':'single', '山':'single', '人':'single', '上':'single', '女':'single', '与':'single', '七':'single', '夕':'single', '牛':'single', '米':'single', '斤':'single', '习':'single', '天':'single', '儿':'single', '方':'single', '马':'single', '中':'single', '书':'single', '门':'single', '口':'single', '片':'single', '大':'single', '日':'single', '电':'single', '瓜':'single', '父':'single', '母':'single', '立':'single', '长':'single', '才':'single', '也':'single', '而':'single', '且':'single', '自':'single', '其':'single', '平':'single', '正':'single', '专':'single', '几':'single', '乎':'single', '及':'single', '办':'single', '出':'single', '来':'single', '飞':'single', '心':'single', '业':'single', '互':'single', '工':'single', '皮':'single', '入':'single', '车':'single', '力':'single', '求':'single', '干':'single', '本':'single', '万':'single', '开':'single', '一':'single', '已':'single', '己':'single', '下':'single', '之':'single', '主':'single', '不':'single', '了':'single', '面':'single', '雨':'single', '言':'single'
+        };
+
+        const structDetails = {
+            'lr': { ch: '左右结构', py: 'zuǒyòu jiégòu', pt: 'Estrutura Esquerda-Direita' },
+            'tb': { ch: '上下结构', py: 'shàngxià jiégòu', pt: 'Estrutura Topo-Base' },
+            'lmr': { ch: '左中右结构', py: 'zuǒzhōngyòu jiégòu', pt: 'Estrutura Esq-Meio-Dir' },
+            'tmb': { ch: '上中下结构', py: 'shàngzhōngxià jiégòu', pt: 'Estrutura Topo-Meio-Base' },
+            'semi_lb': { ch: '左下包围结构', py: 'zuǒxià bāowéi jiégòu', pt: 'Estrutura Semi-cercada (Esq-Inf)' },
+            'semi_tl': { ch: '左上包围结构', py: 'zuǒshàng bāowéi jiégòu', pt: 'Estrutura Semi-cercada (Esq-Sup)' },
+            'semi_tr': { ch: '右上包围结构', py: 'yòushàng bāowéi jiégòu', pt: 'Estrutura Semi-cercada (Dir-Sup)' },
+            'semi_out': { ch: '内外结构 (上左右)', py: 'nèiwài jiégòu', pt: 'Estrutura Semi-cercada (Topo/Lados)' },
+            'full': { ch: '全包围结构', py: 'quánbāowéi jiégòu', pt: 'Estrutura Totalmente Cercada' },
+            'single': { ch: '独体字', py: 'dútǐzì', pt: 'Caractere de Componente Único' }
+        };
+
+        const svgBackgrounds = {
+            'lr': `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><rect x="15" y="15" width="120" height="250" rx="12" fill="%230066cc" fill-opacity="0.1" stroke="%230066cc" stroke-width="2" stroke-opacity="0.4"/><rect x="145" y="15" width="120" height="250" rx="12" fill="%230d9488" fill-opacity="0.1" stroke="%230d9488" stroke-width="2" stroke-opacity="0.4"/></svg>')`,
+            'tb': `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><rect x="15" y="15" width="250" height="120" rx="12" fill="%230066cc" fill-opacity="0.1" stroke="%230066cc" stroke-width="2" stroke-opacity="0.4"/><rect x="15" y="145" width="250" height="120" rx="12" fill="%230d9488" fill-opacity="0.1" stroke="%230d9488" stroke-width="2" stroke-opacity="0.4"/></svg>')`,
+            'lmr': `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><rect x="15" y="15" width="76" height="250" rx="8" fill="%230066cc" fill-opacity="0.1" stroke="%230066cc" stroke-width="2" stroke-opacity="0.4"/><rect x="101" y="15" width="78" height="250" rx="8" fill="%238b5cf6" fill-opacity="0.1" stroke="%238b5cf6" stroke-width="2" stroke-opacity="0.4"/><rect x="189" y="15" width="76" height="250" rx="8" fill="%230d9488" fill-opacity="0.1" stroke="%230d9488" stroke-width="2" stroke-opacity="0.4"/></svg>')`,
+            'tmb': `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><rect x="15" y="15" width="250" height="76" rx="8" fill="%230066cc" fill-opacity="0.1" stroke="%230066cc" stroke-width="2" stroke-opacity="0.4"/><rect x="15" y="101" width="250" height="78" rx="8" fill="%238b5cf6" fill-opacity="0.1" stroke="%238b5cf6" stroke-width="2" stroke-opacity="0.4"/><rect x="15" y="189" width="250" height="76" rx="8" fill="%230d9488" fill-opacity="0.1" stroke="%230d9488" stroke-width="2" stroke-opacity="0.4"/></svg>')`,
+            'semi_lb': `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><path d="M 15 15 L 15 265 L 265 265" fill="none" stroke="%238b5cf6" stroke-width="35" stroke-opacity="0.15" stroke-linecap="round" stroke-linejoin="round"/><rect x="75" y="15" width="190" height="190" rx="12" fill="%23f43f5e" fill-opacity="0.1" stroke="%23f43f5e" stroke-width="2" stroke-opacity="0.4"/></svg>')`,
+            'semi_tl': `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><path d="M 265 15 L 15 15 L 15 265" fill="none" stroke="%238b5cf6" stroke-width="35" stroke-opacity="0.15" stroke-linecap="round" stroke-linejoin="round"/><rect x="75" y="75" width="190" height="190" rx="12" fill="%23f43f5e" fill-opacity="0.1" stroke="%23f43f5e" stroke-width="2" stroke-opacity="0.4"/></svg>')`,
+            'semi_tr': `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><path d="M 15 15 L 265 15 L 265 265" fill="none" stroke="%238b5cf6" stroke-width="35" stroke-opacity="0.15" stroke-linecap="round" stroke-linejoin="round"/><rect x="15" y="75" width="190" height="190" rx="12" fill="%23f43f5e" fill-opacity="0.1" stroke="%23f43f5e" stroke-width="2" stroke-opacity="0.4"/></svg>')`,
+            'semi_out': `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><path d="M 15 265 L 15 15 L 265 15 L 265 265" fill="none" stroke="%238b5cf6" stroke-width="35" stroke-opacity="0.15" stroke-linecap="round" stroke-linejoin="round"/><rect x="65" y="65" width="150" height="200" rx="12" fill="%23f43f5e" fill-opacity="0.1" stroke="%23f43f5e" stroke-width="2" stroke-opacity="0.4"/></svg>')`,
+            'full': `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><rect x="15" y="15" width="250" height="250" rx="12" fill="none" stroke="%238b5cf6" stroke-width="30" stroke-opacity="0.15"/><rect x="65" y="65" width="150" height="150" rx="8" fill="%23f43f5e" fill-opacity="0.1" stroke="%23f43f5e" stroke-width="2" stroke-opacity="0.4"/></svg>')`,
+            'single': `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><rect x="15" y="15" width="250" height="250" rx="12" fill="%230d9488" fill-opacity="0.05" stroke="%230d9488" stroke-width="2" stroke-opacity="0.4" stroke-dasharray="6,6"/></svg>')`
+        };
+
+        const basicStrokes = [
+            { name: '点', py: 'diǎn', pt: 'Ponto', ex: '不', num: 3 },
+            { name: '横', py: 'héng', pt: 'Traço horizontal', ex: '不', num: 0 },
+            { name: '竖', py: 'shù', pt: 'Traço vertical', ex: '不', num: 2 },
+            { name: '撇', py: 'piě', pt: 'Curva à esquerda', ex: '八', num: 0 },
+            { name: '捺', py: 'nà', pt: 'Curva à direita', ex: '八', num: 1 },
+            { name: '提', py: 'tí', pt: 'Ascendente', ex: '汉', num: 2 },
+            { name: '横钩', py: 'hénggōu', pt: 'Horizontal c/ gancho', ex: '你', num: 3 },
+            { name: '竖钩', py: 'shùgōu', pt: 'Vertical c/ gancho', ex: '小', num: 0 },
+            { name: '斜钩', py: 'xiégōu', pt: 'Inclinado c/ gancho', ex: '我', num: 4 },
+            { name: '竖提', py: 'shùtí', pt: 'Vertical ascendente', ex: '很', num: 6 },
+            { name: '横折', py: 'héngzhé', pt: 'Horizontal dobrado', ex: '口', num: 1 },
+            { name: '竖折', py: 'shùzhé', pt: 'Vertical dobrado', ex: '山', num: 1 },
+            { name: '撇点', py: 'piědiǎn', pt: 'Curva à esq. c/ ponto', ex: '好', num: 0 },
+            { name: '撇折', py: 'piězhé', pt: 'Curva dobrada', ex: '去', num: 3 },
+            { name: '横撇', py: 'héngpiě', pt: 'Horizontal p/ curva', ex: '水', num: 1 },
+            { name: '竖弯', py: 'shùwān', pt: 'Vertical curvo', ex: '四', num: 3 },
+            { name: '横折钩', py: 'héngzhégōu', pt: 'Horiz. dobrado c/ gancho', ex: '习', num: 0 },
+            { name: '竖弯钩', py: 'shùwāngōu', pt: 'Vertical curvo c/ gancho', ex: '儿', num: 1 },
+            { name: '横折提', py: 'héngzhétí', pt: 'Horiz. dobrado ascendente', ex: '语', num: 1 },
+            { name: '竖折折钩', py: 'shùzhézhégōu', pt: 'Vert. dupla dobra c/ gancho', ex: '吗', num: 4 },
+            { name: '横折弯撇', py: 'héngzhéwānpiě', pt: 'Horiz. dobrado curvo esq.', ex: '这', num: 5 },
+            { name: '横折弯钩', py: 'héngzhéwāngōu', pt: 'Horiz. dobrado curvo c/ gancho', ex: '九', num: 1 }
+        ];
+
+        let currentLesson = 1;
+        let filteredDB = [];
+        let currentMode = 'practice';
+        let currentItemIndex = 0;
+        let activeCharStr = '';
+        let hanziWriterInstance = null;
+        let isDesktopSidebarOpen = true; 
+
+        function init() {
+            lucide.createIcons();
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                renderSidebar(e.target.value);
+            });
+        }
+
+        // --- NAVIGATION LOGIC ---
+        function switchView(viewId) {
+            ['view-home', 'view-folder', 'view-app'].forEach(v => {
+                const el = document.getElementById(v);
+                el.classList.remove('view-active', 'view-hidden', 'view-zoomed');
+                if (v === viewId) {
+                    el.classList.add('view-active');
+                } else if (v === 'view-home' && viewId === 'view-folder') {
+                    el.classList.add('view-hidden');
+                } else if (v === 'view-folder' && viewId === 'view-home') {
+                    el.classList.add('view-zoomed');
+                } else {
+                    el.classList.add('view-hidden');
+                }
+            });
+        }
+
+        function openFolder() { switchView('view-folder'); }
+        function goHome() { switchView('view-home'); }
+        function goFolder() { switchView('view-folder'); }
+
+        function openLesson(lessonNum) {
+            currentLesson = lessonNum;
+            document.getElementById('mobile-lesson-title').innerText = `Lição ${lessonNum}`;
+            document.getElementById('desktop-lesson-title').innerText = `Lição ${lessonNum}`;
+            
+            // Filter DB for current lesson
+            filteredDB = database.filter(item => item.l === currentLesson);
+            
+            switchView('view-app');
+            setMode('practice');
+        }
+
+        function removeAccents(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        }
+
+        function playAudioText(elementId) {
+            const textToSpeak = document.getElementById(elementId).innerText;
+            if (!textToSpeak) return;
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                utterance.lang = 'zh-CN'; 
+                utterance.rate = 0.9; 
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            ['practice', 'structure', 'strokes'].forEach(m => {
+                const tab = document.getElementById(`tab-${m}`);
+                if(m === mode) tab.classList.add('active');
+                else tab.classList.remove('active');
+            });
+
+            const headerWords = document.getElementById('header-words');
+            const headerStrokes = document.getElementById('header-strokes');
+            const structBox = document.getElementById('struct-info-box');
+
+            if(mode === 'strokes') {
+                headerWords.classList.add('hidden');
+                headerWords.classList.remove('flex');
+                headerStrokes.classList.remove('hidden');
+                headerStrokes.classList.add('flex');
+                structBox.classList.add('hidden');
+            } else {
+                headerWords.classList.remove('hidden');
+                headerWords.classList.add('flex');
+                headerStrokes.classList.add('hidden');
+                headerStrokes.classList.remove('flex');
+                if(mode === 'structure') structBox.classList.remove('hidden');
+                else structBox.classList.add('hidden');
+            }
+
+            document.getElementById('searchInput').value = '';
+            renderSidebar();
+            selectItem(0, true);
+        }
+
+        function toggleCategory(catId) {
+            const list = document.getElementById(catId);
+            if(list.classList.contains('collapsed')) list.classList.remove('collapsed');
+            else list.classList.add('collapsed');
+        }
+
+        function renderSidebar(rawFilter = "") {
+            const filter = removeAccents(rawFilter);
+            const container = document.getElementById('listContainer');
+            container.innerHTML = '';
+
+            if(currentMode === 'strokes') {
+                basicStrokes.forEach((stroke, index) => {
+                    const searchStr = removeAccents(stroke.name + stroke.py + stroke.pt);
+                    if (filter && !searchStr.includes(filter)) return;
+                    
+                    const div = document.createElement('div');
+                    div.className = `list-item-glass p-3 mb-2 rounded-2xl cursor-pointer flex justify-between items-center ${index === currentItemIndex ? 'active' : ''}`;
+                    div.onclick = () => selectItem(index);
+                    div.innerHTML = `
+                        <div class="overflow-hidden pr-2 flex items-center gap-3">
+                            <div class="chinese-text text-2xl text-[#1d1d1f] font-bold bg-white/40 w-10 h-10 flex items-center justify-center rounded-xl shadow-sm shrink-0 border border-white/60">${stroke.name}</div>
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-[#0066cc]">${stroke.py}</span>
+                                <span class="text-[10px] uppercase tracking-wider text-[#86868b] font-semibold truncate">${stroke.pt}</span>
+                            </div>
+                        </div>`;
+                    container.appendChild(div);
+                });
+            } else {
+                const grouped = {};
+                filteredDB.forEach((item, index) => {
+                    const searchStr = removeAccents(item.w + item.p + item.t);
+                    if (filter && !searchStr.includes(filter)) return; 
+                    if (!grouped[item.c]) grouped[item.c] = [];
+                    grouped[item.c].push({ ...item, originalIndex: index });
+                });
+
+                Object.keys(grouped).sort().forEach(category => {
+                    grouped[category].sort((a, b) => removeAccents(a.p).localeCompare(removeAccents(b.p)));
+                    const catId = 'cat-' + removeAccents(category).replace(/\s/g, '-');
+                    const isSearching = filter.length > 0;
+
+                    const header = document.createElement('div');
+                    header.className = 'cat-header flex items-center justify-between text-xs uppercase text-[#86868b] mt-6 mb-3 px-2 tracking-widest';
+                    header.onclick = () => toggleCategory(catId);
+                    header.innerHTML = `
+                        <span>${category} <span class="ml-1 opacity-60 font-normal">(${grouped[category].length})</span></span>
+                        <div class="cat-icon-container text-[#86868b] bg-white/30 p-1 rounded-md border border-white/50">
+                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 cat-icon"></i>
+                        </div>
+                    `;
+                    container.appendChild(header);
+
+                    const listDiv = document.createElement('div');
+                    listDiv.id = catId;
+                    listDiv.className = `cat-list flex flex-col ${isSearching ? '' : 'collapsed'}`; 
+                    
+                    if(!isSearching && category === Object.keys(grouped).sort()[0]) listDiv.classList.remove('collapsed');
+
+                    grouped[category].forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = `list-item-glass p-3 mb-2 rounded-2xl cursor-pointer flex justify-between items-center ${item.originalIndex === currentItemIndex ? 'active' : ''}`;
+                        div.onclick = () => selectItem(item.originalIndex);
+                        div.innerHTML = `
+                            <div class="overflow-hidden pr-2">
+                                <div class="chinese-text text-lg font-bold text-[#1d1d1f] truncate">${item.w}</div>
+                                <div class="text-[11px] text-[#86868b] font-medium truncate tracking-wide">${item.t}</div>
+                            </div>
+                            <div class="text-xs font-bold text-teal-700 bg-white/40 px-2 py-1 rounded-lg shrink-0 border border-white/60 shadow-sm">${item.p || ''}</div>`;
+                        listDiv.appendChild(div);
+                    });
+                    container.appendChild(listDiv);
+                });
+                lucide.createIcons();
+            }
+        }
+
+        function selectItem(index, isInit = false) {
+            currentItemIndex = index;
+            if (!isInit && window.innerWidth < 768) {
+                const sidebar = document.getElementById('sidebar');
+                if (!sidebar.classList.contains('-translate-x-full')) toggleMobileSidebar();
+            }
+
+            const items = document.querySelectorAll('.list-item-glass');
+            items.forEach(el => el.classList.remove('active'));
+            
+            if(currentMode === 'strokes') {
+                const data = basicStrokes[index];
+                document.getElementById('stroke-name').innerText = data.name;
+                document.getElementById('stroke-py').innerText = data.py;
+                document.getElementById('stroke-pt').innerText = data.pt;
+                initBoard(data.ex); 
+            } else {
+                const data = filteredDB[index];
+                document.getElementById('word-hanzi').innerText = data.w;
+                document.getElementById('word-pinyin').innerText = data.p;
+                document.getElementById('word-trans').innerText = data.t;
+                document.getElementById('word-category').innerText = data.c;
+
+                const exContainer = document.getElementById('example-container');
+                const grammarContainer = document.getElementById('grammar-container');
+
+                // Lógica de exibição atualizada e inteligente
+                if (data.c === "Gramática" && data.gram_desc) {
+                    grammarContainer.style.display = 'block';
+                    document.getElementById('grammar-text').innerText = data.gram_desc;
+                } else {
+                    grammarContainer.style.display = 'none';
+                }
+
+                if (data.ex_ch) {
+                    exContainer.style.display = 'block';
+                    document.getElementById('example-ch').innerText = data.ex_ch;
+                    document.getElementById('example-py').innerText = data.ex_py;
+                    document.getElementById('example-pt').innerText = data.ex_pt;
+                } else {
+                    exContainer.style.display = 'none';
+                }
+
+                const chars = data.w.replace(/[，、。！？；：（）《》“”‘’…\.\sa-zA-Z0-9\/]/g, '').split(''); 
+                const tabsContainer = document.getElementById('char-tabs');
+                tabsContainer.innerHTML = '';
+                
+                if(chars.length > 0) {
+                    chars.forEach((char, i) => {
+                        const btn = document.createElement('div');
+                        btn.className = `w-12 h-12 flex items-center justify-center rounded-2xl cursor-pointer transition-all text-xl font-bold chinese-text border ${i === 0 ? 'bg-white/60 border-white/90 text-[#0066cc] shadow-md scale-105' : 'glass-inner border-white/40 text-[#86868b] hover:bg-white/50 hover:scale-105 hover:text-[#1d1d1f]'}`;
+                        btn.innerText = char;
+                        btn.onclick = () => {
+                            Array.from(tabsContainer.children).forEach((t, idx) => {
+                                t.className = `w-12 h-12 flex items-center justify-center rounded-2xl cursor-pointer transition-all text-xl font-bold chinese-text border ${idx === i ? 'bg-white/60 border-white/90 text-[#0066cc] shadow-md scale-105' : 'glass-inner border-white/40 text-[#86868b] hover:bg-white/50 hover:scale-105 hover:text-[#1d1d1f]'}`;
+                            });
+                            initBoard(char);
+                        };
+                        tabsContainer.appendChild(btn);
+                    });
+                    initBoard(chars[0]);
+                } else {
+                    initBoard('汉');
+                }
+            }
+        }
+
+        // ==========================================
+        // QUADRO DE ESCRITA
+        // ==========================================
+        function initBoard(character) {
+            activeCharStr = character;
+            const targetDiv = document.getElementById('character-target');
+            const fbMsg = document.getElementById('feedback-msg');
+            const structBox = document.getElementById('struct-info-box');
+            
+            fbMsg.innerText = currentMode === 'strokes' 
+                ? 'Pratique prestando atenção ao traço focado.'
+                : 'Clique em "Praticar" para desenhar.';
+            fbMsg.className = "text-[#86868b] min-h-[44px] max-w-[280px] text-sm md:text-base font-semibold mt-6 text-center transition-all flex items-center justify-center w-full px-4 py-2 bg-white/40 rounded-xl shadow-sm border border-white/60 backdrop-blur-md";
+            
+            document.getElementById('btn-practice').classList.remove('pulse-light');
+            targetDiv.innerHTML = '';
+            targetDiv.style.backgroundSize = 'cover';
+
+            let drawColor = '#0066cc'; 
+            let radColor = '#8b5cf6';  
+
+            if(currentMode === 'structure') {
+                const structType = charStructures[character];
+                if(structType && svgBackgrounds[structType] && structDetails[structType]) {
+                    targetDiv.style.backgroundImage = svgBackgrounds[structType];
+                    targetDiv.classList.remove('grid-bg-standard');
+                    
+                    document.getElementById('struct-ch').innerText = structDetails[structType].ch;
+                    document.getElementById('struct-py').innerText = structDetails[structType].py;
+                    document.getElementById('struct-pt').innerText = structDetails[structType].pt;
+                    structBox.classList.remove('hidden');
+                } else {
+                    targetDiv.style.backgroundImage = '';
+                    targetDiv.classList.add('grid-bg-standard');
+                    structBox.classList.add('hidden');
+                }
+                drawColor = '#1d1d1f'; 
+                radColor = '#1d1d1f';
+            } else if(currentMode === 'strokes') {
+                targetDiv.style.backgroundImage = '';
+                targetDiv.classList.add('grid-bg-standard');
+                drawColor = '#b5b5ba'; // Cor neutra para traços sem foco
+                radColor = '#b5b5ba'; 
+            } else {
+                targetDiv.style.backgroundImage = '';
+                targetDiv.classList.add('grid-bg-standard');
+            }
+
+            hanziWriterInstance = HanziWriter.create('character-target', character, {
+                width: 280, height: 280, padding: 15,
+                strokeAnimationSpeed: 1.5, delayBetweenStrokes: 50,
+                strokeColor: drawColor, radicalColor: radColor, 
+                outlineColor: 'rgba(134, 134, 139, 0.3)', 
+                drawingColor: '#1d1d1f',
+                drawingWidth: 16, showOutline: true
+            });
+
+            if(currentMode === 'strokes') {
+                hanziWriterInstance.setCharacter(character).then(() => {
+                    const targetNum = basicStrokes[currentItemIndex].num;
+                    const svg = document.querySelector('#character-target svg');
+                    if (svg) {
+                        const groups = svg.querySelectorAll('g');
+                        groups.forEach(g => {
+                            const paths = Array.from(g.children).filter(el => el.tagName.toLowerCase() === 'path');
+                            if (paths.length > targetNum) {
+                                paths[targetNum].style.fill = '#0066cc'; // Azul de destaque
+                            }
+                        });
+                    }
+                    setTimeout(() => hanziWriterInstance.animateCharacter(), 300);
+                });
+            }
+        }
+
+        // ==========================================
+        // CONTROLES E EVENTOS
+        // ==========================================
+        function animateCharacter() {
+            if(!hanziWriterInstance) return;
+            const fbMsg = document.getElementById('feedback-msg');
+            fbMsg.innerText = 'Observando animação...';
+            fbMsg.className = "text-[#0066cc] min-h-[44px] max-w-[280px] text-sm md:text-base font-semibold mt-6 text-center transition-all flex items-center justify-center w-full px-4 py-2 bg-blue-50/50 rounded-xl border border-blue-200/50 shadow-sm backdrop-blur-md";
+            document.getElementById('btn-practice').classList.remove('pulse-light');
+            hanziWriterInstance.cancelQuiz();
+            hanziWriterInstance.animateCharacter();
+        }
+
+        function startQuiz() {
+            if(!hanziWriterInstance) return;
+            const fbMsg = document.getElementById('feedback-msg');
+            fbMsg.innerText = 'Desenhe o 1º traço!';
+            fbMsg.className = "text-teal-700 min-h-[44px] max-w-[280px] text-sm md:text-base font-semibold mt-6 text-center transition-all flex items-center justify-center w-full px-4 py-2 bg-teal-50/50 rounded-xl border border-teal-200/50 shadow-sm backdrop-blur-md";
+            document.getElementById('btn-practice').classList.remove('pulse-light');
+
+            hanziWriterInstance.quiz({
+                onMistake: function(strokeData) {
+                    fbMsg.innerText = `Erro. (Total: ${strokeData.mistakesOnStroke})`;
+                    fbMsg.className = "text-rose-600 min-h-[44px] max-w-[280px] text-sm md:text-base font-semibold mt-6 text-center transition-all flex items-center justify-center w-full px-4 py-2 bg-rose-50/50 rounded-xl border border-rose-200/50 shadow-sm backdrop-blur-md";
+                },
+                onCorrectStroke: function(strokeData) {
+                    fbMsg.innerText = 'Certo! Próximo...';
+                    fbMsg.className = "text-teal-600 min-h-[44px] max-w-[280px] text-sm md:text-base font-semibold mt-6 text-center transition-all flex items-center justify-center w-full px-4 py-2 bg-teal-50/50 rounded-xl border border-teal-200/50 shadow-sm backdrop-blur-md";
+                },
+                onComplete: function(summaryData) {
+                    fbMsg.innerText = `Concluído!`;
+                    fbMsg.className = "text-teal-800 min-h-[44px] max-w-[280px] text-sm md:text-base font-bold mt-6 text-center transition-all flex items-center justify-center w-full px-4 py-2 bg-teal-100/60 rounded-xl shadow-md border border-teal-300/60 backdrop-blur-md";
+                    document.getElementById('btn-practice').classList.add('pulse-light');
+                }
+            });
+        }
+
+        function showOutline() { 
+            if(hanziWriterInstance) hanziWriterInstance.showOutline(); 
+            document.getElementById('character-target').style.backgroundSize = 'cover';
+        }
+        function hideOutline() { 
+            if(hanziWriterInstance) hanziWriterInstance.hideOutline(); 
+            document.getElementById('character-target').style.backgroundSize = '0px';
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobile-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        function toggleDesktopSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const btnReopen = document.getElementById('btn-reopen-desktop');
+            if (isDesktopSidebarOpen) {
+                sidebar.classList.add('desktop-closed');
+                btnReopen.classList.remove('hidden');
+            } else {
+                sidebar.classList.remove('desktop-closed');
+                btnReopen.classList.add('hidden');
+            }
+            isDesktopSidebarOpen = !isDesktopSidebarOpen;
+        }
+
+        window.onload = init;
+
+    </script>
+</body>
+</html>
