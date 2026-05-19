@@ -80,7 +80,7 @@
             -webkit-backdrop-filter: blur(50px) saturate(200%);
         }
         .folder-container {
-            width: 90%; max-width: 800px;
+            width: 90%; max-width: 900px;
             background: rgba(255, 255, 255, 0.4);
             border-radius: 40px; padding: 40px;
             border: 1px solid rgba(255, 255, 255, 0.6);
@@ -168,7 +168,8 @@
         </button>
         <div class="folder-container flex flex-col items-center">
             <h2 class="text-3xl font-bold text-slate-800 mb-8 tracking-tight">HSK 4 <span class="text-lg font-medium text-slate-500">/ Conteúdo</span></h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
+            <!-- ADAPTADO PARA 4 LIÇÕES: Alterado de md:grid-cols-3 para lg:grid-cols-4 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
                 <div class="lesson-card group" onclick="openLesson(1)">
                     <div class="w-12 h-12 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center mb-4 border border-teal-200 group-hover:scale-110 transition-transform shadow-sm">
                         <i data-lucide="book-open" class="w-6 h-6"></i>
@@ -189,6 +190,14 @@
                     </div>
                     <h3 class="text-xl font-bold text-slate-800 mb-1 chinese-text">第三课</h3>
                     <p class="text-sm text-slate-500 font-semibold tracking-wide uppercase">Lição 3</p>
+                </div>
+                <!-- NOVA LIÇÃO 4 AQUI -->
+                <div class="lesson-card group" onclick="openLesson(4)">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mb-4 border border-rose-200 group-hover:scale-110 transition-transform shadow-sm">
+                        <i data-lucide="book-open" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1 chinese-text">第四课</h3>
+                    <p class="text-sm text-slate-500 font-semibold tracking-wide uppercase">Lição 4</p>
                 </div>
             </div>
         </div>
@@ -373,7 +382,7 @@
     </div>
 
     <script>
-        // BANCO DE DADOS 100% COMPLETO - LIÇÕES 1, 2 e 3 REUNIDAS.
+        // BANCO DE DADOS 100% COMPLETO - LIÇÕES 1, 2, 3 e 4 REUNIDAS.
         const database = [
             // ================== LIÇÃO 1 ==================
             { w: "法律", p: "fǎlǜ", t: "lei", c: "Substantivos", l: 1, ex_ch: "他在大学学习法律专业。", ex_py: "Tā zài dàxué xuéxí fǎlǜ zhuānyè.", ex_pt: "Ele estuda a graduação em direito na universidade." },
@@ -514,10 +523,10 @@
             { w: "发现", p: "fāxiàn", t: "descobrir", c: "Verbos", l: 1, ex_ch: "我突然发现钱包不见了。", ex_py: "Wǒ tūrán fāxiàn qiánbāo bú jiàn le.", ex_pt: "De repente descobri que a carteira sumiu." },
             { w: "需要", p: "xūyào", t: "precisar", c: "Verbos", l: 1, ex_ch: "如果你需要帮助，请随时告诉我。", ex_py: "Rúguǒ nǐ xūyào bāngzhù, qǐng suíshí gàosu wǒ.", ex_pt: "Se você precisar de ajuda, por favor me avise a qualquer momento." },
 
-            { w: "不仅……也/还/而且……", p: "bùjǐn... yě/hái/érqiě...", t: "Gramática", c: "Gramática", l: 1, gram_desc: "Indica que além do que foi dito na primeira oração, há uma informação adicional.", ex_ch: "他不仅足球踢得好，性格也不错。", ex_py: "Tā bùjǐn zúqiú tī de hǎo, xìnggé yě búcuò.", ex_pt: "Ele não apenas joga futebol bem, como também tem boa personalidade." },
-            { w: "刚才", p: "gāngcái", t: "Gramática", c: "Gramática", l: 1, gram_desc: "Substantivo de tempo para o momento imediatamente anterior. Pode vir antes ou depois do sujeito.", ex_ch: "刚才你去哪儿了？我找了你半天。", ex_py: "Gāngcái nǐ qù nǎr le? Wǒ zhǎo le nǐ bàntiān.", ex_pt: "Onde você foi agora há pouco? Te procurei um tempão." },
-            { w: "即使……也……", p: "jíshǐ... yě...", t: "Gramática", c: "Gramática", l: 1, gram_desc: "Conjunção para introduzir condição hipotética ou extrema.", ex_ch: "即使星期天，他也在加班。", ex_py: "Jíshǐ xīngqītiān, tā yě zài jiābān.", ex_pt: "Mesmo sendo domingo, ele também está fazendo hora extra." },
-            { w: "(在) ……上", p: "(zài) ... shàng", t: "Gramática", c: "Gramática", l: 1, gram_desc: "Estrutura para limitar o escopo ou aspecto de um assunto. Pode ser traduzido como 'em termos de'.", ex_ch: "在饮食上，南北方有什么不同？", ex_py: "Zài yǐnshí shàng, nánběifāng yǒu shénme bùtóng?", ex_pt: "Em termos de alimentação, qual a diferença entre norte e sul?" },
+            { w: "不仅……也/还/而且……", p: "bùjǐn... yě/hái/érqiě...", t: "não apenas... mas também", c: "Gramática", l: 1, gram_desc: "Indica que além do que foi dito na primeira oração, há uma informação adicional.", ex_ch: "他不仅足球踢得好，性格也不错。", ex_py: "Tā bùjǐn zúqiú tī de hǎo, xìnggé yě búcuò.", ex_pt: "Ele não apenas joga futebol bem, como também tem boa personalidade." },
+            { w: "刚才", p: "gāngcái", t: "agora há pouco", c: "Gramática", l: 1, gram_desc: "Substantivo de tempo para o momento imediatamente anterior. Pode vir antes ou depois do sujeito.", ex_ch: "刚才你去哪儿了？我找了你半天。", ex_py: "Gāngcái nǐ qù nǎr le? Wǒ zhǎo le nǐ bàntiān.", ex_pt: "Onde você foi agora há pouco? Te procurei um tempão." },
+            { w: "即使……也……", p: "jíshǐ... yě...", t: "mesmo que... também", c: "Gramática", l: 1, gram_desc: "Conjunção para introduzir condição hipotética ou extrema.", ex_ch: "即使星期天，他也在加班。", ex_py: "Jíshǐ xīngqītiān, tā yě zài jiābān.", ex_pt: "Mesmo sendo domingo, ele também está fazendo hora extra." },
+            { w: "(在) ……上", p: "(zài) ... shàng", t: "em termos de", c: "Gramática", l: 1, gram_desc: "Estrutura para limitar o escopo ou aspecto de um assunto. Pode ser traduzido como 'em termos de'.", ex_ch: "在饮食上，南北方有什么不同？", ex_py: "Zài yǐnshí shàng, nánběifāng yǒu shénme bùtóng?", ex_pt: "Em termos de alimentação, qual a diferença entre norte e sul?" },
 
             // ================== LIÇÃO 2 ==================
             { w: "聚会", p: "jùhuì", t: "reunião social", c: "Substantivos", l: 2, ex_ch: "明天晚上有一个大学同学的聚会。", ex_py: "Míngtiān wǎnshang yǒu yí ge dàxué tóngxué de jùhuì.", ex_pt: "Amanhã à noite há uma reunião de colegas da faculdade." },
@@ -597,7 +606,7 @@
             { w: "踢足球", p: "tī zúqiú", t: "jogar futebol", c: "Expressões e Compostos", l: 2, ex_ch: "下课后，男孩子们都跑到操场上去踢足球了。", ex_py: "Xiàkè hòu, nánháizi men dōu pǎo dào cāochǎng shàng qù tī zúqiú le.", ex_pt: "Após a aula, os garotos todos correram para a quadra jogar futebol." },
             { w: "打电话", p: "dǎ diànhuà", t: "fazer ligação", c: "Expressões e Compostos", l: 2, ex_ch: "到了酒店记得先给妈妈打电话报平安。", ex_py: "Dào le jiǔdiàn jìde xiān gěi māma dǎ diànhuà bào píng'ān.", ex_pt: "Quando chegar ao hotel lembre-se de ligar para a mãe primeiro para avisar que está bem." },
             { w: "发短信", p: "fā duǎnxìn", t: "enviar SMS", c: "Expressões e Compostos", l: 2, ex_ch: "如果不方便接电话，就给我发短信吧。", ex_py: "Rúguǒ bù fāngbiàn jiē diànhuà, jiù gěi wǒ fā duǎnxìn ba.", ex_pt: "Se não for conveniente atender a ligação, me envie um SMS." },
-            { w: "想办法", p: "xiǎng bànfǎ", t: "buscar uma solução", c: "Expressões e Compostos", l: 2, ex_ch: "遇到难题别着急，我们一起想办法解决。", ex_py: "Yùdào nántí bié zháojí, wǒmen yìqǐ xiǎng bànfǎ jiějué.", ex_pt: "Não se desespere com problemas difíceis, vamos buscar uma solução juntos." },
+            { w: "想办法", p: "xiǎng bànfǎ", t: "buscar uma solution", c: "Expressões e Compostos", l: 2, ex_ch: "遇到难题别着急，我们一起想办法解决。", ex_py: "Yùdào nántí bié zháojí, wǒmen yìqǐ xiǎng bànfǎ jiějué.", ex_pt: "Não se desespere com problemas difíceis, vamos buscar uma solution juntos." },
             { w: "站出来", p: "zhàn chūlái", t: "dar passo à frente", c: "Expressões e Compostos", l: 2, ex_ch: "危急时刻，他勇敢地站出来保护了大家。", ex_py: "Wēijí shíkè, tā yǒnggǎn de zhàn chūlái bǎohù le dàjiā.", ex_pt: "No momento crítico, ele corajosamente deu um passo à frente e protegeu a todos." },
             { w: "有福同享，有难同当", p: "yǒu fú tóng xiǎng, yǒu nàn tóng dāng", t: "na alegria e tristeza", c: "Expressões e Compostos", l: 2, ex_ch: "好兄弟就是要做到有福同享，有难同当。", ex_py: "Hǎo xiōngdì jiù shì yào zuòdào yǒu fú tóng xiǎng, yǒu nàn tóng dāng.", ex_pt: "Bons irmãos devem conseguir compartilhar alegrias e sofrimentos juntos." },
             { w: "在家靠父母，出门靠朋友", p: "zài jiā kào fùmǔ, chū mén kào péngyou", t: "apoio da família e amigos", c: "Expressões e Compostos", l: 2, ex_ch: "俗话说“在家靠父母，出门靠朋友”，交际很重要。", ex_py: "Súhuà shuō “zài jiā kào fùmǔ, chū mén kào péngyou”, jiāojì hěn zhòngyào.", ex_pt: "Como diz o ditado: 'em casa apoie-se nos pais, fora apoie-se nos amigos', socializar é importante." },
@@ -624,11 +633,11 @@
             { w: "分享", p: "fēnxiǎng", t: "compartilhar", c: "Verbos", l: 2, ex_ch: "好消息要和好朋友一起分享。", ex_py: "Hǎo xiāoxi yào hé hǎo péngyou yìqǐ fēnxiǎng.", ex_pt: "Boas notícias devem ser compartilhadas com bons amigos." },
             { w: "毕业", p: "bìyè", t: "formar-se", c: "Verbos", l: 2, ex_ch: "大学毕业后，他选择留在北京工作。", ex_py: "Dàxué bìyè hòu, tā xuǎnzé liú zài Běijīng gōngzuò.", ex_pt: "Depois de se formar na universidade, ele escolheu ficar em Pequim para trabalhar." },
 
-            { w: "正好", p: "zhènghǎo", t: "Gramática", c: "Gramática", l: 2, gram_desc: "Pode ser adjetivo (exatamente certo) ou advérbio (coincidência).", ex_ch: "我们正要找你，你来得正好。", ex_py: "Wǒmen zhèng yào zhǎo nǐ, nǐ lái de zhènghǎo.", ex_pt: "Nós estávamos justamente te procurando, você chegou em boa hora." },
-            { w: "差不多", p: "chàbuduō", t: "Gramática", c: "Gramática", l: 2, gram_desc: "Adjetivo/advérbio indicando diferença pequena ou proximidade. Pode ser predicado.", ex_ch: "他们俩差不多高，很难分清谁更高。", ex_py: "Tāmen liǎ chàbuduō gāo, hěn nán fēnqīng shéi gèng gāo.", ex_pt: "Eles dois têm quase a mesma altura, é difícil distinguir quem é mais alto." },
-            { w: "而", p: "ér", t: "Gramática", c: "Gramática", l: 2, gram_desc: "Conjunção ligando duas orações (adição ou contraste suave).", ex_ch: "哥哥喜欢运动，而弟弟更喜欢看书。", ex_py: "Gēge xǐhuan yùndòng, ér dìdi gèng xǐhuan kànshū.", ex_pt: "O irmão mais velho gosta de esportes, enquanto o mais novo gosta mais de ler." },
+            { w: "正好", p: "zhènghǎo", t: "exatamente / coincidência", c: "Gramática", l: 2, gram_desc: "Pode ser adjetivo (exatamente certo) ou advérbio (coincidência).", ex_ch: "我们正要找你，你来得正好。", ex_py: "Wǒmen zhèng yào zhǎo nǐ, nǐ lái de zhènghǎo.", ex_pt: "Nós estávamos justamente te procurando, você chegou em boa hora." },
+            { w: "差不多", p: "chàbuduō", t: "quase o mesmo", c: "Gramática", l: 2, gram_desc: "Adjetivo/advérbio indicando diferença pequena ou proximidade. Pode ser predicado.", ex_ch: "他们俩差不多高，很难分清谁更高。", ex_py: "Tāmen liǎ chàbuduō gāo, hěn nán fēnqīng shéi gèng gāo.", ex_pt: "Eles dois têm quase a mesma altura, é difícil distinguir quem é mais alto." },
+            { w: "而", p: "ér", t: "e / mas / enquanto", c: "Gramática", l: 2, gram_desc: "Conjunção ligando duas orações (adição ou contraste suave).", ex_ch: "哥哥喜欢运动，而弟弟更喜欢看书。", ex_py: "Gēge xǐhuan yùndòng, ér dìdi gèng xǐhuan kànshū.", ex_pt: "O irmão mais velho gosta de esportes, enquanto o mais novo gosta mais de ler." },
 
-            // ================== LIÇÃO 3 (100% Completa e Restaurada) ==================
+            // ================== LIÇÃO 3 ==================
             { w: "经理", p: "jīnglǐ", t: "gerente", c: "Substantivos", l: 3, ex_ch: "经理对我印象不错。", ex_py: "Jīnglǐ duì wǒ yìnxiàng búcuò.", ex_pt: "O gerente teve uma boa impressão minha." },
             { w: "印象", p: "yìnxiàng", t: "impressão", c: "Substantivos", l: 3, ex_ch: "第一印象不总是对的。", ex_py: "Dì-yī yìnxiàng bù zǒngshì duì de.", ex_pt: "A primeira impressão nem sempre está correta." },
             { w: "面试", p: "miànshì", t: "entrevista de emprego", c: "Substantivos", l: 3, ex_ch: "明天的面试很重要，我得好好准备。", ex_py: "Míngtiān de miànshì hěn zhòngyào, wǒ děi hǎohǎo zhǔnbèi.", ex_pt: "A entrevista de amanhã é muito importante, eu preciso me preparar bem." },
@@ -727,26 +736,213 @@
             { w: "锻炼", p: "duànliàn", t: "exercitar-se", c: "Verbos", l: 3, ex_ch: "经常锻炼身体不容易生病。", ex_py: "Jīngcháng duànliàn shēntǐ bù róngyì shēngbìng.", ex_pt: "Exercitar-se frequentemente não adoece fácil." },
             { w: "注意", p: "zhùyì", t: "prestar atenção", c: "Verbos", l: 3, ex_ch: "过马路时一定要注意安全。", ex_py: "Guò mǎlù shí yídìng yào zhùyì ānquán.", ex_pt: "Ao atravessar a rua é indispensável prestar atenção à segurança." },
 
-            { w: "挺", p: "tǐng", t: "Gramática", c: "Gramática", l: 3, gram_desc: "Advérbio que significa muito ou bem. Frequentemente usado na estrutura 挺……的.", ex_ch: "他们问的问题都挺容易的。", ex_py: "Tāmen wèn de wèntí dōu tǐng róngyì de.", ex_pt: "As perguntas que eles fizeram foram bem fáceis." },
-            { w: "本来", p: "běnlái", t: "Gramática", c: "Gramática", l: 3, gram_desc: "Advérbio que indica que naturalmente ou pela lógica deveria ser assim, ou que originalmente/a princípio era de certa forma.", ex_ch: "这件事本来应该听他的。", ex_py: "Zhè jiàn shì běnlái yīnggāi tīng tā de.", ex_pt: "Nesse caso, deveríamos ter escutado ele desde o começo." },
-            { w: "另外", p: "lìngwài", t: "Gramática", c: "Gramática", l: 3, gram_desc: "Pode atuar como pronome, advérbio ou conjunção para expressar além disso ou outro. Como pronome, pode usar a partícula 的.", ex_ch: "我们走另外一条路吧。另外，还比较便宜。", ex_py: "Wǒmen zǒu lìngwài yì tiáo lù ba. Lìngwài, hái bǐjiào piányi.", ex_pt: "Vamos pegar outro caminho. Além disso, ainda é mais barato." },
-            { w: "另", p: "lìng", t: "Gramática", c: "Gramática", l: 3, gram_desc: "Pronome ou advérbio para expressar 'outro'. Não usa 的 diretamente antes do substantivo e costuma modificar verbos de apenas uma sílaba. Não atua como conjunção.", ex_ch: "你还是另找别人吧。", ex_py: "Nǐ háishì lìng zhǎo biérén ba.", ex_pt: "É melhor você procurar outra pessoa." },
-            { w: "首先……其次……", p: "shǒuxiān... qícì...", t: "Gramática", c: "Gramática", l: 3, gram_desc: "Pronomes usados em conjunto na linguagem escrita para enumerar itens em uma sequência lógica, significando primeiramente e em segundo lugar.", ex_ch: "首先要注意健康，其次才是工作。", ex_py: "Shǒuxiān yào zhùyì jiànkāng, qícì cái shì gōngzuò.", ex_pt: "Primeiramente preste atenção à saúde, só em segundo lugar vem o trabalho." },
-            { w: "不管", p: "bùguǎn", t: "Gramática", c: "Gramática", l: 3, gram_desc: "Conjunção que significa não importa se. Indica que o resultado não muda independentemente da condição. Costuma ser usado com pronomes interrogativos ou a palavra 还是, seguido por 都 na oração seguinte.", ex_ch: "不管是上课还是上班，都不能迟到。", ex_py: "Bùguǎn shì shàngkè háishì shàngbān, dōu bùnéng chídào.", ex_pt: "Não importa se é para a aula ou para o trabalho, não se pode chegar atrasado." }
+            { w: "挺", p: "tǐng", t: "muito / bem", c: "Gramática", l: 3, gram_desc: "Advérbio que significa muito ou bem. Frequentemente usado na estrutura 挺……的.", ex_ch: "他们问的问题都挺容易的。", ex_py: "Tāmen wèn de wèntí dōu tǐng róngyì de.", ex_pt: "As perguntas que eles fizeram foram bem fáceis." },
+            { w: "本来", p: "běnlái", t: "originalmente / naturalmente", c: "Gramática", l: 3, gram_desc: "Advérbio que indica que naturalmente ou pela lógica deveria ser assim, ou que originalmente/a princípio era de certa forma.", ex_ch: "这件事本来应该听他的。", ex_py: "Zhè jiàn shì běnlái yīnggāi tīng tā de.", ex_pt: "Nesse caso, deveríamos ter escutado ele desde o começo." },
+            { w: "另外", p: "lìngwài", t: "além disso / outro", c: "Gramática", l: 3, gram_desc: "Pode atuar como pronome, advérbio ou conjunção para expressar além disso ou outro. Como pronome, pode usar a partícula 的.", ex_ch: "我们走另外一条路吧。另外，还比较便宜。", ex_py: "Wǒmen zǒu lìngwài yì tiáo lù ba. Lìngwài, hái bǐjiào piányi.", ex_pt: "Vamos pegar outro caminho. Além disso, ainda é mais barato." },
+            { w: "另", p: "lìng", t: "outro", c: "Gramática", l: 3, gram_desc: "Pronome ou advérbio para expressar 'outro'. Não usa 的 diretamente antes do substantivo e costuma modificar verbos de apenas uma sílaba. Não atua como conjunção.", ex_ch: "你还是另找别人吧。", ex_py: "Nǐ háishì lìng zhǎo biérén ba.", ex_pt: "É melhor você procurar outra pessoa." },
+            { w: "首先……其次……", p: "shǒuxiān... qícì...", t: "primeiramente... em segundo", c: "Gramática", l: 3, gram_desc: "Pronomes usados em conjunto na linguagem escrita para enumerar itens em uma sequência lógica, significando primeiramente e em segundo lugar.", ex_ch: "首先要注意健康，其次才是工作。", ex_py: "Shǒuxiān yào zhùyì jiànkāng, qícì cái shì gōngzuò.", ex_pt: "Primeiramente preste atenção à saúde, só em segundo lugar vem o trabalho." },
+            { w: "不管", p: "bùguǎn", t: "não importa se", c: "Gramática", l: 3, gram_desc: "Conjunção que significa não importa se. Indica que o resultado não muda independentemente da condição. Costuma ser usado com pronomes interrogativos ou a palavra 还是, seguido por 都 na oração seguinte.", ex_ch: "不管是上课还是上班，都不能迟到。", ex_py: "Bùguǎn shì shàngkè háishì shàngbān, dōu bùnéng chídào.", ex_pt: "Não importa se é para a aula ou para o trabalho, não se pode chegar atrasado." },
+
+            // ================== LIÇÃO 4 ==================
+            // SUBSTANTIVOS
+            { w: "办法", p: "bànfǎ", t: "método ou solução", c: "Substantivos", l: 4, ex_ch: "遇到难题别着急，我们一起想办法解决。", ex_py: "Yùdào nántí bié zháojí, wǒmen yìqǐ xiǎng bànfǎ jiějué.", ex_pt: "Não se desespere com problemas difíceis, vamos buscar uma solução juntos." },
+            { w: "笔记本", p: "bǐjìběn", t: "caderno", c: "Substantivos", l: 4, ex_ch: "请把这个写在笔记本上。", ex_py: "Qǐng bǎ zhège xiě zài bǐjìběn shang.", ex_pt: "Por favor, escreva isso no caderno." },
+            { w: "北京", p: "Běijīng", t: "Pequim", c: "Substantivos", l: 4, ex_ch: "北京是中国的首都。", ex_py: "Běijīng shì Zhōngguó de shǒudū.", ex_pt: "Pequim é a capital da China." },
+            { w: "成绩", p: "chéngjì", t: "nota ou desempenho", c: "Substantivos", l: 4, ex_ch: "只要努力，成绩自然会提高。", ex_py: "Zhǐyào nǔlì, chéngjì zìrán huì tígāo.", ex_pt: "Basta se esforçar, e as notas subirão naturalmente." },
+            { w: "调查", p: "diàochá", t: "pesquisa ou investigação", c: "Substantivos", l: 4, ex_ch: "我们需要对这个市场进行调查。", ex_py: "Wǒmen xūyào duì zhège shìchǎng jìnxíng diàochá.", ex_pt: "Precisamos realizar uma pesquisa sobre este mercado." },
+            { w: "方法", p: "fāngfǎ", t: "método ou maneira", c: "Substantivos", l: 4, ex_ch: "学习外语要找到合适的方法。", ex_py: "Xuéxí wàiyǔ yào zhǎodào héshì de fāngfǎ.", ex_pt: "Para aprender línguas estrangeiras é preciso encontrar um método adequado." },
+            { w: "法律", p: "fǎlǜ", t: "lei", c: "Substantivos", l: 4, ex_ch: "他在大学学习法律专业。", ex_py: "Tā zài dàxué xuéxí fǎlǜ zhuānyè.", ex_pt: "Ele estuda a graduação em direito na universidade." },
+            { w: "份", p: "fèn", t: "classificador p/ docs ou emprego", c: "Substantivos", l: 4, ex_ch: "我今天找了一份新工作。", ex_py: "Wǒ jīntiān zhǎo le yí fèn xīn gōngzuò.", ex_pt: "Encontrei um novo emprego hoje." },
+            { w: "工资", p: "gōngzī", t: "salário", c: "Substantivos", l: 4, ex_ch: "这个月的工资已经发了。", ex_py: "Zhège yuè de gōngzī yǐjīng fā le.", ex_pt: "O salário deste mês já foi pago." },
+            { w: "高铁", p: "gāotiě", t: "trem de alta velocidade", c: "Substantivos", l: 4, ex_ch: "坐高铁去上海非常快。", ex_py: "Zuò gāotiě qù Shànghǎi fēicháng kuài.", ex_pt: "Pegar o trem de alta velocidade para Xangai é muito rápido." },
+            { w: "好处", p: "hǎochù", t: "vantagem ou benefício", c: "Substantivos", l: 4, ex_ch: "多吃水果对身体有好处。", ex_py: "Duō chī shuǐguǒ duì shēntǐ yǒu hǎochù.", ex_pt: "Comer mais frutas traz benefícios à saúde." },
+            { w: "计划", p: "jìhuà", t: "plano", c: "Substantivos", l: 4, ex_ch: "我们计划明年去欧洲旅游。", ex_py: "Wǒmen jìhuà míngnián qù Ōuzhōu lǚyóu.", ex_pt: "Nós planejamos viajar para a Europa no ano que vem." },
+            { w: "奖金", p: "jiǎngjīn", t: "bônus ou prêmio", c: "Substantivos", l: 4, ex_ch: "年底公司发了一笔丰厚的奖金。", ex_py: "Niándǐ gōngsī fā le yì bǐ fēnghòu de jiǎngjīn.", ex_pt: "No final do ano a empresa pagou um bônus generoso." },
+            { w: "经验", p: "jīngyàn", t: "experiência", c: "Substantivos", l: 4, ex_ch: "那个医生有着丰富的经验。", ex_py: "Nàge yīshēng yǒuzhe fēngfù de jīngyàn.", ex_pt: "Aquele médico tem uma rica experiência." },
+            { w: "困难", p: "kùnnan", t: "dificuldade", c: "Substantivos", l: 4, ex_ch: "遇到困难不要轻易放弃。", ex_py: "Yùdào kùnnan bú yào qīngyì fàngqì.", ex_pt: "Ao encontrar dificuldades, não desista facilmente." },
+            { w: "律师", p: "lǜshī", t: "advogado", c: "Substantivos", l: 4, ex_ch: "我一毕业就去上海当律师了。", ex_py: "Wǒ yì bìyè jiù qù Shànghǎi dāng lǜshī le.", ex_pt: "Assim que me formei, fui para Xangai trabalhar como advogado." },
+            { w: "马", p: "Mǎ", t: "Ma (sobrenome)", c: "Substantivos", l: 4, ex_ch: "马经理对大家的要求一直很严格。", ex_py: "Mǎ jīnglǐ duì dàjiā de yāoqiú yìzhí hěn yángé.", ex_pt: "O gerente Ma sempre foi muito rigoroso com as exigências para todos." },
+            { w: "能力", p: "nénglì", t: "habilidade ou capacidade", c: "Substantivos", l: 4, ex_ch: "这两个人的能力都比较符合我们的要求。", ex_py: "Zhè liǎng ge rén de nénglì dōu bǐjiào fúhé wǒmen de yāoqiú.", ex_pt: "O perfil de habilidades desses dois atende muito bem ao que exigimos." },
+            { w: "年轻人", p: "niánqīngrén", t: "jovens", c: "Substantivos", l: 4, ex_ch: "年轻人需要多花时间积累经验。", ex_py: "Niánqīng rén xūyào duō huā shíjiān jīlěi jīngyàn.", ex_pt: "Os jovens precisam gastar mais tempo acumulando experiência." },
+            { w: "钱", p: "qián", t: "dinheiro", c: "Substantivos", l: 4, ex_ch: "赚钱越来越难了。", ex_py: "Zhuànqián yuè lái yuè nán le.", ex_pt: "Ganhar dinheiro está cada vez mais difícil." },
+            { w: "身体", p: "shēntǐ", t: "corpo ou saúde", c: "Substantivos", l: 4, ex_ch: "爷爷的身体越来越好了。", ex_py: "Yéye de shēntǐ yuèláiyuè hǎo le.", ex_pt: "A saúde do vovô está cada vez melhor." },
+            { w: "生意", p: "shēngyi", t: "negócio", c: "Substantivos", l: 4, ex_ch: "他的生意越做越大。", ex_py: "Tā de shēngyi yuè zuò yuè dà.", ex_pt: "Os negócios dele estão crescendo cada vez mais." },
+            { w: "事情", p: "shìqing", t: "coisa ou assunto", c: "Substantivos", l: 4, ex_ch: "今天有很多重要的事情要处理。", ex_py: "Jīntiān yǒu hěnduō zhòngyào de shìqing yào chǔlǐ.", ex_pt: "Hoje há muitos assuntos importantes para tratar." },
+            { w: "收入", p: "shōurù", t: "renda ou rendimento", c: "Substantivos", l: 4, ex_ch: "这份工作虽然辛苦，但收入很高。", ex_py: "Zhè fèn gōngzuò suīrán xīnkǔ, dàn shōurù hěn gāo.", ex_pt: "Embora este trabalho seja duro, a renda é muito alta." },
+            { w: "叔叔", p: "shūshu", t: "tio", c: "Substantivos", l: 4, ex_ch: "王叔叔是个热心肠的人。", ex_py: "Wáng shūshu shì ge rèxīncháng de rén.", ex_pt: "O tio Wang é uma pessoa de bom coração." },
+            { w: "同事", p: "tóngshì", t: "colega de trabalho", c: "Substantivos", l: 4, ex_ch: "我的同事们都很热心。", ex_py: "Wǒ de tóngshì men dōu hěn rèxīn.", ex_pt: "Meus colegas de trabalho são todos muito prestativos." },
+            { w: "王", p: "Wáng", t: "Wang (sobrenome)", c: "Substantivos", l: 4, ex_ch: "王医生马上就到。", ex_py: "Wáng yīshēng mǎshàng jiù dào.", ex_pt: "O Dr. Wang chegará imediatamente." },
+            { w: "问题", p: "wèntí", t: "problema ou questão", c: "Substantivos", l: 4, ex_ch: "成功地解决了问题。", ex_py: "Chénggōng de jiějuéle wèntí.", ex_pt: "Resolvemos o problema com sucesso." },
+            { w: "消息", p: "xiāoxi", t: "notícia", c: "Substantivos", l: 4, ex_ch: "听到这个好消息，大家都很高兴。", ex_py: "Tīngdào zhège hǎo xiāoxi, dàjiā dōu hěn gāoxìng.", ex_pt: "Ao ouvir esta boa notícia, todos ficaram muito felizes." },
+            { w: "一切", p: "yíqiè", t: "tudo ou todas as coisas", c: "Substantivos", l: 4, ex_ch: "一切都会好起来的。", ex_py: "Yíqiè dōu huì hǎo qǐlái de.", ex_pt: "Tudo vai melhorar." },
+            { w: "要求", p: "yāoqiú", t: "exigência ou requisito", c: "Substantivos", l: 4, ex_ch: "客户对这批产品的质量要求非常高。", ex_py: "Kèhù duì zhè pī chǎnpǐn de zhìliàng yāoqiú fēicháng gāo.", ex_pt: "As exigências de qualidade do cliente para este lote são muito altas." },
+            { w: "原因", p: "yuányīn", t: "motivo ou razão", c: "Substantivos", l: 4, ex_ch: "你能告诉我迟到的原因吗？", ex_py: "Nǐ néng gàosu wǒ chídào de yuányīn ma?", ex_pt: "Você pode me dizer o motivo do atraso?" },
+            { w: "颜色", p: "yánsè", t: "cor", c: "Substantivos", l: 4, ex_ch: "你最喜欢什么颜色的衣服？", ex_py: "Nǐ zuì xǐhuan shénme yánsè de yīfu?", ex_pt: "Qual a cor de roupa que você mais gosta?" },
+            { w: "鱼", p: "yú", t: "peixe", c: "Substantivos", l: 4, ex_ch: "这只猫很喜欢吃鱼。", ex_py: "Zhè zhǐ māo hěn xǐhuan chī yú.", ex_pt: "Este gato gosta muito de comer peixe." },
+            { w: "渔", p: "yú", t: "pesca", c: "Substantivos", l: 4, ex_ch: "授人以鱼不如授人以渔。", ex_py: "Shòu rén yǐ yú bùrú shòu rén yǐ yú.", ex_pt: "Melhor ensinar a pescar do que dar o peixe." },
+            { w: "责任", p: "zérèn", t: "responsabilidade", c: "Substantivos", l: 4, ex_ch: "保护环境是我们每个人的责任。", ex_py: "Bǎohù huánjìng shì wǒmen měi ge rén de zérèn.", ex_pt: "Proteger o meio ambiente é responsabilidade de cada um de nós." },
+            { w: "责任心", p: "zérènxīn", t: "senso de responsabilidade", c: "Substantivos", l: 4, ex_ch: "他对工作有很强的责任心。", ex_py: "Tā duì gōngzuò yǒu hěn qiáng de zérènxīn.", ex_pt: "Ele tem um forte senso de responsabilidade com o trabalho." },
+            { w: "知识", p: "zhīshi", t: "conhecimento", c: "Substantivos", l: 4, ex_ch: "阅读可以增加我们的知识。", ex_py: "Yuèdú kěyǐ zēngjiā wǒmen de zhīshi.", ex_pt: "A leitura pode aumentar nosso conhecimento." },
+            { w: "周末", p: "zhōumò", t: "fim de semana", c: "Substantivos", l: 4, ex_ch: "周末很多人去市中心购物。", ex_py: "Zhōumò hěnduō rén qù shìzhōngxīn gòuwù.", ex_pt: "No fim de semana muitas pessoas vão ao centro fazer compras." },
+            
+            // ADJETIVOS
+            { w: "成功", p: "chénggōng", t: "bem-sucedido", c: "Adjetivos", l: 4, ex_ch: "祝你的项目取得成功。", ex_py: "Zhù nǐ de xiàngmù qǔdé chénggōng.", ex_pt: "Desejo que seu projeto alcance o sucesso." },
+            { w: "低", p: "dī", t: "baixo", c: "Adjetivos", l: 4, ex_ch: "这里的温度很低。", ex_py: "Zhèlǐ de wēndù hěn dī.", ex_pt: "A temperatura aqui é muito baixa." },
+            { w: "高兴", p: "gāoxìng", t: "feliz ou contente", c: "Adjetivos", l: 4, ex_ch: "认识你我很高兴。", ex_py: "Rènshi nǐ wǒ hěn gāoxìng.", ex_pt: "Estou feliz em conhecê-lo." },
+            { w: "合适", p: "héshì", t: "adequado", c: "Adjetivos", l: 4, ex_ch: "这件衣服的大小很合适。", ex_py: "Zhè jiàn yīfu de dàxiǎo hěn héshì.", ex_pt: "O tamanho desta roupa é muito adequado." },
+            { w: "简单", p: "jiǎndān", t: "simples", c: "Adjetivos", l: 4, ex_ch: "我觉得这道题并不简单。", ex_py: "Wǒ juéde zhè dào tí bìng bù jiǎndān.", ex_pt: "Acho que essa questão não é nada simples." },
+            { w: "紧张", p: "jǐnzhāng", t: "tenso ou nervoso", c: "Adjetivos", l: 4, ex_ch: "第一次上台演讲，我非常紧张。", ex_py: "Dì yí cì shàngtái yǎnjiǎng, wǒ fēicháng jǐnzhāng.", ex_pt: "Na primeira vez discursando no palco, fiquei muito nervoso." },
+            { w: "冷", p: "lěng", t: "frio", c: "Adjetivos", l: 4, ex_ch: "今天外面很冷。", ex_py: "Jīntiān wàimiàn hěn lěng.", ex_pt: "Hoje está muito frio lá fora." },
+            { w: "乱", p: "luàn", t: "bagunçado ou confuso", c: "Adjetivos", l: 4, ex_ch: "房间里太乱了，你该打扫一下。", ex_py: "Fángjiān lǐ tài luàn le, nǐ gāi dǎsǎo yíxià.", ex_pt: "O quarto está muito bagunçado, você deveria dar uma limpada." },
+            { w: "忙", p: "máng", t: "ocupado", c: "Adjetivos", l: 4, ex_ch: "这几天工作特别忙。", ex_py: "Zhè jǐ tiān gōngzuò tèbié máng.", ex_pt: "Nesses dias o trabalho está especialmente corrido." },
+            { w: "难", p: "nán", t: "difícil", c: "Adjetivos", l: 4, ex_ch: "这个汉字很难写。", ex_py: "Zhège hànzì hěn nán xiě.", ex_pt: "Este ideograma é difícil de escrever." },
+            { w: "容易", p: "róngyì", t: "fácil", c: "Adjetivos", l: 4, ex_ch: "学好一门外语不容易。", ex_py: "Xuéhǎo yì mén wàiyǔ bù róngyì.", ex_pt: "Aprender bem um idioma estrangeiro não é fácil." },
+            { w: "顺利", p: "shùnlì", t: "tranquilo / sem problemas", c: "Adjetivos", l: 4, ex_ch: "顺利地完成了工作。", ex_py: "Shùnlì de wánchéngle gōngzuò.", ex_pt: "Concluiu o trabalho sem problemas." },
+            { w: "重要", p: "zhòngyào", t: "importante", c: "Adjetivos", l: 4, ex_ch: "这是一次非常重要的会议。", ex_py: "Zhè shì yí cì fēicháng zhòngyào de huìyì.", ex_pt: "Esta é uma reunião extremamente importante." },
+            { w: "最近", p: "zuìjìn", t: "recente", c: "Adjetivos", l: 4, ex_ch: "最近天气变化大。", ex_py: "Zuìjìn tiānqì biànhuà dà.", ex_pt: "Recentemente o tempo tem mudado muito." },
+
+            // ADVÉRBIOS E CONJUNÇÕES
+            { w: "按时", p: "ànshí", t: "pontualmente", c: "Advérbios / Conjunções", l: 4, ex_ch: "请大家明天按时到达机场。", ex_py: "Qǐng dàjiā míngtiān ànshí dàodá jīchǎng.", ex_pt: "Por favor, todos cheguem pontualmente ao aeroporto amanhã." },
+            { w: "按照", p: "ànzhào", t: "de acordo com", c: "Advérbios / Conjunções", l: 4, ex_ch: "请按照说明书组装这个柜子。", ex_py: "Qǐng ànzhào shuōmíngshū zǔzhuāng zhège guìzi.", ex_pt: "Por favor, monte este armário de acordo com o manual." },
+            { w: "本来", p: "běnlái", t: "originalmente / por natureza", c: "Advérbios / Conjunções", l: 4, ex_ch: "这件事本来应该听他的。", ex_py: "Zhè jiàn shì běnlái yīnggāi tīng tā de.", ex_pt: "Nesse caso, deveríamos ter escutado ele desde o começo." },
+            { w: "并", p: "bìng", t: "de forma alguma", c: "Advérbios / Conjunções", l: 4, ex_ch: "这件事并没有你想象的那么复杂。", ex_py: "Zhè jiàn shì bìng méiyǒu nǐ xiǎngxiàng de nàme fùzá.", ex_pt: "Este assunto não é de forma alguma tão complexo quanto você imagina." },
+            { w: "不但", p: "bùdàn", t: "não apenas", c: "Advérbios / Conjunções", l: 4, ex_ch: "他不但聪明，而且很努力。", ex_py: "Tā bùdàn cōngming, érqiě hěn nǔlì.", ex_pt: "Ele não apenas é inteligente, mas também muito esforçado." },
+            { w: "不得不", p: "bù dé bù", t: "não ter escolha a não ser", c: "Advérbios / Conjunções", l: 4, ex_ch: "雨下得太大了，我们不得不取消比赛。", ex_py: "Yǔ xià de tài dà le, wǒmen bù dé bù qǔxiāo bǐsài.", ex_pt: "A chuva estava muito forte, não tivemos escolha a não ser cancelar o jogo." },
+            { w: "不管是", p: "bùguǎn shì", t: "não importa se", c: "Advérbios / Conjunções", l: 4, ex_ch: "不管是上课还是上班，都不能迟到。", ex_py: "Bùguǎn shì shàngkè háishì shàngbān, dōu bùnéng chídào.", ex_pt: "Não importa se é para a aula ou para o trabalho, não se pode chegar atrasado." },
+            { w: "差点儿", p: "chàdiǎnr", t: "quase ou por pouco", c: "Advérbios / Conjunções", l: 4, ex_ch: "我差点儿就迟到了。", ex_py: "Wǒ chàdiǎnr jiù chídào le.", ex_pt: "Eu quase me atrasei por pouco." },
+            { w: "反而", p: "fǎn'ér", t: "pelo contrário", c: "Advérbios / Conjunções", l: 4, ex_ch: "风不但没停，反而更大了。", ex_py: "Fēng bùdàn méi tíng, fǎn'ér gèng dà le.", ex_pt: "O vento não só não parou, pelo contrário, ficou ainda mais forte." },
+            { w: "刚好", p: "gānghǎo", t: "por coincidência", c: "Advérbios / Conjunções", l: 4, ex_ch: "我刚好路过这里。", ex_py: "Wǒ gānghǎo lùguò zhèlǐ.", ex_pt: "Eu por coincidência passei por aqui." },
+            { w: "即便", p: "jíbiàn", t: "mesmo que", c: "Advérbios / Conjunções", l: 4, ex_ch: "即便能力再高，也要不断学习。", ex_py: "Jíbiàn nénglì zài gāo, yě yào búduàn xuéxí.", ex_pt: "Mesmo que a habilidade seja alta, ainda é preciso estudar constantemente." },
+            { w: "经常", p: "jīngcháng", t: "frequentemente", c: "Advérbios / Conjunções", l: 4, ex_ch: "经常换工作不一定好。", ex_py: "Jīngcháng huàn gōngzuò bù yídìng hǎo.", ex_pt: "Mudar de emprego frequentemente não é necessariamente bom." },
+            { w: "尽管", p: "jǐnguǎn", t: "embora ou apesar de", c: "Advérbios / Conjunções", l: 4, ex_ch: "尽管失败了多次，他还是没有放弃。", ex_py: "Jǐnguǎn shībài le duō cì, tā háishì méiyǒu fàngqì.", ex_pt: "Apesar de ter falhado várias vezes, ele ainda assim não desistiu." },
+            { w: "就", p: "jiù", t: "logo ou então", c: "Advérbios / Conjunções", l: 4, ex_ch: "我马上就到。", ex_py: "Wǒ mǎshàng jiù dào.", ex_pt: "Eu chego logo." },
+            { w: "另外", p: "lìngwài", t: "além disso", c: "Advérbios / Conjunções", l: 4, ex_ch: "另外，还比较便宜。", ex_py: "Lìngwài, hái bǐjiào piányi.", ex_pt: "Além disso, ainda é mais barato." },
+            { w: "慢慢", p: "mànmàn", t: "vagarosamente", c: "Advérbios / Conjunções", l: 4, ex_ch: "慢慢积累经验。", ex_py: "Mànmàn jīlěi jīngyàn.", ex_pt: "Acumular experiência aos poucos." },
+            { w: "马上", p: "mǎshàng", t: "imediatamente", c: "Advérbios / Conjunções", l: 4, ex_ch: "客人们马上就要到了。", ex_py: "Kèrén men mǎshàng jiù yào dào le.", ex_pt: "Os convidados vão chegar imediatamente." },
+            { w: "其实", p: "qíshí", t: "na verdade", c: "Advérbios / Conjunções", l: 4, ex_ch: "其实并不容易。", ex_py: "Qíshí bìng bù róngyì.", ex_pt: "Na verdade não é nada fácil." },
+            { w: "甚至", p: "shènzhì", t: "até mesmo ou inclusive", c: "Advérbios / Conjunções", l: 4, ex_ch: "他忙得甚至连吃午饭的时间都没有。", ex_py: "Tā máng de shènzhì lián chī wǔfàn de shíjiān dōu méiyǒu.", ex_pt: "Ele está tão ocupado que até mesmo tempo para almoçar não tem." },
+            { w: "虽然", p: "suīrán", t: "embora", c: "Advérbios / Conjunções", l: 4, ex_ch: "虽然外面很冷，但他还是去跑步了。", ex_py: "Suīrán wàimiàn hěn lěng, dàn tā háishì qù pǎobù le.", ex_pt: "Embora estivesse frio lá fora, ele ainda foi correr." },
+            { w: "提前", p: "tíqián", t: "antecipadamente", c: "Advérbios / Conjunções", l: 4, ex_ch: "会议提前到了上午九点。", ex_py: "Huìyì tíqián dào le shàngwǔ jiǔ diǎn.", ex_pt: "A reunião foi antecipada para as nove da manhã." },
+            { w: "完全", p: "wánquán", t: "completamente", c: "Advérbios / Conjunções", l: 4, ex_ch: "完全没有改变。", ex_py: "Wánquán méiyǒu gǎibiàn.", ex_pt: "Não mudou absolutamente nada." },
+            { w: "小", p: "xiǎo", t: "pequeno (usado em nomes)", c: "Advérbios / Conjunções", l: 4, ex_ch: "小夏是个很幽默的女孩。", ex_py: "Xiǎo Xià shì ge hěn yōumò de nǚhái.", ex_pt: "Xiaoxia é uma garota muito bem-humorada." },
+            { w: "原来", p: "yuánlái", t: "originalmente / afinal", c: "Advérbios / Conjunções", l: 4, ex_ch: "原来是你啊！", ex_py: "Yuánlái shì nǐ a!", ex_pt: "Afinal é você!" },
+            { w: "终于", p: "zhōngyú", t: "finalmente", c: "Advérbios / Conjunções", l: 4, ex_ch: "终于找到了我的钥匙！", ex_py: "Zhōngyú zhǎodào le wǒ de yàoshi!", ex_pt: "Finalmente encontrei minha chave!" },
+            { w: "总是", p: "zǒngshì", t: "sempre", c: "Advérbios / Conjunções", l: 4, ex_ch: "第一印象不总是对的。", ex_py: "Dì-yī yìnxiàng bù zǒngshì duì de.", ex_pt: "A primeira impressão nem sempre está correta." },
+
+            // EXPRESSÕES IDIOMÁTICAS E CHUNKS
+            { w: "别提了", p: "biétíle", t: "nem me fale", c: "Expressões e Compostos", l: 4, ex_ch: "别提了，今天真倒霉。", ex_py: "Biétíle, jīntiān zhēn dǎoméi.", ex_pt: "Nem me fale, hoje tive muito azar." },
+            { w: "开玩笑", p: "kāi wánxiào", t: "brincar ou fazer piada", c: "Expressões e Compostos", l: 4, ex_ch: "别生气，我只是在跟你开玩笑。", ex_py: "Bié shēngqì, wǒ zhǐshì zài gēn nǐ kāi wánxiào.", ex_pt: "Não fique com raiva, estou apenas brincando com você." },
+            { w: "手忙脚乱", p: "shǒumáng-jiǎoluàn", t: "atrapalhado ou em pânico", c: "Expressões e Compostos", l: 4, ex_ch: "突然来了这么多客人，让我有点儿手忙脚乱。", ex_py: "Tūrán lái le zhème duō kèrén, ràng wǒ yǒudiǎnr shǒumáng-jiǎoluàn.", ex_pt: "De repente vieram tantos convidados, me deixou um pouco atrapalhado." },
+            { w: "授人以鱼不如授人以渔", p: "shòu rén yǐ yú bùrú shòu rén yǐ yú", t: "melhor ensinar a pescar...", c: "Expressões e Compostos", l: 4, ex_ch: "俗话说，授人以鱼不如授人以渔。", ex_py: "Súhuà shuō, shòu rén yǐ yú bùrú shòu rén yǐ yú.", ex_pt: "Como diz o ditado, melhor ensinar a pescar do que dar o peixe." },
+            { w: "万事开头难", p: "wànshì kāitóu nán", t: "tudo é difícil no começo", c: "Expressões e Compostos", l: 4, ex_ch: "别灰心，俗话说万事开头难。", ex_py: "Bié huīxīn, súhuà shuō wàn shì kāitóu nán.", ex_pt: "Não desanime, como diz o ditado, tudo é difícil no começo." },
+            { w: "按原来的计划", p: "àn yuánlái de jìhuà", t: "de acordo com o plano original", c: "Expressões e Compostos", l: 4, ex_ch: "我们按原来的计划进行。", ex_py: "Wǒmen àn yuánlái de jìhuà jìnxíng.", ex_pt: "Nós prosseguimos de acordo com o plano original." },
+            { w: "安排好时间", p: "ānpái hǎo shíjiān", t: "organizar bem o tempo", c: "Expressões e Compostos", l: 4, ex_ch: "你需要安排好时间来复习。", ex_py: "Nǐ xūyào ānpái hǎo shíjiān lái fùxí.", ex_pt: "Você precisa organizar bem o tempo para revisar." },
+            { w: "按照计划完成", p: "ànzhào jìhuà wánchéng", t: "completar conforme o plano", c: "Expressões e Compostos", l: 4, ex_ch: "我们要按照计划完成任务。", ex_py: "Wǒmen yào ànzhào jìhuà wánchéng rènwu.", ex_pt: "Devemos completar a tarefa de acordo com o plano." },
+            { w: "并不适合每一个人", p: "bìng bú shìhé měi yí ge rén", t: "de forma alguma combina c/ todos", c: "Expressões e Compostos", l: 4, ex_ch: "这种方法并不适合每一个人。", ex_py: "Zhè zhǒng fāngfǎ bìng bú shìhé měi yí ge rén.", ex_pt: "Este método de forma alguma combina com todas as pessoas." },
+            { w: "并没有太大关系", p: "bìng méiyǒu tài dà guānxi", t: "não tem absolutamente nada a ver", c: "Expressões e Compostos", l: 4, ex_ch: "这和专业并没有太大关系。", ex_py: "Zhè hé zhuānyè bìng méiyǒu tài dà guānxi.", ex_pt: "Isso não tem absolutamente muito a ver com a área de formação." },
+            { w: "不仅工资高", p: "bùjǐn gōngzī gāo", t: "não apenas o salário é alto", c: "Expressões e Compostos", l: 4, ex_ch: "这份工作不仅工资高，环境也好。", ex_py: "Zhè fèn gōngzuò bùjǐn gōngzī gāo, huánjìng yě hǎo.", ex_pt: "Este trabalho não apenas o salário é alto, o ambiente também é bom." },
+            { w: "不得不去做一些自己不愿意做的工作", p: "bù dé bù qù zuò yìxiē zìjǐ bú yuànyì zuò de gōngzuò", t: "ter que fazer o que não quer", c: "Expressões e Compostos", l: 4, ex_ch: "有时不得不去做一些自己不愿意做的工作。", ex_py: "Yǒushí bù dé bù qù zuò yìxiē zìjǐ bú yuànyì zuò de gōngzuò.", ex_pt: "Às vezes se tem que fazer alguns trabalhos que a própria pessoa não quer fazer." },
+            { w: "不知道该先做哪个", p: "bù zhīdào gāi xiān zuò nǎge", t: "não saber qual fazer primeiro", c: "Expressões e Compostos", l: 4, ex_ch: "事情太多，不知道该先做哪个。", ex_py: "Shìqing tài duō, bù zhīdào gāi xiān zuò nǎge.", ex_pt: "Muitas coisas a fazer, não sei qual fazer primeiro." },
+            { w: "成功地解决了问题", p: "chénggōng de jiějuéle wèntí", t: "resolveu o problema com sucesso", c: "Expressões e Compostos", l: 4, ex_ch: "他成功地解决了问题。", ex_py: "Tā chénggōng de jiějuéle wèntí.", ex_pt: "Ele resolveu o problema com sucesso." },
+            { w: "对工作的责任心", p: "duì gōngzuò de zérènxīn", t: "senso de respons. c/ o trabalho", c: "Expressões e Compostos", l: 4, ex_ch: "老板很看重对工作的责任心。", ex_py: "Lǎobǎn hěn kànzhòng duì gōngzuò de zérènxīn.", ex_pt: "O chefe valoriza muito o senso de responsabilidade com o trabalho." },
+            { w: "调查换工作的原因", p: "diàochá huàn gōngzuò de yuányīn", t: "investigar motivos da mudança", c: "Expressões e Compostos", l: 4, ex_ch: "他们在调查换工作的原因。", ex_py: "Tāmen zài diàochá huàn gōngzuò de yuányīn.", ex_pt: "Eles estão investigando os motivos de mudar de emprego." },
+            { w: "多学习才是最重要的", p: "duō xuéxí cái shì zuì zhòngyào de", t: "estudar mais é o mais importante", c: "Expressões e Compostos", l: 4, ex_ch: "对于年轻人，多学习才是最重要的。", ex_py: "Duìyú niánqīng rén, duō xuéxí cái shì zuì zhòngyào de.", ex_pt: "Para os jovens, estudar mais é o que é mais importante." },
+            { w: "丰富工作经验", p: "fēngfù gōngzuò jīngyàn", t: "enriquecer a exp. de trabalho", c: "Expressões e Compostos", l: 4, ex_ch: "我们需要丰富工作经验。", ex_py: "Wǒmen xūyào fēngfù gōngzuò jīngyàn.", ex_pt: "Precisamos enriquecer a experiência de trabalho." },
+            { w: "积累专业知识", p: "jīlěi zhuānyè zhīshi", t: "acumular conhec. profissional", c: "Expressões e Compostos", l: 4, ex_ch: "大学是积累专业知识的时候。", ex_py: "Dàxué shì jīlěi zhuānyè zhīshi de shíhou.", ex_pt: "A faculdade é o momento de acumular conhecimento profissional." },
+            { w: "即便能力再高", p: "jíbiàn nénglì zài gāo", t: "mesmo que a habilidade seja alta", c: "Expressões e Compostos", l: 4, ex_ch: "即便能力再高，也要学会合作。", ex_py: "Jíbiàn nénglì zài gāo, yě yào xuéhuì hézuò.", ex_pt: "Mesmo que a habilidade seja alta, é preciso aprender a cooperar." },
+            { w: "经常换工作不一定好", p: "jīngcháng huàn gōngzuò bù yídìng hǎo", t: "mudar de emprego nem sempre é bom", c: "Expressões e Compostos", l: 4, ex_ch: "经常换工作不一定好。", ex_py: "Jīngcháng huàn gōngzuò bù yídìng hǎo.", ex_pt: "Mudar de emprego frequentemente não é necessariamente bom." },
+            { w: "今年已经换了三次工作了", p: "jīnnián yǐjīng huànle sān cì gōngzuò le", t: "mudou de emprego 3x este ano", c: "Expressões e Compostos", l: 4, ex_ch: "他今年已经换了三次工作了。", ex_py: "Tā jīnnián yǐjīng huànle sān cì gōngzuò le.", ex_pt: "Ele já mudou de emprego três vezes este ano." },
+            { w: "解决这个问题", p: "jiějué zhège wèntí", t: "resolver este problema", c: "Expressões e Compostos", l: 4, ex_ch: "大家一起想办法解决这个问题。", ex_py: "Dàjiā yìqǐ xiǎng bànfǎ jiějué zhège wèntí.", ex_pt: "Todos juntos buscando uma maneira de resolver este problema." },
+            { w: "慢慢积累经验", p: "mànmàn jīlěi jīngyàn", t: "acumular experiência aos poucos", c: "Expressões e Compostos", l: 4, ex_ch: "不要着急，慢慢积累经验就好。", ex_py: "Bú yào zháojí, mànmàn jīlěi jīngyàn jiù hǎo.", ex_pt: "Não se desespere, acumular experiência aos poucos é o suficiente." },
+            { w: "没认出来", p: "méi rèn chūlái", t: "não reconheceu", c: "Expressões e Compostos", l: 4, ex_ch: "你变化太大了，我都没认出来。", ex_py: "Nǐ biànhuà tài dà le, wǒ dōu méi rèn chūlái.", ex_pt: "Você mudou muito, eu nem reconheci." },
+            { w: "其实并不容易", p: "qíshí bìng bù róngyì", t: "na verdade não é nada fácil", c: "Expressões e Compostos", l: 4, ex_ch: "这件事看似简单，其实并不容易。", ex_py: "Zhè jiàn shì kànsì jiǎndān, qíshí bìng bù róngyì.", ex_pt: "Esta questão parece simples, mas na verdade não é nada fácil." },
+            { w: "顺利地完成了工作", p: "shùnlì de wánchéngle gōngzuò", t: "concluiu o trab. sem problemas", c: "Expressões e Compostos", l: 4, ex_ch: "我们顺利地完成了工作。", ex_py: "Wǒmen shùnlì de wánchéngle gōngzuò.", ex_pt: "Nós concluímos o trabalho sem problemas." },
+            { w: "适应一个新的工作", p: "shìyìng yí ge xīn de gōngzuò", t: "adaptar-se a um novo trabalho", c: "Expressões e Compostos", l: 4, ex_ch: "适应一个新的工作需要时间。", ex_py: "Shìyìng yí ge xīn de gōngzuò xūyào shíjiān.", ex_pt: "Adaptar-se a um novo trabalho requer tempo." },
+            { w: "提前半个小时到公司", p: "tíqián bàn ge xiǎoshí dào gōngsī", t: "chegar meia hora antes", c: "Expressões e Compostos", l: 4, ex_ch: "第一天上班最好提前半个小时到公司。", ex_py: "Dì yī tiān shàngbān zuìhǎo tíqián bàn ge xiǎoshí dào gōngsī.", ex_pt: "No primeiro dia de trabalho é melhor chegar à empresa com meia hora de antecedência." },
+            { w: "完全没有改变", p: "wánquán méiyǒu gǎibiàn", t: "não mudou absolutamente nada", c: "Expressões e Compostos", l: 4, ex_ch: "这里的风景完全没有改变。", ex_py: "Zhèlǐ de fēngjǐng wánquán méiyǒu gǎibiàn.", ex_pt: "A paisagem daqui não mudou absolutamente nada." },
+            { w: "写在笔记本上", p: "xiě zài bǐjìběn shang", t: "escrever no caderno", c: "Expressões e Compostos", l: 4, ex_ch: "重要的事要写在笔记本上。", ex_py: "Zhòngyào de shì yào xiě zài bǐjìběn shang.", ex_pt: "Assuntos importantes devem ser escritos no caderno." },
+            { w: "一切都会好的", p: "yíqiè dōu huì hǎo de", t: "tudo ficará bem", c: "Expressões e Compostos", l: 4, ex_ch: "别担心，一切都会好的。", ex_py: "Bié dānxīn, yíqiè dōu huì hǎo de.", ex_pt: "Não se preocupe, tudo ficará bem." },
+            { w: "原来是你啊", p: "yuánlái shì nǐ a", t: "ah, no fim das contas era você", c: "Expressões e Compostos", l: 4, ex_ch: "我当是谁呢，原来是你啊！", ex_py: "Wǒ dāng shì shéi ne, yuánlái shì nǐ a!", ex_pt: "Eu estava pensando quem era, ah, no fim das contas era você!" },
+            { w: "在这份工作上", p: "zài zhè fèn gōngzuò shàng", t: "neste trabalho", c: "Expressões e Compostos", l: 4, ex_ch: "他在这份工作上非常努力。", ex_py: "Tā zài zhè fèn gōngzuò shàng fēicháng nǔlì.", ex_pt: "Ele se esforça muito neste trabalho." },
+            { w: "这些比收入重要多了", p: "zhèxiē bǐ shōurù zhòngyào duō le", t: "isso é mais importante que a renda", c: "Expressões e Compostos", l: 4, ex_ch: "开心和健康，这些比收入重要多了。", ex_py: "Kāixīn hé jiànkāng, zhèxiē bǐ shōurù zhòngyào duō le.", ex_pt: "Felicidade e saúde, essas coisas são muito mais importantes que a renda." },
+            { w: "赚钱越来越难了", p: "zhuànqián yuè lái yuè nán le", t: "ganhar dinheiro está mais difícil", c: "Expressões e Compostos", l: 4, ex_ch: "现在赚钱越来越难了。", ex_py: "Xiànzài zhuànqián yuè lái yuè nán le.", ex_pt: "Agora ganhar dinheiro está cada vez mais difícil." },
+
+            // VERBOS
+            { w: "安排", p: "ānpái", t: "organizar ou arranjar", c: "Verbos", l: 4, ex_ch: "时间安排得很紧张。", ex_py: "Shíjiān ānpái de hěn jǐnzhāng.", ex_pt: "A programação de tempo está bem apertada." },
+            { w: "保证", p: "bǎozhèng", t: "garantir", c: "Verbos", l: 4, ex_ch: "我保证以后不再迟到了。", ex_py: "Wǒ bǎozhèng yǐhòu bú zài chídào le.", ex_pt: "Eu garanto que não vou mais me atrasar no futuro." },
+            { w: "变化", p: "biànhuà", t: "mudar", c: "Verbos", l: 4, ex_ch: "这几年城市的家变化很大。", ex_py: "Zhè jǐ nián chéngshì de jiā biànhuà hěn dà.", ex_pt: "Nesses últimos anos a cidade mudou muito." },
+            { w: "打扫", p: "dǎsǎo", t: "limpar", c: "Verbos", l: 4, ex_ch: "周末我们一起打扫房间吧。", ex_py: "Zhōumò wǒmen yìqǐ dǎsǎo fángjiān ba.", ex_pt: "No fim de semana vamos limpar o quarto juntos." },
+            { w: "等于", p: "děngyú", t: "ser igual a", c: "Verbos", l: 4, ex_ch: "一加一等于二。", ex_py: "Yī jiā yī děngyú èr.", ex_pt: "Um mais um é igual a dois." },
+            { w: "调查", p: "diàochá", t: "investigar ou pesquisar", c: "Verbos", l: 4, ex_ch: "我们需要对这个市场进行调查。", ex_py: "Wǒmen xūyào duì zhège shìchǎng jìnxíng diàochá.", ex_pt: "Precisamos realizar uma pesquisa sobre este mercado." },
+            { w: "锻炼", p: "duànliàn", t: "exercitar-se", c: "Verbos", l: 4, ex_ch: "经常锻炼身体不容易生病。", ex_py: "Jīngcháng duànliàn shēntǐ bù róngyì shēngbìng.", ex_pt: "Exercitar-se frequentemente não adoece fácil." },
+            { w: "发生", p: "fāshēng", t: "ocorrer", c: "Verbos", l: 4, ex_ch: "昨天这里发生了一起交通事故。", ex_py: "Zuótiān zhèlǐ fāshēng le yì qǐ jiāotōng shìgù.", ex_pt: "Ontem ocorreu um acidente de trânsito aqui." },
+            { w: "发现", p: "fāxiàn", t: "descobrir", c: "Verbos", l: 4, ex_ch: "我突然发现钱包不见了。", ex_py: "Wǒ tūrán fāxiàn qiánbāo bú jiàn le.", ex_pt: "De repente descobri que a carteira sumiu." },
+            { w: "放心", p: "fàngxīn", t: "ficar tranquilo", c: "Verbos", l: 4, ex_ch: "有他在，你就一百个放心吧。", ex_py: "Yǒu tā zài, nǐ jiù yì bǎi ge fàngxīn ba.", ex_pt: "Com ele aqui, fique cem por cento tranquilo." },
+            { w: "丰富", p: "fēngfù", t: "enriquecer", c: "Verbos", l: 4, ex_ch: "读书可以丰富我们的生活。", ex_py: "Dúshū kěyǐ fēngfù wǒmen de shēnghuó.", ex_pt: "Ler livros pode enriquecer nossa vida." },
+            { w: "感谢", p: "gǎnxiè", t: "agradecer", c: "Verbos", l: 4, ex_ch: "非常感谢您的支持和帮助。", ex_py: "Fēicháng gǎnxiè nín de zhīchí hé bāngzhù.", ex_pt: "Agradeço muito pelo seu apoio e ajuda." },
+            { w: "还", p: "huán", t: "devolver", c: "Verbos", l: 4, ex_ch: "借的书下周必须还给图书馆。", ex_py: "Jiè de shū xià zhōu bìxū huán gěi túshūguǎn.", ex_pt: "O livro emprestado deve ser devolvido à biblioteca na semana que vem." },
+            { w: "换", p: "huàn", t: "trocar ou mudar", c: "Verbos", l: 4, ex_ch: "我想去银行换点儿现金。", ex_py: "Wǒ xiǎng qù yínháng huàn diǎnr xiànjīn.", ex_pt: "Quero ir ao banco trocar um pouco de dinheiro vivo." },
+            { w: "积累", p: "jīlěi", t: "acumular", c: "Verbos", l: 4, ex_ch: "工作经验是慢慢积累出来的。", ex_py: "Gōngzuò jīngyàn shì mànmàn jīlěi chūlái de.", ex_pt: "A experiência de trabalho é acumulada lentamente." },
+            { w: "交流", p: "jiāoliú", t: "comunicar-se / trocar ideias", c: "Verbos", l: 4, ex_ch: "学习语言需要多与人交流。", ex_py: "Xuéxí yǔyán xūyào duō yǔ rén jiāoliú.", ex_pt: "Aprender idiomas requer trocar muitas ideias com as pessoas." },
+            { w: "解决", p: "jiějué", t: "resolver", c: "Verbos", l: 4, ex_ch: "这个问题必须马上解决。", ex_py: "Zhège wèntí bìxū mǎshàng jiějué.", ex_pt: "Este problema deve ser resolvido imediatamente." },
+            { w: "教", p: "jiāo", t: "ensinar", c: "Verbos", l: 4, ex_ch: "谁教你弹钢琴的？", ex_py: "Shéi jiāo nǐ tán gāngqín de?", ex_pt: "Quem te ensinou a tocar piano?" },
+            { w: "结婚", p: "jiéhūn", t: "casar-se", c: "Verbos", l: 4, ex_ch: "听说李进马上要结婚了。", ex_py: "Tīngshuō Lǐ Jìn mǎshàng yào jiéhūn le.", ex_pt: "Ouvi dizer que Li Jin vai se casar em breve." },
+            { w: "觉得", p: "juéde", t: "achar ou sentir", c: "Verbos", l: 4, ex_ch: "你觉得这个计划怎么样？", ex_py: "Nǐ juéde zhège jìhuà zěnmeyàng?", ex_pt: "O que você acha deste plano?" },
+            { w: "看来", p: "kànlái", t: "pelo visto", c: "Verbos", l: 4, ex_ch: "看来今天又要下雨了。", ex_py: "Kànlái jīntiān yòu yào xiàyǔ le.", ex_pt: "Pelo visto hoje vai chover de novo." },
+            { w: "离开", p: "líkāi", t: "partir ou sair", c: "Verbos", l: 4, ex_ch: "他十年前离开了家乡。", ex_py: "Tā shí nián qián líkāi le jiāxiāng.", ex_pt: "Ele partiu da terra natal há dez anos." },
+            { w: "留", p: "liú", t: "deixar ou ficar", c: "Verbos", l: 4, ex_ch: "出门前请给我留一张字条。", ex_py: "Chūmén qián qǐng gěi wǒ liú yì zhāng zìtiáo.", ex_pt: "Por favor, me deixe um bilhete antes de sair." },
+            { w: "配", p: "pèi", t: "combinar com", c: "Verbos", l: 4, ex_ch: "这件衬衫配那条裙子很好看。", ex_py: "Zhè jiàn chènshān pèi nà tiáo qúnzi hěn hǎokàn.", ex_pt: "Esta camisa combinada com aquela saia fica muito bonita." },
+            { w: "骑", p: "qí", t: "andar (de bicicleta)", c: "Verbos", l: 4, ex_ch: "我每天骑自行车去学校。", ex_py: "Wǒ měitiān qí zìxíngchē qù xuéxiào.", ex_pt: "Eu ando de bicicleta até a escola todos os dias." },
+            { w: "认", p: "rèn", t: "reconhecer", c: "Verbos", l: 4, ex_ch: "我差点儿没认出你来。", ex_py: "Wǒ chàdiǎnr méi rèn chū nǐ lái.", ex_pt: "Eu quase não te reconheci." },
+            { w: "认错", p: "rèncuò", t: "confundir / admitir erro", c: "Verbos", l: 4, ex_ch: "对不起，我认错人了。", ex_py: "Duìbùqǐ, wǒ rèncuò rén le.", ex_pt: "Desculpe, eu confundi a pessoa." },
+            { w: "适应", p: "shìyìng", t: "adaptar-se", c: "Verbos", l: 4, ex_ch: "你需要多长时间适应新的环境？", ex_py: "Nǐ xūyào duō cháng shíjiān shìyìng xīn de huánjìng?", ex_pt: "Quanto tempo você precisa para se adaptar ao novo ambiente?" },
+            { w: "谈", p: "tán", t: "conversar ou discutir", c: "Verbos", l: 4, ex_ch: "他们正在会议室里谈生意。", ex_py: "Tāmen zhèngzài huìyìshì lǐ tán shēngyi.", ex_pt: "Eles estão conversando sobre negócios na sala de reunião." },
+            { w: "谈成", p: "tánchéng", t: "fechar (acordo/negócio)", c: "Verbos", l: 4, ex_ch: "这笔生意终于谈成了。", ex_py: "Zhè bǐ shēngyi zhōngyú tánchéng le.", ex_pt: "Este negócio finalmente foi fechado." },
+            { w: "提", p: "tí", t: "mencionar ou levantar", c: "Verbos", l: 4, ex_ch: "他向经理提了一个好建议。", ex_py: "Tā xiàng jīnglǐ tí le yí ge hǎo jiànyì.", ex_pt: "Ele mencionou/apresentou uma boa sugestão ao gerente." },
+            { w: "提高", p: "tígāo", t: "melhorar ou elevar", c: "Verbos", l: 4, ex_ch: "多听多说能提高你的口语水平。", ex_py: "Duō tīng duō shuō néng tígāo nǐ de kǒuyǔ shuǐpíng.", ex_pt: "Ouvir muito e falar muito pode melhorar seu nível de fala." },
+            { w: "提醒", p: "tíxǐng", t: "lembrar ou alertar", c: "Verbos", l: 4, ex_ch: "谢谢你提醒我，不然我就忘了。", ex_py: "Xièxie nǐ tíxǐng wǒ, bùrán wǒ jiù wàng le.", ex_pt: "Obrigado por me lembrar, senão eu teria esquecido." },
+            { w: "完成", p: "wánchéng", t: "completar", c: "Verbos", l: 4, ex_ch: "这项任务必须在今天完成。", ex_py: "Zhè xiàng rènwu bìxū zài jīntiān wánchéng.", ex_pt: "Esta tarefa deve ser completada hoje." },
+            { w: "忘记", p: "wàngjì", t: "esquecer", c: "Verbos", l: 4, ex_ch: "出门别忘记带伞。", ex_py: "Chūmén bié wàngjì dài sǎn.", ex_pt: "Ao sair não se esqueça de levar o guarda-chuva." },
+            { w: "习惯", p: "xíguàn", t: "acostumar-se", c: "Verbos", l: 4, ex_ch: "我已经习惯了这里的生活。", ex_py: "Wǒ yǐjīng xíguàn le zhèlǐ de shēnghuó.", ex_pt: "Eu já me acostumei com a vida aqui." },
+            { w: "写", p: "xiě", t: "escrever", c: "Verbos", l: 4, ex_ch: "他正在给朋友写信。", ex_py: "Tā zhèngzài gěi péngyou xiě xìn.", ex_pt: "Ele está escrevendo uma carta para um amigo." },
+            { w: "学习", p: "xuéxí", t: "estudar", c: "Verbos", l: 4, ex_ch: "每天坚持学习才能进步。", ex_py: "Měitiān jiānchí xuéxí cái néng jìnbù.", ex_pt: "Apenas insistindo em estudar todos os dias pode-se progredir." },
+            { w: "以为", p: "yǐwéi", t: "achar erroneamente", c: "Verbos", l: 4, ex_ch: "我以为今天会下雨，结果出了太阳。", ex_py: "Wǒ yǐwéi jīntiān huì xiàyǔ, jiéguǒ chū le tàiyáng.", ex_pt: "Eu achei que fosse chover hoje, no fim saiu o sol." },
+            { w: "愿意", p: "yuànyì", t: "estar disposto a", c: "Verbos", l: 4, ex_ch: "只要你愿意学，我就愿意教。", ex_py: "Zhǐyào nǐ yuànyì xué, wǒ jiù yuànyì jiāo.", ex_pt: "Desde que você esteja disposto a aprender, eu estarei disposto a ensinar." },
+            { w: "注意", p: "zhùyì", t: "prestar atenção", c: "Verbos", l: 4, ex_ch: "过马路时一定要注意安全。", ex_py: "Guò mǎlù shí yídìng yào zhùyì ānquán.", ex_pt: "Ao atravessar a rua é indispensável prestar atenção à segurança." },
+            { w: "赚", p: "zhuàn", t: "ganhar (dinheiro)", c: "Verbos", l: 4, ex_ch: "他做生意赚了很多钱。", ex_py: "Tā zuò shēngyi zhuàn le hěnduō qián.", ex_pt: "Ele ganhou muito dinheiro fazendo negócios." },
+            { w: "赚钱", p: "zhuànqián", t: "ganhar dinheiro", c: "Verbos", l: 4, ex_ch: "工作不仅仅是为了赚钱。", ex_py: "Gōngzuò bù jǐnjǐn shì wèi le zhuàn qián.", ex_pt: "Trabalhar não é apenas para ganhar dinheiro." },
+
+            // GRAMÁTICA
+            { w: "按照", p: "ànzhào", t: "de acordo com", c: "Gramática", l: 4, gram_desc: "Preposição que indica conformidade com um plano, regra ou conselho.", ex_ch: "我们要按照计划完成任务。", ex_py: "Wǒmen yào ànzhào jìhuà wánchéng rènwu.", ex_pt: "Nós devemos completar a tarefa de acordo com o plano." },
+            { w: "并", p: "bìng", t: "de forma alguma", c: "Gramática", l: 4, gram_desc: "Advérbio usado para reforçar a negação antes de bù ou méiyǒu. Traz o sentido de refutar uma expectativa.", ex_ch: "这件事其实并不容易。", ex_py: "Zhè jiàn shì qíshí bìng bù róngyì.", ex_pt: "Esta questão na verdade não é nada fácil." },
+            { w: "甚至", p: "shènzhì", t: "até mesmo", c: "Gramática", l: 4, gram_desc: "Advérbio ou conjunção que enfatiza um item extremo ou surpreendente em uma progressão.", ex_ch: "我太累了，甚至不想吃饭。", ex_py: "Wǒ tài lèi le, shènzhì bù xiǎng chīfàn.", ex_pt: "Estou tão cansado que até mesmo não quero comer." },
+            { w: "以为", p: "yǐwéi", t: "achar erroneamente", c: "Gramática", l: 4, gram_desc: "Verbo que indica uma opinião anterior que se revelou incorreta após a descoberta da realidade.", ex_ch: "我以为新工作更好，结果并非如此。", ex_py: "Wǒ yǐwéi xīn gōngzuò gèng hǎo, jiéguǒ bìng fēi rúcǐ.", ex_pt: "Eu achava que o novo emprego era melhor, no fim não foi assim." },
+            { w: "原来 vs 本来", p: "yuánlái vs běnlái", t: "originalmente vs por natureza", c: "Gramática", l: 4, gram_desc: "原来 (yuánlái) indica descoberta de um fato novo ou situação do passado. 本来 (běnlái) indica como algo deveria ser por lógica ou natureza original.", ex_ch: "原来是你！这件事本来应该早点说。", ex_py: "Yuánlái shì nǐ! Zhè jiàn shì běnlái yīnggāi zǎo diǎn shuō.", ex_pt: "Afinal era você! Esse assunto originalmente deveria ter sido dito mais cedo." },
+            { w: "原来", p: "yuánlái", t: "originalmente / afinal", c: "Gramática", l: 4, gram_desc: "Pode ser substantivo (referindo-se ao passado), adjetivo (original) ou advérbio (indica a descoberta súbita de uma verdade/causa).", ex_ch: "这就是事情原来的样子。", ex_py: "Zhè jiù shì shìqing yuánlái de yàngzi.", ex_pt: "Esta era a aparência original do assunto." }
         ];
 
         // Mapeamento estrutural total (iOS Squircle Geometry)
         const charStructures = {
             '法':'lr', '律':'lr', '俩':'lr', '性':'lr', '格':'lr', '静':'lr', '孙':'lr', '新':'lr', '球':'lr', '比':'lr', '时':'lr', '好':'lr', '活':'lr', '浪':'lr', '漫':'lr', '鲜':'lr', '缺':'lr', '情':'lr', '灯':'lr', '脾':'lr', '体':'lr', '眼':'lr', '睛':'lr', '双':'lr', '雅':'lr', '眠':'lr', '诺':'lr', '欧':'lr', '坦':'lr', '巧':'lr', '郎':'lr', '织':'lr', '购':'lr', '物':'lr', '动':'lr', '聊':'lr', '旅':'lr', '地':'lr', '馆':'lr', '短':'lr', '信':'lr', '张':'lr', '外':'lr', '铁':'lr', '站':'lr', '海':'lr', '校':'lr', '饭':'lr', '话':'lr', '谊':'lr', '钱':'lr', '词':'lr', '礼':'lr', '叔':'lr', '惯':'lr', '镜':'lr', '难':'lr', '经':'lr', '理':'lr', '院':'lr', '场':'lr', '深':'lr', '福':'lr', '默':'lr', '认':'lr', '刚':'lr', '即':'lr', '使':'lr', '但':'lr', '慢':'lr', '候':'lr', '却':'lr', '玩':'lr', '加':'lr', '红':'lr', '朋':'lr', '够':'lr', '接':'lr', '引':'lr', '听':'lr', '说':'lr', '踢':'lr', '欢':'lr', '结':'lr', '婚':'lr', '唱':'lr', '歌':'lr', '找':'lr', '得':'lr', '解':'lr', '决':'lr', '泳':'lr', '放':'lr', '助':'lr', '陪':'lr', '锻':'lr', '炼':'lr', '顾':'lr', '睡':'lr', '试':'lr', '师':'lr', '知':'lr', '能':'lr', '聘':'lr', '应':'semi_tl', '机':'lr', '材':'lr', '料':'lr', '境':'lr', '调':'lr', '断':'lr', '翻':'lr', '译':'lr', '错':'lr', '满':'lr', '净':'lr', '顺':'lr', '利':'lr', '诚':'lr', '坏':'lr', '准':'lr', '挺':'lr', '另':'lr', '按':'lr', '排':'lr', '留':'lr', '约':'lr', '练':'lr', '联':'lr', '现':'lr', '设':'lr', '计':'lr',
+            '提':'lr', '以':'lr', '份':'lr', '赚':'lr', '划':'lr', '保':'lr', '证':'lr', '醒':'lr', '乱':'lr', '谈':'lr', '积':'lr', '精':'lr', '验':'lr', '切':'lr', '功':'lr', '消':'lr', '任':'lr', '明':'lr', '识':'lr', '办':'lr', '绩':'lr', '结':'lr', '理':'lr', '轻':'lr', '诉':'lr', '科':'lr', '指':'lr', '授':'lr', '渔':'lr', '冷':'lr', '打':'lr', '扫':'lr', '换':'lr', '适':'semi_lb', '配':'lr', '骑':'lr',
+            
             '象':'tb', '李':'tb', '足':'tb', '赛':'tb', '兴':'tb', '妻':'tb', '感':'tb', '点':'tb', '高':'tb', '星':'tb', '亮':'tb', '单':'tb', '重':'tb', '夜':'tb', '当':'tb', '男':'tb', '罗':'tb', '密':'tb', '朱':'tb', '丽':'tb', '泰':'tb', '克':'tb', '号':'tb', '节':'tb', '乞':'tb', '少':'tb', '农':'tb', '百':'tb', '公':'tb', '聚':'tb', '会':'tb', '学':'tb', '名':'tb', '字':'tb', '事':'tb', '夏':'tb', '照':'tb', '南':'tb', '苹':'tb', '果':'tb', '典':'tb', '哥':'tb', '关':'tb', '系':'tb', '舞':'tb', '幸':'tb', '普':'tb', '竖':'tb', '直':'tb', '卷':'tb', '真':'tb', '然':'tb', '虽':'tb', '实':'tb', '最':'tb', '常':'tb', '差':'tb', '尽':'tb', '管':'tb', '笑':'tb', '完':'tb', '变':'tb', '老':'tb', '交':'tb', '走':'tb', '步':'tb', '享':'tb', '靠':'tb', '受':'tb', '羡':'tb', '慕':'tb', '菜':'tb', '觉':'tb', '参':'tb', '冒':'tb', '卖':'tb', '光':'tb', '复':'tb', '帮':'tb', '毕':'tb', '音':'tb', '些':'tb', '息':'tb', '思':'tb', '答':'tb', '要':'tb', '者':'tb', '总':'tb', '首':'tb', '先':'tb', '责':'tb', '笔':'tb', '客':'tb', '售':'tb', '容':'tb', '易':'tb', '且':'tb', '务':'tb',
+            '全':'tb', '查':'tb', '前':'tb', '累':'tb', '奖':'tb', '金':'tb', '资':'tb', '甚':'tb', '至':'tb', '富':'tb', '费':'tb', '笔':'tb', '记':'lr', '本':'single', '考':'tb', '算':'tb', '商':'tb', '量':'tb', '等':'tb',
+            
             '班':'lmr', '游':'lmr', '谢':'lmr', '街':'lmr', '树':'lmr', '做':'lmr', '哪':'lmr',
             '黄':'tmb', '意':'tmb', '赢':'tmb', '曼':'tmb', '画':'tmb', '爱':'tmb',
-            '进':'semi_lb', '起':'semi_lb', '还':'semi_lb', '题':'semi_lb', '趣':'semi_lb', '运':'semi_lb', '远':'semi_lb', '近':'semi_lb', '适':'semi_lb', '遇':'semi_lb', '迟':'semi_lb', '建':'semi_lb', '这':'semi_lb', '道':'semi_lb', '过':'semi_lb', '连':'semi_lb', '通':'semi_lb',
-            '店':'semi_tl', '原':'semi_tl', '友':'semi_tl', '医':'semi_tl', '愿':'semi_tl', '压':'semi_tl', '病':'semi_tl', '瘦':'semi_tl', '厌':'semi_tl', '历':'semi_tl',
+            
+            '进':'semi_lb', '起':'semi_lb', '还':'semi_lb', '题':'semi_lb', '趣':'semi_lb', '运':'semi_lb', '远':'semi_lb', '近':'semi_lb', '适':'semi_lb', '遇':'semi_lb', '迟':'semi_lb', '建':'semi_lb', '这':'semi_lb', '道':'semi_lb', '过':'semi_lb', '连':'semi_lb', '通':'semi_lb', '达':'semi_lb', '边':'semi_lb',
+            
+            '店':'semi_tl', '原':'semi_tl', '友':'semi_tl', '医':'semi_tl', '愿':'semi_tl', '压':'semi_tl', '病':'semi_tl', '瘦':'semi_tl', '厌':'semi_tl', '历':'semi_tl', '座':'semi_tl', '度':'semi_tl',
+            
             '气':'semi_tr', '可':'semi_tr', '司':'semi_tr', '句':'semi_tr', '式':'semi_tr',
-            '间':'semi_out', '闻':'semi_out', '同':'semi_out', '问':'semi_out', '幽':'semi_out', '网':'semi_out', '风':'semi_out', '向':'semi_out',
+            
+            '间':'semi_out', '闻':'semi_out', '同':'semi_out', '问':'semi_out', '幽':'semi_out', '网':'semi_out', '风':'semi_out', '向':'semi_out', '成':'semi_out', '两':'semi_out',
+            
             '因':'full', '图':'full', '国':'full', '园':'full', '回':'full', '四':'full', '围':'full', '团':'full',
-            '月':'single', '水':'single', '人':'single', '天':'single', '儿':'single', '马':'single', '中':'single', '书':'single', '门':'single', '口':'single', '大':'single', '日':'single', '电':'single', '瓜':'single', '母':'single', '立':'single', '长':'single', '才':'single', '也':'single', '而':'single', '且':'single', '自':'single', '其':'single', '平':'single', '正':'single', '专':'single', '几':'single', '乎':'single', '及':'single', '办':'single', '出':'single', '来':'single', '飞':'single', '心':'single', '业':'single', '工':'single', '己':'single', '之':'single', '一':'single', '丁':'single', '下':'single', '不':'single', '与':'single'
+            
+            '月':'single', '水':'single', '人':'single', '天':'single', '儿':'single', '马':'single', '中':'single', '书':'single', '门':'single', '口':'single', '大':'single', '日':'single', '电':'single', '瓜':'single', '母':'single', '立':'single', '长':'single', '才':'single', '也':'single', '而':'single', '且':'single', '自':'single', '其':'single', '平':'single', '正':'single', '专':'single', '几':'single', '乎':'single', '及':'single', '办':'single', '出':'single', '来':'single', '飞':'single', '心':'single', '业':'single', '工':'single', '己':'single', '之':'single', '一':'single', '丁':'single', '下':'single', '不':'single', '与':'single', '为':'single', '生':'single', '并':'single', '方':'single', '丰':'single', '王':'single', '鱼':'single', '交':'single', '少':'single', '万':'single', '又':'single', '千':'single', '无':'single'
         };
 
         const structDetails = {
@@ -838,7 +1034,12 @@
             selectItem(0, true); 
         }
         
-        function toggleCategory(id) { document.getElementById(id).classList.toggle('collapsed'); }
+        function toggleCategory(id) { 
+            const el = document.getElementById(id);
+            el.classList.toggle('collapsed'); 
+            const icon = el.previousElementSibling.querySelector('i');
+            if(icon) icon.style.transform = el.classList.contains('collapsed') ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
 
         function renderSidebar(rawFilter = "") {
             const f = removeAccents(rawFilter), container = document.getElementById('listContainer'); container.innerHTML = '';
@@ -854,11 +1055,11 @@
                 Object.keys(g).sort().forEach(cat => {
                     g[cat].sort((a,b) => removeAccents(a.p).localeCompare(removeAccents(b.p)));
                     const id = 'cat-'+removeAccents(cat).replace(/\s/g,'-');
-                    const h = document.createElement('div'); h.className = 'cat-header'; h.onclick = () => toggleCategory(id);
+                    const h = document.createElement('div'); h.className = 'cat-header flex justify-between items-center py-2'; h.onclick = () => toggleCategory(id);
                     // Quantidade de itens garantida e formatada: ${cat} (${g[cat].length})
-                    h.innerHTML = `<span class="text-xs uppercase font-bold text-[#86868b]">${cat} (${g[cat].length})</span><i data-lucide="chevron-down" class="w-4 h-4 cat-arrow text-[#86868b]"></i>`;
+                    h.innerHTML = `<span class="text-xs uppercase font-bold text-[#86868b]">${cat} (${g[cat].length})</span><i data-lucide="chevron-down" class="w-4 h-4 text-[#86868b] transition-transform duration-300" style="transform: ${f ? 'rotate(180deg)' : 'rotate(0deg)'}"></i>`;
                     container.appendChild(h);
-                    const l = document.createElement('div'); l.id = id; l.className = 'cat-list';
+                    const l = document.createElement('div'); l.id = id; l.className = `cat-list ${f ? '' : 'collapsed'}`;
                     g[cat].forEach(item => {
                         const d = document.createElement('div'); d.className = `list-item-glass cursor-pointer ${item.originalIndex===currentItemIndex?'active':''}`; d.onclick = () => selectItem(item.originalIndex);
                         d.innerHTML = `<div><div class="chinese-text text-lg font-bold text-[#1d1d1f]">${item.w}</div><div class="text-[10px] text-[#86868b] font-medium">${item.t}</div></div><div class="text-xs font-bold text-teal-700 bg-white/40 px-2 py-1 rounded-lg border border-white/60">${item.p||''}</div>`;
