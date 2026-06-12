@@ -1346,21 +1346,53 @@
             if (bestZhVoice) u.voice = bestZhVoice;
             window.speechSynthesis.speak(u);
         }
+        // Desbloqueio do áudio no celular: iOS/Android só liberam a fala se ela for
+        // ativada uma vez dentro de um toque do usuário. Fazemos isso no 1º toque.
+        let speechUnlocked = false;
+        function unlockSpeechOnce() {
+            if (speechUnlocked || !('speechSynthesis' in window)) return;
+            try {
+                const u = new SpeechSynthesisUtterance(' ');
+                u.volume = 0;
+                window.speechSynthesis.speak(u);
+                window.speechSynthesis.cancel();
+                speechUnlocked = true;
+            } catch(e) {}
+        }
+        document.addEventListener('touchend', unlockSpeechOnce, { once: true, passive: true });
+        document.addEventListener('click', unlockSpeechOnce, { once: true });
+        // Se o serviço do Google falhar uma vez (ex.: bloqueado na rede móvel),
+        // passamos a usar direto a voz do sistema, sem atraso.
+        let googleTtsBroken = false;
         function playAudioText(id) {
             const el = document.getElementById(id);
             const t = el ? el.innerText.trim() : '';
             if (!t) return;
+            unlockSpeechOnce();
             // Interrompe qualquer áudio em andamento
             if (currentAudio) { try { currentAudio.pause(); } catch(e) {} currentAudio = null; }
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            if (googleTtsBroken) { speakWithSystemVoice(t); return; }
             // Voz neural do Google Translate (não robótica, igual em qualquer navegador)
             const url = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=zh-CN&client=tw-ob&ttsspeed=0.9&q=' + encodeURIComponent(t);
             const audio = new Audio(url);
+            audio.preload = 'auto';
             currentAudio = audio;
-            audio.onerror = () => { currentAudio = null; speakWithSystemVoice(t); };
+            let started = false;
+            const useFallback = () => {
+                if (started) return;
+                started = true; // evita disparo duplo
+                googleTtsBroken = true;
+                if (currentAudio === audio) { try { audio.pause(); } catch(e) {} currentAudio = null; }
+                speakWithSystemVoice(t);
+            };
+            audio.onplaying = () => { started = true; };
+            audio.onerror = useFallback;
+            // Vigia: se o áudio não começar em 2,5s (rede lenta/bloqueada), usa a voz do sistema
+            setTimeout(() => { if (!started) useFallback(); }, 2500);
             const p = audio.play();
             if (p && typeof p.catch === 'function') {
-                p.catch(() => { currentAudio = null; speakWithSystemVoice(t); });
+                p.catch(useFallback);
             }
         }
 
