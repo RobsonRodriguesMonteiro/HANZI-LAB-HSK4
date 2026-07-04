@@ -1988,7 +1988,7 @@
     //  PRÁTICA DE CONTEÚDO — motor de exercícios do HSK 4
     //  (não altera nada da prática de caracteres nem do conteúdo)
     // ============================================================
-    const APP_VERSION = '2026-07-04.1';
+    const APP_VERSION = '2026-07-04.2';
     // ---------- PREFERÊNCIAS (tema + recursos de prática) ----------
     const PREFS_KEY = 'hsk4_prefs_v1';
     let prefs = { theme:'light', pinyin:true, trad:true, autoAudio:true, slow:false, effects:true };
@@ -2054,41 +2054,57 @@
         document.body.appendChild(b); if(window.lucide) lucide.createIcons();
         requestAnimationFrame(()=>b.classList.add('show'));
     }
-    // Detecta nova versão de DUAS formas (funciona no GitHub Pages sem precisar
-    // mudar nada manualmente): 1) ETag/Last-Modified do servidor mudou desde que
-    // a página foi aberta; 2) a constante APP_VERSION do arquivo publicado é outra.
-    let BASE_STAMP=null, _updFound=false;
-    async function fetchStamp(){
+    // Detecta nova versão SEM precisar editar nada manualmente. Três camadas:
+    //  1) APP_VERSION do arquivo publicado difere da que está rodando (página velha no cache);
+    //  2) a "impressão digital" (hash) do arquivo no servidor mudou desde que a página abriu
+    //     — pega QUALQUER alteração publicada, mesmo sem mudar APP_VERSION;
+    //  3) o ETag/Last-Modified do GitHub mudou entre uma visita e outra
+    //     — nesse caso o app se recarrega sozinho UMA vez para buscar a versão nova.
+    let BASE_STAMP=null, BASE_HASH=null, _updFound=false;
+    const STAMP_KEY='hsk4_stamp_v1', RELOADED_KEY='hsk4_reloaded_v1';
+    function _hashTxt(t){ let h=5381; for(let i=0;i<t.length;i+=7){ h=((h<<5)+h+t.charCodeAt(i))>>>0; } return h.toString(36)+':'+t.length; }
+    async function fetchSelf(){
         try{
-            let r=await fetch(location.origin+location.pathname+'?_s='+Date.now(), {method:'HEAD', cache:'no-store'});
-            if(!r.ok) r=await fetch(location.origin+location.pathname+'?_s='+Date.now(), {cache:'no-store'});
+            const r=await fetch(location.origin+location.pathname+'?_='+Date.now(), {cache:'no-store'});
             if(!r.ok) return null;
-            const et=(r.headers.get('etag')||'').replace(/W\//,''), lm=r.headers.get('last-modified')||'';
-            return (et||lm)? et+'|'+lm : null;
+            const txt=await r.text();
+            const et=(r.headers.get('etag')||'').replace(/^W\//,''), lm=r.headers.get('last-modified')||'';
+            const m=txt.match(/const APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
+            return { stamp:(et||lm)? (et+'|'+lm):'', hash:_hashTxt(txt), ver:(m&&m[1])||'' };
         }catch(e){ return null; }
     }
     async function checkForUpdate(silent){
         if(_updFound){ showUpdateBanner(); return; }
-        try{
-            let newer=false;
-            const s=await fetchStamp();
-            if(s && BASE_STAMP && s!==BASE_STAMP) newer=true;
-            if(!newer){
-                const res=await fetch(location.origin+location.pathname+'?_='+Date.now(), {cache:'no-store'});
-                if(!res.ok){ if(!silent) appToast('Não foi possível verificar agora.'); return; }
-                const txt=await res.text();
-                const m=txt.match(/const APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
-                if(m && m[1] && m[1]!==APP_VERSION) newer=true;
-            }
-            if(newer){ _updFound=true; showUpdateBanner(); }
-            else if(!silent) appToast('Você já está na versão mais recente.');
-        }catch(e){ if(!silent) appToast('Sem conexão para verificar.'); }
+        const s=await fetchSelf();
+        if(!s){ if(!silent) appToast('Sem conexão para verificar.'); return; }
+        let newer=false;
+        if(s.ver && s.ver!==APP_VERSION) newer=true;
+        if(!newer && BASE_HASH && s.hash!==BASE_HASH) newer=true;
+        if(!newer && BASE_STAMP && s.stamp && s.stamp!==BASE_STAMP) newer=true;
+        if(newer){ _updFound=true; showUpdateBanner(); }
+        else if(!silent) appToast('Você já está na versão mais recente. Se acabou de publicar no GitHub, aguarde 1-3 minutos e tente de novo.');
     }
-    function initUpdateWatch(){
+    async function initUpdateWatch(){
         if(!(location.protocol==='http:'||location.protocol==='https:')) return;
-        fetchStamp().then(s=>{ BASE_STAMP=s; });
-        setTimeout(()=>checkForUpdate(true), 2500);
-        setInterval(()=>checkForUpdate(true), 20*60*1000);                 // a cada 20 min
+        const s=await fetchSelf();
+        if(s){
+            BASE_STAMP=s.stamp; BASE_HASH=s.hash;
+            // Camada 1: a página aberta está desatualizada em relação ao servidor?
+            if(s.ver && s.ver!==APP_VERSION){ _updFound=true; showUpdateBanner(); return; }
+            // Camada 3: houve publicação desde a última visita? Recarrega sozinho 1x com cache-buster.
+            try{
+                const last=localStorage.getItem(STAMP_KEY), done=localStorage.getItem(RELOADED_KEY);
+                if(s.stamp){
+                    localStorage.setItem(STAMP_KEY, s.stamp);
+                    if(last && last!==s.stamp && done!==s.stamp){
+                        localStorage.setItem(RELOADED_KEY, s.stamp);
+                        location.replace(location.origin+location.pathname+'?v='+Date.now());
+                        return;
+                    }
+                }
+            }catch(e){}
+        }
+        setInterval(()=>checkForUpdate(true), 15*60*1000);                 // a cada 15 min
         document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) checkForUpdate(true); });
     }
     // ---------- PAINEL DE CONFIGURAÇÕES ----------
