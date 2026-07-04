@@ -225,6 +225,15 @@
         .hub-item:hover { transform:translateY(-1px); background:rgba(255,255,255,0.85); }
         .hub-ico { width:42px; height:42px; border-radius:13px; display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0; }
         .reading-box { background: rgba(255,255,255,0.72); border:1px solid rgba(255,255,255,0.9); border-radius:1.5rem; padding:1.1rem 1.25rem; box-shadow:0 8px 24px rgba(0,0,0,0.05); }
+        .mem-card { position:relative; height:5.6rem; border-radius:1rem; cursor:pointer; transform-style:preserve-3d; transition:transform .4s; }
+        .mem-card.flipped { transform:rotateY(180deg); }
+        .mem-face { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; border-radius:1rem; backface-visibility:hidden; -webkit-backface-visibility:hidden; padding:.4rem; text-align:center; font-weight:700; }
+        .mem-back { background:linear-gradient(135deg,#0066cc,#3388ff); color:#fff; box-shadow:0 8px 20px rgba(0,102,204,0.25); }
+        .mem-front { background:rgba(255,255,255,0.95); border:1px solid rgba(255,255,255,1); color:#1d1d1f; transform:rotateY(180deg); box-shadow:0 6px 16px rgba(0,0,0,0.06); font-size:.85rem; line-height:1.15; }
+        .mem-card.done .mem-front { background:rgba(20,184,166,0.15); border-color:#14b8a6; }
+        body.dark .mem-front { background:linear-gradient(135deg, rgba(30,41,59,0.9), rgba(30,41,59,0.7)); border-color:rgba(148,163,184,0.2); color:#e8edf5; }
+        .dlg-bubble { background:rgba(255,255,255,0.85); border:1px solid rgba(255,255,255,1); border-radius:1.3rem 1.3rem 1.3rem .3rem; padding:.9rem 1.1rem; box-shadow:0 6px 18px rgba(0,0,0,0.06); text-align:left; }
+        body.dark .dlg-bubble { background:linear-gradient(135deg, rgba(30,41,59,0.8), rgba(30,41,59,0.55)); border-color:rgba(148,163,184,0.2); }
         /* ==================== TEMA ESCURO ==================== */
         body, .glass-inner, .glass-panel, .lesson-card, .folder-container, .practice-card, .word-block, .practice-btn, .list-item-glass, .glass-btn, .modal-sheet, .stat-card, .badge, .tgl, .hub-item, .reading-box { transition: background-color .35s ease, color .35s ease, border-color .35s ease; }
         body.dark { background-color:#0a0f1e; background-image:
@@ -1979,7 +1988,7 @@
     //  PRÁTICA DE CONTEÚDO — motor de exercícios do HSK 4
     //  (não altera nada da prática de caracteres nem do conteúdo)
     // ============================================================
-    const APP_VERSION = '2026-07-03.1';
+    const APP_VERSION = '2026-07-04.1';
     // ---------- PREFERÊNCIAS (tema + recursos de prática) ----------
     const PREFS_KEY = 'hsk4_prefs_v1';
     let prefs = { theme:'light', pinyin:true, trad:true, autoAudio:true, slow:false, effects:true };
@@ -2045,15 +2054,42 @@
         document.body.appendChild(b); if(window.lucide) lucide.createIcons();
         requestAnimationFrame(()=>b.classList.add('show'));
     }
-    async function checkForUpdate(silent){
+    // Detecta nova versão de DUAS formas (funciona no GitHub Pages sem precisar
+    // mudar nada manualmente): 1) ETag/Last-Modified do servidor mudou desde que
+    // a página foi aberta; 2) a constante APP_VERSION do arquivo publicado é outra.
+    let BASE_STAMP=null, _updFound=false;
+    async function fetchStamp(){
         try{
-            const res=await fetch(location.origin+location.pathname+'?_='+Date.now(), {cache:'no-store'});
-            if(!res.ok){ if(!silent) appToast('Não foi possível verificar agora.'); return; }
-            const txt=await res.text();
-            const m=txt.match(/const APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
-            if(m && m[1] && m[1]!==APP_VERSION) showUpdateBanner();
+            let r=await fetch(location.origin+location.pathname+'?_s='+Date.now(), {method:'HEAD', cache:'no-store'});
+            if(!r.ok) r=await fetch(location.origin+location.pathname+'?_s='+Date.now(), {cache:'no-store'});
+            if(!r.ok) return null;
+            const et=(r.headers.get('etag')||'').replace(/W\//,''), lm=r.headers.get('last-modified')||'';
+            return (et||lm)? et+'|'+lm : null;
+        }catch(e){ return null; }
+    }
+    async function checkForUpdate(silent){
+        if(_updFound){ showUpdateBanner(); return; }
+        try{
+            let newer=false;
+            const s=await fetchStamp();
+            if(s && BASE_STAMP && s!==BASE_STAMP) newer=true;
+            if(!newer){
+                const res=await fetch(location.origin+location.pathname+'?_='+Date.now(), {cache:'no-store'});
+                if(!res.ok){ if(!silent) appToast('Não foi possível verificar agora.'); return; }
+                const txt=await res.text();
+                const m=txt.match(/const APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
+                if(m && m[1] && m[1]!==APP_VERSION) newer=true;
+            }
+            if(newer){ _updFound=true; showUpdateBanner(); }
             else if(!silent) appToast('Você já está na versão mais recente.');
         }catch(e){ if(!silent) appToast('Sem conexão para verificar.'); }
+    }
+    function initUpdateWatch(){
+        if(!(location.protocol==='http:'||location.protocol==='https:')) return;
+        fetchStamp().then(s=>{ BASE_STAMP=s; });
+        setTimeout(()=>checkForUpdate(true), 2500);
+        setInterval(()=>checkForUpdate(true), 20*60*1000);                 // a cada 20 min
+        document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) checkForUpdate(true); });
     }
     // ---------- PAINEL DE CONFIGURAÇÕES ----------
     function openSettings(){ document.getElementById('settingsModal').classList.remove('hidden'); renderSettings(); }
@@ -2185,6 +2221,7 @@
         conn:{ label:'Conectores & Advérbios', zh:'连词·副词', icon:'link-2', color:'linear-gradient(135deg,#7c3aed,#a855f7)', cats:['Advérbios / Conjunções','Gramática'] },
         expr:{ label:'Expressões e Compostos', zh:'表达', icon:'quote', color:'linear-gradient(135deg,#e11d48,#f43f5e)', cats:['Expressões e Compostos'] },
         read:{ label:'Leitura & Compreensão', zh:'阅读', icon:'book-open', color:'linear-gradient(135deg,#d97706,#f59e0b)', cats:null },
+        game:{ label:'Mini-jogos & Cultura', zh:'游戏·文化', icon:'gamepad-2', color:'linear-gradient(135deg,#db2777,#ec4899)', cats:null },
         all:{ label:'Prática Geral (tudo)', zh:'综合', icon:'sparkles', color:'linear-gradient(135deg,#334155,#64748b)', cats:null }
     };
     function poolFor(lessonN, kind){
@@ -2237,31 +2274,54 @@
         return { type:'orderSentence', entry:entry, answer:blocks, pool:shuffleA(blocks.concat(distract)) };
     }
     function mkReadQ(text, q){ return { type:'readQ', text:text, q:q }; }
-    // Um turno = ~8 exercícios variados, sorteados a cada vez (nunca igual ao anterior)
+    function mkMemory(words){ return { type:'memory', pairs:sampleA(words,3) }; }
+    function mkDialog(d){ return { type:'dialog', d:d }; }
+    function mkCulture(c){ return { type:'culture', c:c }; }
+    // Um turno = 13-15 exercícios variados, sorteados a cada vez (nunca igual ao anterior)
     function buildTurn(lessonN, kind){
         if(kind==='read') return buildReadingTurn(lessonN);
+        if(kind==='game') return buildGameTurn(lessonN);
         const pool=poolFor(lessonN, kind);
         const words=usableWords(pool, kind==='expr'?10:6);
+        const allWords=usableWords(poolFor(lessonN,'all'),6);
         const sents=usableSents(pool);
         const acts=[];
         if(words.length>=4){
             acts.push(mkMatch(words));
-            sampleA(words,2).forEach(it=>acts.push(mkChoosePt(it,words)));
-            sampleA(words,1).forEach(it=>acts.push(mkChooseZh(it,words)));
-            sampleA(words,1).forEach(it=>acts.push(mkListen(it,words)));
+            sampleA(words,3).forEach(it=>acts.push(mkChoosePt(it,words)));
+            sampleA(words,2).forEach(it=>acts.push(mkChooseZh(it,words)));
+            sampleA(words,2).forEach(it=>acts.push(mkListen(it,words)));
             const typable=words.filter(x=>onlyHanzi(x.w).length<=4);
-            if(typable.length){ acts.push(mkTypeZh(sampleA(typable,1)[0])); acts.push(mkTypeHearZh(sampleA(typable,1)[0])); }
+            sampleA(typable,2).forEach(it=>acts.push(mkTypeZh(it)));
+            sampleA(typable,1).forEach(it=>acts.push(mkTypeHearZh(it)));
         }
-        sampleA(sents,3).forEach(s=>{
-            const a = Math.random()<0.5 ? mkFill(s, words.length?words:usableWords(poolFor(lessonN,'all'),6)) : mkOrder(s, usableWords(poolFor(lessonN,'all'),6));
+        // Frases reais da lição: metade para completar, metade para montar
+        sampleA(sents,5).forEach((s,i)=>{
+            const a = (i%2===0) ? mkFill(s, words.length>=4?words:allWords) : mkOrder(s, allWords);
             if(a) acts.push(a);
         });
-        // Prática geral inclui 1 pergunta de leitura, quando houver texto
-        if(kind==='all' && READINGS[lessonN] && Math.random()<0.7){
-            const t=sampleA(READINGS[lessonN],1)[0];
-            acts.push(mkReadQ(t, sampleA(t.qs,1)[0]));
+        // Situações comunicativas e leitura entram na prática geral
+        if(kind==='all'){
+            if(DIALOGS[lessonN] && DIALOGS[lessonN].length) acts.push(mkDialog(sampleA(DIALOGS[lessonN],1)[0]));
+            if(CULTURE[lessonN] && CULTURE[lessonN].length) acts.push(mkCulture(sampleA(CULTURE[lessonN],1)[0]));
+            if(READINGS[lessonN] && READINGS[lessonN].length){
+                const t=sampleA(READINGS[lessonN],1)[0];
+                acts.push(mkReadQ(t, sampleA(t.qs,1)[0]));
+            }
         }
-        return shuffleA(acts).slice(0, 9);
+        return shuffleA(acts).slice(0, 15);
+    }
+    // Turno de mini-jogos: memória + diálogos comunicativos + quiz cultural + rapidez
+    function buildGameTurn(lessonN){
+        const words=usableWords(poolFor(lessonN,'all'),6);
+        const sents=usableSents(poolFor(lessonN,'all'));
+        const acts=[];
+        if(words.length>=6){ acts.push(mkMemory(words)); acts.push(mkMemory(words)); acts.push(mkMatch(words)); }
+        sampleA(DIALOGS[lessonN]||[],3).forEach(d=>acts.push(mkDialog(d)));
+        sampleA(CULTURE[lessonN]||[],3).forEach(c=>acts.push(mkCulture(c)));
+        sampleA(words,2).forEach(it=>acts.push(mkListen(it,words)));
+        sampleA(sents,2).forEach(s=>{ const a=mkOrder(s, words); if(a) acts.push(a); });
+        return shuffleA(acts).slice(0, 14);
     }
     // Cada turno de leitura traz PELO MENOS DOIS textos, cada um com suas perguntas.
     function buildReadingTurn(lessonN){
@@ -2453,7 +2513,7 @@
     function pcEl(id){ return document.getElementById(id); }
     function startPracticeC(lessonN, kind){
         closeHub();
-        P = { active:true, lesson:lessonN, kind:kind, turn:1, maxTurns:(kind==='read'?3:4), acts:[], idx:0, hearts:6, log:[], usedTexts:[], checking:false, sel:null, matchSel:[], typedOk:0, readsDone:0, ended:false };
+        P = { active:true, lesson:lessonN, kind:kind, turn:1, maxTurns:(kind==='read'?4:5), acts:[], idx:0, hearts:8, log:[], usedTexts:[], checking:false, sel:null, matchSel:[], typedOk:0, readsDone:0, ended:false, note:'' };
         P.acts = buildTurn(lessonN, kind);
         if(!P.acts.length){ appToast('Conteúdo insuficiente para esta prática.'); return; }
         pcEl('pcHearts').innerText = P.hearts;
@@ -2492,7 +2552,7 @@
     }
     function promptCard(inner){ return `<div class="w-full max-w-2xl mx-auto p-4 md:p-6 reading-box text-center">${inner}</div>`; }
     // ---------- carregamento de cada exercício ----------
-    const PC_TITLES = { match:'Associe os pares', choosePt:'Qual é a tradução?', chooseZh:'Como se diz em chinês?', listen:'O que você ouviu?', typeZh:'Escreva em caracteres', typeHearZh:'Ouça e escreva em caracteres', fillBlank:'Complete a frase', orderSentence:'Monte a frase', readQ:'Leia e responda' };
+    const PC_TITLES = { match:'Associe os pares', choosePt:'Qual é a tradução?', chooseZh:'Como se diz em chinês?', listen:'O que você ouviu?', typeZh:'Escreva em caracteres', typeHearZh:'Ouça e escreva em caracteres', fillBlank:'Complete a frase', orderSentence:'Monte a frase', readQ:'Leia e responda', memory:'Jogo da memória', dialog:'Como você responde?', culture:'Cultura chinesa' };
     function loadAct(){
         if(P.idx >= P.acts.length){ endOfTurn(); return; }
         P.checking=false; P.sel=null; P.matchSel=[];
@@ -2509,7 +2569,67 @@
         else if(a.type==='fillBlank') renderFillC(a, area);
         else if(a.type==='orderSentence') renderOrderC(a, area);
         else if(a.type==='readQ') renderReadQ(a, area);
+        else if(a.type==='memory') renderMemoryC(a, area);
+        else if(a.type==='dialog') renderDialogC(a, area);
+        else if(a.type==='culture') renderCultureC(a, area);
         lucide.createIcons();
+    }
+    // ---------- JOGO DA MEMÓRIA ----------
+    let memState={sel:[],done:0,total:0};
+    function renderMemoryC(a, area){
+        memState={sel:[],done:0,total:a.pairs.length};
+        area.insertAdjacentHTML('beforeend','<p class="text-xs text-slate-500 font-semibold">Vire as cartas e encontre os pares chinês ↔ português</p>');
+        const grid=document.createElement('div');
+        grid.className='grid grid-cols-3 gap-3 w-full max-w-xl mx-auto';
+        let cards=[];
+        a.pairs.forEach((p,i)=>{ cards.push({txt:onlyHanzi(p.w)||p.w, zh:true, id:i}); cards.push({txt:p.t, zh:false, id:i}); });
+        shuffleA(cards).forEach(c=>{
+            const w=document.createElement('div'); w.className='mem-card';
+            w.innerHTML=`<div class="mem-face mem-back"><i data-lucide="help-circle" class="w-7 h-7"></i></div><div class="mem-face mem-front">${c.zh?`<span class="chinese-text text-lg">${c.txt}</span>${pyHint(c.txt)}`:c.txt}</div>`;
+            w.onclick=()=>{
+                if(P.checking||w.classList.contains('done')||w.classList.contains('flipped')) return;
+                w.classList.add('flipped');
+                if(c.zh && prefs.autoAudio) playZh(c.txt);
+                memState.sel.push({el:w,c:c});
+                if(memState.sel.length===2){
+                    P.checking=true;
+                    const [x,y]=memState.sel;
+                    if(x.c.id===y.c.id && x.c.zh!==y.c.zh){
+                        setTimeout(()=>{ x.el.classList.add('done'); y.el.classList.add('done'); memState.done++;
+                            if(memState.done>=memState.total){ logR(true,'Memória concluída','',''); sfx(true); showFb(true); } else P.checking=false; },420);
+                    } else {
+                        loseHeart();
+                        setTimeout(()=>{ x.el.classList.remove('flipped'); y.el.classList.remove('flipped'); P.checking=false; },800);
+                    }
+                    memState.sel=[];
+                }
+            };
+            grid.appendChild(w);
+        });
+        area.appendChild(grid); enableCheck(false);
+    }
+    // ---------- DIÁLOGO COMUNICATIVO (escolha a resposta adequada) ----------
+    function renderDialogC(a, area){
+        const d=a.d;
+        area.insertAdjacentHTML('beforeend', `<div class="w-full max-w-2xl mx-auto">
+            <span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-pink-100 text-pink-700 border border-pink-200">对话 · Situação real</span>
+            <div class="flex items-start gap-3 mt-3">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white shrink-0" style="background:linear-gradient(135deg,#db2777,#ec4899);"><i data-lucide="user-round" class="w-5 h-5"></i></div>
+                <div class="dlg-bubble flex-1">
+                    <div class="flex items-center gap-2"><span class="chinese-text text-lg md:text-xl font-bold text-[#1d1d1f]">${d.a}</span>${audioBtn(d.a)}</div>
+                    ${prefs.pinyin?`<span class="py-hint">${d.ap}</span>`:''}${prefs.trad?`<span class="pt-hint">${d.at}</span>`:''}
+                </div>
+            </div>
+            <p class="text-xs text-slate-500 font-semibold mt-4 mb-1 text-center">Qual é a resposta mais adequada?</p>
+        </div>`);
+        optionList(area, shuffleA(d.opts.map((o,i)=>({o:o, ok:i===d.ok}))), x=>`<span class="chinese-text text-base md:text-lg font-bold leading-snug">${x.o[0]}</span>${prefs.pinyin?`<span class="py-hint">${x.o[1]}</span>`:''}${prefs.trad?`<span class="pt-hint">${x.o[2]}</span>`:''}`, x=>{ P.sel=x; if(prefs.autoAudio) playZh(x.o[0]); });
+        if(prefs.autoAudio) setTimeout(()=>playZh(d.a),350);
+    }
+    // ---------- QUIZ CULTURAL (educativo) ----------
+    function renderCultureC(a, area){
+        const c=a.c;
+        area.insertAdjacentHTML('beforeend', promptCard(`<span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-amber-100 text-amber-700 border border-amber-200">文化 · Cultura</span><div class="text-base md:text-xl font-extrabold text-[#1d1d1f] leading-snug mt-3">${c.q}</div>`));
+        optionList(area, shuffleA(c.opts.map((o,i)=>({o:o, ok:i===c.ok}))), x=>`<span class="text-sm md:text-base font-bold leading-snug">${x.o}</span>`, x=>{ P.sel=x; });
     }
     // ---------- ASSOCIAR PARES ----------
     function renderMatchC(a, area){
@@ -2678,7 +2798,9 @@
             zh=a.entry.ex_ch; py=a.entry.ex_py; pt=a.entry.ex_pt; your=user; audio=a.entry.ex_ch;
         }
         else if(a.type==='readQ'){ ok = P.sel && P.sel.ok; const co=a.q.opts[a.q.ok]; zh=co[0]; py=co[1]; pt=co[2]; your=P.sel?P.sel.o[0]:''; audio=co[0]; }
-        else if(a.type==='match'){ return; }
+        else if(a.type==='dialog'){ ok = P.sel && P.sel.ok; const co=a.d.opts[a.d.ok]; zh=co[0]; py=co[1]; pt=co[2]; your=P.sel?P.sel.o[0]:''; audio=co[0]; }
+        else if(a.type==='culture'){ ok = P.sel && P.sel.ok; zh=a.c.opts[a.c.ok]; py=''; pt=a.c.note||''; your=P.sel?P.sel.o:''; audio=''; P.note=a.c.note||''; }
+        else if(a.type==='match'||a.type==='memory'){ return; }
         logR(ok, zh, py, pt, your);
         P.checking=true;
         if(!ok) loseHeart();
@@ -2692,7 +2814,10 @@
         let zh='',py='',pt='';
         if(a.type==='fillBlank'||a.type==='orderSentence'){ zh=a.entry.ex_ch; py=a.entry.ex_py; pt=a.entry.ex_pt; }
         else if(a.type==='readQ'){ const co=a.q.opts[a.q.ok]; zh=co[0]; py=co[1]; pt=co[2]; }
+        else if(a.type==='dialog'){ const co=a.d.opts[a.d.ok]; zh=co[0]; py=co[1]; pt=co[2]; }
+        else if(a.type==='culture'){ zh=a.c.opts[a.c.ok]; pt=a.c.note||''; P.note=a.c.note||''; }
         else if(a.type==='match'){ zh='Associe todos os pares'; }
+        else if(a.type==='memory'){ zh='Encontre todos os pares'; }
         else if(a.item){ zh=onlyHanzi(a.item.w)||a.item.w; py=a.item.p; pt=a.item.t; }
         logR(false, zh, py, pt, '');
         showFb(false, zh, py, pt);
@@ -2711,7 +2836,10 @@
             pcEl('pcFbIcon').className='w-12 h-12 rounded-full flex items-center justify-center text-white bg-teal-500 shadow-md shrink-0';
             pcEl('pcFbIcon').innerHTML='<i data-lucide="check" class="w-7 h-7"></i>';
             pcEl('pcFbTitle').innerText=['很好! Muito bem!','太棒了! Excelente!','对了! Correto!','真厉害! Impressionante!'][Math.floor(Math.random()*4)];
-            pcEl('pcFbText').classList.add('hidden'); pcEl('pcFbSub').classList.add('hidden');
+            pcEl('pcFbText').classList.add('hidden');
+            // Curiosidade cultural aparece mesmo quando a resposta está certa (educativo)
+            const sOk=pcEl('pcFbSub');
+            if(P.note){ sOk.innerText=P.note; sOk.classList.remove('hidden'); P.note=''; } else sOk.classList.add('hidden');
             c.classList.add('practice-btn-success'); c.classList.remove('practice-btn-danger');
         } else {
             fb.className='absolute left-0 bottom-full w-full p-4 md:px-8 py-5 flex flex-col slide-up bg-rose-50/95 backdrop-blur-xl border-t border-rose-200 text-rose-900';
@@ -2792,7 +2920,7 @@
             return `<button class="hub-item" onclick="startPracticeC(${n}, '${k}')">
                 <div class="hub-ico" style="background:${K.color};"><i data-lucide="${K.icon}" class="w-5 h-5"></i></div>
                 <div class="min-w-0 flex-1"><div class="text-sm font-extrabold text-[#1d1d1f] leading-tight">${K.label} <span class="chinese-text text-[#86868b] font-bold">${K.zh}</span></div>
-                <div class="text-[10px] text-[#86868b] font-semibold mt-0.5">${k==='read'?'Pequenos textos com perguntas de compreensão':(k==='all'?'Mistura tudo: vocabulário, frases, escrita e leitura':'Exercícios variados focados nesta categoria')}</div></div>
+                <div class="text-[10px] text-[#86868b] font-semibold mt-0.5">${k==='read'?'Textos de uso real (2 por turno) com compreensão':(k==='game'?'Memória, diálogos comunicativos e quiz de cultura chinesa':(k==='all'?'Mistura tudo: vocabulário, frases, escrita, diálogos e leitura':'Exercícios variados focados nesta categoria'))}</div></div>
                 <i data-lucide="chevron-right" class="w-4 h-4 text-[#86868b] shrink-0"></i>
             </button>`;
         }).join('');
@@ -2825,7 +2953,7 @@
         loadPrefs(); applyTheme(); loadProgress(); buildPinyinMaps();
         decorateFolder();
         if(window.lucide) lucide.createIcons();
-        if(location.protocol==='http:'||location.protocol==='https:') setTimeout(()=>checkForUpdate(true),1500);
+        initUpdateWatch();
     });
     // ---------- TEXTOS EXTRAS (uso real: mensagens, avisos, anúncios) ----------
     READINGS[1].push(
@@ -3127,6 +3255,231 @@
           { q:'绿色食品的价格怎么样？', qp:'Lǜsè shípǐn de jiàgé zěnmeyàng?', qt:'Como é o preço dos orgânicos?', opts:[['比普通食品贵一些','bǐ pǔtōng shípǐn guì yìxiē','um pouco mais caros que os comuns'],['非常便宜','fēicháng piányi','muito baratos'],['和普通食品一样','hé pǔtōng shípǐn yíyàng','iguais aos comuns']], ok:0 },
           { q:'绿色食品的生产过程怎么样？', qp:'Lǜsè shípǐn de shēngchǎn guòchéng zěnmeyàng?', qt:'Como é a produção dos orgânicos?', opts:[['很快','hěn kuài','muito rápida'],['没有污染','méiyǒu wūrǎn','sem poluição'],['很麻烦','hěn máfan','muito trabalhosa']], ok:1 },
           { q:'很多家庭愿意做什么？', qp:'Hěnduō jiātíng yuànyì zuò shénme?', qt:'O que muitas famílias estão dispostas a fazer?', opts:[['不买食品','bù mǎi shípǐn','não comprar alimentos'],['只买便宜的','zhǐ mǎi piányi de','comprar só o barato'],['为绿色食品花更多的钱','wèi lǜsè shípǐn huā gèng duō de qián','gastar mais com orgânicos']], ok:2 }] }
+    );
+    // ---------- DIÁLOGOS COMUNICATIVOS (escolha a resposta adequada) ----------
+    const DIALOGS = {
+      1:[
+        { a:'你好！请问你叫什么名字？', ap:'Nǐ hǎo! Qǐngwèn nǐ jiào shénme míngzi?', at:'Olá! Como você se chama?', opts:[['我叫王静，很高兴认识你。','Wǒ jiào Wáng Jìng, hěn gāoxìng rènshi nǐ.','Me chamo Wang Jing, prazer!'],['我今年二十岁。','Wǒ jīnnián èrshí suì.','Tenho vinte anos.'],['再见！','Zàijiàn!','Tchau!']], ok:0 },
+        { a:'你的爱好是什么？', ap:'Nǐ de àihào shì shénme?', at:'Qual é o seu passatempo?', opts:[['我的身高是一米八。','Wǒ de shēngāo shì yì mǐ bā.','Minha altura é 1,80 m.'],['我喜欢听音乐和游泳。','Wǒ xǐhuan tīng yīnyuè hé yóuyǒng.','Gosto de ouvir música e nadar.'],['他是我的丈夫。','Tā shì wǒ de zhàngfu.','Ele é meu marido.']], ok:1 },
+        { a:'听说你要结婚了，恭喜你！', ap:'Tīngshuō nǐ yào jiéhūn le, gōngxǐ nǐ!', at:'Soube que você vai se casar, parabéns!', opts:[['对不起，我迟到了。','Duìbùqǐ, wǒ chídào le.','Desculpe, me atrasei.'],['我不喜欢吃辣的。','Wǒ bù xǐhuan chī là de.','Não gosto de comida apimentada.'],['谢谢！婚礼在七月。','Xièxie! Hūnlǐ zài qī yuè.','Obrigado! O casamento é em julho.']], ok:2 },
+        { a:'你觉得他的性格怎么样？', ap:'Nǐ juéde tā de xìnggé zěnmeyàng?', at:'O que você acha da personalidade dele?', opts:[['他很幽默，也很认真。','Tā hěn yōumò, yě hěn rènzhēn.','Ele é bem-humorado e dedicado.'],['他身高一米七。','Tā shēngāo yì mǐ qī.','Ele tem 1,70 m.'],['这条裙子很好看。','Zhè tiáo qúnzi hěn hǎokàn.','Esta saia é bonita.']], ok:0 },
+      ],
+      2:[
+        { a:'好久不见！最近怎么样？', ap:'Hǎojiǔ bú jiàn! Zuìjìn zěnmeyàng?', at:'Quanto tempo! Como você está?', opts:[['还不错，就是工作有点儿忙。','Hái búcuò, jiùshì gōngzuò yǒudiǎnr máng.','Estou bem, só o trabalho anda corrido.'],['我不认识你。','Wǒ bú rènshi nǐ.','Não te conheço.'],['这本书很贵。','Zhè běn shū hěn guì.','Este livro é caro.']], ok:0 },
+        { a:'周末我们一起去逛街，好吗？', ap:'Zhōumò wǒmen yìqǐ qù guàngjiē, hǎo ma?', at:'Vamos passear no fim de semana?', opts:[['我昨天去医院了。','Wǒ zuótiān qù yīyuàn le.','Fui ao hospital ontem.'],['好啊，顺便去看看新开的商场。','Hǎo a, shùnbiàn qù kànkan xīn kāi de shāngchǎng.','Boa! De passagem vemos o shopping novo.'],['那是我的词典。','Nà shì wǒ de cídiǎn.','Aquele é meu dicionário.']], ok:1 },
+        { a:'喂，你现在方便接电话吗？', ap:'Wéi, nǐ xiànzài fāngbiàn jiē diànhuà ma?', at:'Alô, pode falar agora?', opts:[['我的钱包是新的。','Wǒ de qiánbāo shì xīn de.','Minha carteira é nova.'],['生日快乐！','Shēngrì kuàilè!','Feliz aniversário!'],['不好意思,我在开会，一会儿给你回。','Bù hǎoyìsi, wǒ zài kāihuì, yíhuìr gěi nǐ huí.','Desculpe, estou em reunião, já te retorno.']], ok:2 },
+        { a:'这是我给你带的礼物。', ap:'Zhè shì wǒ gěi nǐ dài de lǐwù.', at:'Este é um presente que trouxe para você.', opts:[['太感谢了，你真是太客气了！','Tài gǎnxiè le, nǐ zhēnshi tài kèqi le!','Muito obrigado, você é muito gentil!'],['我不去图书馆。','Wǒ bú qù túshūguǎn.','Não vou à biblioteca.'],['明天会下雨。','Míngtiān huì xiàyǔ.','Amanhã vai chover.']], ok:0 },
+      ],
+      3:[
+        { a:'你好，我是来参加面试的。', ap:'Nǐ hǎo, wǒ shì lái cānjiā miànshì de.', at:'Olá, vim para a entrevista.', opts:[['欢迎，请坐，先做个自我介绍吧。','Huānyíng, qǐng zuò, xiān zuò ge zìwǒ jièshào ba.','Bem-vindo, sente-se e apresente-se.'],['这里的菜很好吃。','Zhèlǐ de cài hěn hǎochī.','A comida aqui é gostosa.'],['火车马上就到。','Huǒchē mǎshàng jiù dào.','O trem já vai chegar.']], ok:0 },
+        { a:'你为什么应聘这份工作？', ap:'Nǐ wèishénme yìngpìn zhè fèn gōngzuò?', at:'Por que você se candidatou a esta vaga?', opts:[['因为办公室的空调很好。','Yīnwèi bàngōngshì de kōngtiáo hěn hǎo.','Porque o ar-condicionado é bom.'],['因为它和我的专业有关，我也对这个工作很感兴趣。','Yīnwèi tā hé wǒ de zhuānyè yǒuguān, wǒ yě duì zhège gōngzuò hěn gǎn xìngqù.','Porque tem a ver com meu curso e me interessa.'],['因为我家离海边很近。','Yīnwèi wǒ jiā lí hǎibiān hěn jìn.','Porque moro perto da praia.']], ok:1 },
+        { a:'面试结果什么时候通知我？', ap:'Miànshì jiéguǒ shénme shíhou tōngzhī wǒ?', at:'Quando saberei o resultado?', opts:[['昨天已经下雨了。','Zuótiān yǐjīng xiàyǔ le.','Ontem já choveu.'],['你可以坐地铁去。','Nǐ kěyǐ zuò dìtiě qù.','Você pode ir de metrô.'],['三天内我们会给您打电话。','Sān tiān nèi wǒmen huì gěi nín dǎ diànhuà.','Ligaremos em até três dias.']], ok:2 },
+        { a:'你对工资有什么要求？', ap:'Nǐ duì gōngzī yǒu shénme yāoqiú?', at:'Qual é sua expectativa de salário?', opts:[['我希望收入能符合我的能力。','Wǒ xīwàng shōurù néng fúhé wǒ de nénglì.','Espero uma renda condizente com minha capacidade.'],['我不喜欢吃辣的。','Wǒ bù xǐhuan chī là de.','Não gosto de pimenta.'],['那家医院很大。','Nà jiā yīyuàn hěn dà.','Aquele hospital é grande.']], ok:0 },
+      ],
+      4:[
+        { a:'好久不见，我差点儿没认出你来！', ap:'Hǎojiǔ bú jiàn, wǒ chàdiǎnr méi rèn chū nǐ lái!', at:'Quanto tempo, quase não te reconheci!', opts:[['是啊，十年了，你一点儿都没变！','Shì a, shí nián le, nǐ yìdiǎnr dōu méi biàn!','Pois é, dez anos, e você não mudou nada!'],['请把文件打印出来。','Qǐng bǎ wénjiàn dǎyìn chūlái.','Imprima o documento, por favor.'],['我买了两斤西红柿。','Wǒ mǎi le liǎng jīn xīhóngshì.','Comprei dois jin de tomates.']], ok:0 },
+        { a:'我今年已经换了三次工作了。', ap:'Wǒ jīnnián yǐjīng huànle sān cì gōngzuò le.', at:'Já mudei de emprego três vezes este ano.', opts:[['恭喜你买了新房子！','Gōngxǐ nǐ mǎi le xīn fángzi!','Parabéns pela casa nova!'],['经常换工作不一定好，先积累经验吧。','Jīngcháng huàn gōngzuò bù yídìng hǎo, xiān jīlěi jīngyàn ba.','Mudar sempre não é bom; acumule experiência primeiro.'],['这个游戏很好玩。','Zhège yóuxì hěn hǎowán.','Este jogo é divertido.']], ok:1 },
+        { a:'明天的会议改到几点了？', ap:'Míngtiān de huìyì gǎi dào jǐ diǎn le?', at:'Para que horas mudou a reunião?', opts:[['昨天的电影很感人。','Zuótiān de diànyǐng hěn gǎnrén.','O filme de ontem foi emocionante.'],['我妈妈做的菜最好吃。','Wǒ māma zuò de cài zuì hǎochī.','A comida da minha mãe é a melhor.'],['提前到了上午九点，别迟到。','Tíqián dào le shàngwǔ jiǔ diǎn, bié chídào.','Foi antecipada para as 9h, não se atrase.']], ok:2 },
+        { a:'这个问题太难了，怎么办？', ap:'Zhège wèntí tài nán le, zěnme bàn?', at:'Este problema é difícil demais, e agora?', opts:[['别着急，我们一起想办法解决。','Bié zháojí, wǒmen yìqǐ xiǎng bànfǎ jiějué.','Calma, vamos achar uma solução juntos.'],['祝你生日快乐！','Zhù nǐ shēngrì kuàilè!','Feliz aniversário!'],['那条路很远。','Nà tiáo lù hěn yuǎn.','Aquele caminho é longe.']], ok:0 },
+      ],
+      5:[
+        { a:'这条裙子怎么卖？', ap:'Zhè tiáo qúnzi zěnme mài?', at:'Quanto custa esta saia?', opts:[['地铁站在前面。','Dìtiězhàn zài qiánmiàn.','A estação é logo ali.'],['一百八，今天打八折。','Yìbǎi bā, jīntiān dǎ bā zhé.','180, hoje com 20% de desconto.'],['我不会游泳。','Wǒ bú huì yóuyǒng.','Não sei nadar.']], ok:1 },
+        { a:'能不能便宜一点儿？', ap:'Néng bu néng piányi yìdiǎnr?', at:'Pode fazer mais barato?', opts:[['明天是星期五。','Míngtiān shì xīngqīwǔ.','Amanhã é sexta.'],['他是我的同事。','Tā shì wǒ de tóngshì.','Ele é meu colega.'],['好吧，给您减二十块。','Hǎo ba, gěi nín jiǎn èrshí kuài.','Está bem, tiro vinte yuan.']], ok:2 },
+        { a:'网上买东西安全吗？', ap:'Wǎngshàng mǎi dōngxi ānquán ma?', at:'Comprar online é seguro?', opts:[['只要货比三家、看看评价，一般没问题。','Zhǐyào huò bǐ sān jiā, kànkan píngjià, yìbān méi wèntí.','Comparando lojas e avaliações, em geral não há problema.'],['我家有三只猫。','Wǒ jiā yǒu sān zhī māo.','Tenho três gatos.'],['那座山很高。','Nà zuò shān hěn gāo.','Aquela montanha é alta.']], ok:0 },
+        { a:'你为什么喜欢网购？', ap:'Nǐ wèishénme xǐhuan wǎnggòu?', at:'Por que você gosta de comprar online?', opts:[['因为我喜欢排队。','Yīnwèi wǒ xǐhuan páiduì.','Porque gosto de filas.'],['因为方便，东西也比商店便宜。','Yīnwèi fāngbiàn, dōngxi yě bǐ shāngdiàn piányi.','Porque é prático e mais barato que a loja.'],['因为商店太便宜了。','Yīnwèi shāngdiàn tài piányi le.','Porque a loja é barata demais.']], ok:1 },
+      ],
+      6:[
+        { a:'阿姨，西红柿新鲜吗？', ap:'Āyí, xīhóngshì xīnxiān ma?', at:'Tia, os tomates estão frescos?', opts:[['保证百分之百新鲜，刚上市的。','Bǎozhèng bǎi fēn zhī bǎi xīnxiān, gāng shàngshì de.','Garanto 100% frescos, recém-chegados.'],['银行在对面。','Yínháng zài duìmiàn.','O banco é em frente.'],['我明天去北京。','Wǒ míngtiān qù Běijīng.','Amanhã vou a Pequim.']], ok:0 },
+        { a:'你们有送货上门的服务吗？', ap:'Nǐmen yǒu sòng huò shàng mén de fúwù ma?', at:'Vocês entregam em domicílio?', opts:[['我们的老板姓王。','Wǒmen de lǎobǎn xìng Wáng.','Nosso chefe é o Sr. Wang.'],['有，三日内给您送到。','Yǒu, sān rì nèi gěi nín sòng dào.','Sim, entregamos em até três dias.'],['今天天气不错。','Jīntiān tiānqì búcuò.','O tempo está bom hoje.']], ok:1 },
+        { a:'这台冰箱坏了怎么办？', ap:'Zhè tái bīngxiāng huài le zěnme bàn?', at:'E se a geladeira quebrar?', opts:[['冰箱里有很多水果。','Bīngxiāng lǐ yǒu hěnduō shuǐguǒ.','Há muitas frutas na geladeira.'],['你可以去公园跑步。','Nǐ kěyǐ qù gōngyuán pǎobù.','Você pode correr no parque.'],['一年内我们负责免费修理。','Yì nián nèi wǒmen fùzé miǎnfèi xiūlǐ.','Em um ano, consertamos de graça.']], ok:2 },
+        { a:'一共多少钱？', ap:'Yígòng duōshao qián?', at:'Quanto dá no total?', opts:[['两斤十四块。','Liǎng jīn shísì kuài.','Dois jin, catorze yuan.'],['现在是下午三点。','Xiànzài shì xiàwǔ sān diǎn.','São três da tarde.'],['那个商场很远。','Nàge shāngchǎng hěn yuǎn.','Aquele shopping é longe.']], ok:0 },
+      ]
+    };
+    // ---------- QUIZ CULTURAL (educativo, com curiosidade no feedback) ----------
+    const CULTURE = {
+      1:[
+        { q:'O que se celebra no 七夕节 (Qīxī Jié)?', opts:['O "Dia dos Namorados chinês", no 7º dia do 7º mês lunar','O Ano-Novo chinês','O Festival do Barco-Dragão'], ok:0, note:'A data vem da lenda de 牛郎 (o Vaqueiro) e 织女 (a Tecelã): separados pela Via Láctea, eles se encontram uma vez por ano sobre uma ponte formada por pássaros.' },
+        { q:'Em nomes chineses como 王静 (Wáng Jìng), o que vem primeiro?', opts:['O nome próprio','O sobrenome','Um título de respeito'], ok:1, note:'Na China o sobrenome (姓) vem antes do nome: 王 é o sobrenome e 静 é o nome. Por isso a professora é chamada de 王老师, "professora Wang".' },
+        { q:'Como um chinês costuma reagir a um elogio como "você é muito inteligente"?', opts:['Agradece e retribui com um abraço','Considera falta de educação','Responde com modéstia, como 哪里哪里 ("que nada")'], ok:2, note:'A modéstia (谦虚 qiānxū) é um valor tradicional: diminuir o elogio recebido é visto como boa educação.' },
+        { q:'Qual destes animais NÃO faz parte do zodíaco chinês (生肖)?', opts:['O gato','O rato','O dragão'], ok:0, note:'Diz a lenda que o rato enganou o gato e ele perdeu a corrida dos 12 animais — por isso o gato ficou fora do zodíaco e odeia ratos até hoje.' },
+      ],
+      2:[
+        { q:'O ditado 在家靠父母，出门靠朋友 ensina que...', opts:['os amigos são um apoio essencial fora de casa','é melhor nunca sair de casa','só a família importa'], ok:0, note:'Literalmente: "em casa, apoie-se nos pais; fora de casa, apoie-se nos amigos". Mostra o enorme valor social da amizade e das redes de apoio na China.' },
+        { q:'Ao receber um presente, muitos chineses tradicionalmente...', opts:['abrem na hora, na frente de todos','recusam educadamente algumas vezes antes de aceitar','devolvem outro presente no mesmo momento'], ok:1, note:'Recusar duas ou três vezes antes de aceitar é polidez (客气 kèqi). E muitas vezes o presente não é aberto na frente de quem deu.' },
+        { q:'Qual destes presentes é tradicionalmente EVITADO na China?', opts:['Chá de boa qualidade','Frutas frescas','Relógio de parede'], ok:2, note:'送钟 ("dar um relógio") soa igual a 送终 ("acompanhar um funeral"). Outros tabus: guarda-chuva (伞 soa como 散, separar) e pera (梨 soa como 离, partir).' },
+        { q:'O que é o KTV, tão citado quando amigos saem juntos?', opts:['Karaokê em salas privadas, programa social muito popular','Uma rede de supermercados','Um canal de televisão estatal'], ok:0, note:'O KTV (卡拉OK) é um dos programas favoritos entre amigos e colegas: sala privada, música, comida e bebida — como na frase 我们去KTV唱歌庆祝.' },
+      ],
+      3:[
+        { q:'O que significa 面子 (miànzi) no trabalho e nas relações?', opts:['A "face": reputação e imagem social, que se deve preservar','Um tipo de macarrão típico','O crachá da empresa'], ok:0, note:'"Dar face" (给面子) é demonstrar respeito; fazer alguém "perder a face" (丢面子) em público é uma ofensa séria — evite críticas diretas diante de outros.' },
+        { q:'Como se entrega um cartão de visita em um contexto profissional chinês?', opts:['Jogando sobre a mesa','Com as duas mãos e uma leve inclinação','Sempre pela mão esquerda'], ok:1, note:'Entregar e receber com as duas mãos mostra respeito. Ao receber, leia o cartão com atenção antes de guardá-lo — nunca o coloque no bolso de trás.' },
+        { q:'No mundo do trabalho, 关系 (guānxi) é...', opts:['o salário anual','o contrato de trabalho','a rede de relações pessoais e de confiança'], ok:2, note:'O guānxi — relações cultivadas com tempo, favores e confiança — abre portas na vida profissional chinesa, como diz o texto: oportunidades vêm também das pessoas que conhecemos.' },
+        { q:'O ditado 万事开头难 (wàn shì kāitóu nán) quer dizer que...', opts:['todo começo é difícil','dinheiro resolve tudo','trabalhar é sempre fácil'], ok:0, note:'"Em todas as coisas, o começo é difícil" — usado para encorajar quem está começando um emprego, um curso ou um novo desafio.' },
+      ],
+      4:[
+        { q:'O que é o famoso 铁饭碗 ("tigela de arroz de ferro")?', opts:['Um emprego estável e seguro, quase vitalício','Um restaurante tradicional de Pequim','Um prêmio de culinária'], ok:0, note:'A "tigela de ferro" não quebra: descreve empregos públicos ou muito estáveis. Muitos pais chineses sonham com um 铁饭碗 para os filhos.' },
+        { q:'授人以鱼不如授人以渔 é...', opts:['uma regra da lei trabalhista','um provérbio clássico: ensinar o método vale mais que dar o resultado','o nome de um prato de peixe'], ok:1, note:'"Dar um peixe alimenta por um dia; ensinar a pescar alimenta para sempre." O provérbio é a base de muita pedagogia chinesa: valorize o método (方法).' },
+        { q:'O que significa "996", muito discutido no trabalho na China?', opts:['Um bônus de 996 yuan','Um modelo de celular','Trabalhar das 9h às 21h, 6 dias por semana'], ok:2, note:'O regime 996 virou um grande debate social sobre excesso de trabalho (加班) — ligado à ideia do texto: saúde e família valem mais que a renda.' },
+        { q:'O 红包 (hóngbāo) é...', opts:['um envelope vermelho com dinheiro, dado em festas e no Ano-Novo','um relatório da empresa','um tipo de chá vermelho'], ok:0, note:'O vermelho simboliza sorte. Hoje os hóngbāo também são digitais: no Ano-Novo, milhões são enviados pelo WeChat entre familiares, amigos e colegas.' },
+      ],
+      5:[
+        { q:'O que é o 双十一 (11 de novembro) na China?', opts:['O "Dia dos Solteiros", que virou o maior festival de compras online do mundo','Um feriado nacional de descanso','O aniversário da internet chinesa'], ok:0, note:'O 11/11 (quatro "1", solteiros) virou uma mega-liquidação online que movimenta bilhões em um só dia — o exemplo máximo do 网购 (compras online).' },
+        { q:'Onde é comum pechinchar (砍价) na China?', opts:['Em qualquer lugar, inclusive supermercados','Em mercados e lojinhas; em shoppings o preço costuma ser fixo','Nunca é aceitável pechinchar'], ok:1, note:'Nos mercados, pechinchar faz parte da conversa — com bom humor! Já em shoppings e supermercados os preços são fixos, muitas vezes com 打折 (descontos) oficiais.' },
+        { q:'Qual é a forma de pagamento mais comum nas cidades chinesas hoje?', opts:['Cheque','Apenas dinheiro vivo','Pelo celular (WeChat Pay e Alipay)'], ok:2, note:'Até barracas de rua aceitam QR code. Por isso a frase do app é tão real: 带的现金不够，我只好用手机付钱 — sem dinheiro vivo, paga-se com o celular.' },
+        { q:'一分钱一分货 equivale a qual ideia em português?', opts:['"Você recebe pelo que paga" / "o barato sai caro"','"Quem não arrisca não petisca"','"De grão em grão a galinha enche o papo"'], ok:0, note:'Literalmente "um centavo, um produto": a qualidade acompanha o preço. É a resposta clássica de quem foi enganado por um preço bom demais (上当).' },
+      ],
+      6:[
+        { q:'Quanto pesa um 斤 (jīn), usado nos mercados chineses?', opts:['500 gramas','1 quilo','100 gramas'], ok:0, note:'一斤 = 500 g; 一公斤 = 1 kg. Nos mercados, frutas e verduras são anunciadas por 斤 — como 西红柿七块钱一斤 (tomates a 7 yuan o jin).' },
+        { q:'A frase de vendedor 便宜没好货，好货不便宜 serve para...', opts:['oferecer o produto de graça','justificar o preço: "barato não tem coisa boa, coisa boa não é barata"','anunciar a falência da loja'], ok:1, note:'É a resposta tradicional ao cliente que reclama do preço — o vendedor defende a qualidade (质量) do produto em vez de baixar o valor.' },
+        { q:'绿色食品 ("alimento verde") na China significa...', opts:['comida de cor verde','comida vegetariana','alimento certificado, mais seguro e ecológico'], ok:2, note:'É um selo oficial de produção com menos poluição (污染) e mais segurança — geralmente mais caro, mas visto como melhor para a saúde e o ambiente.' },
+        { q:'O que costuma acontecer nos shoppings chineses quando chega um feriado?', opts:['Grandes promoções e atividades: 一到节日，商场就举办活动','Todos fecham por uma semana','Os preços dobram'], ok:0, note:'Feriados como o Dia Nacional e o Ano-Novo são a alta temporada do varejo: descontos (打折), brindes (送好礼) e eventos para toda a família.' },
+      ]
+    };
+    // ---------- TEXTOS CULTURAIS E EDUCATIVOS (mais 2 por lição) ----------
+    READINGS[1].push(
+      { title:'中国人的名字',
+        lines:[
+          ['中国人的名字和西方的很不一样。','Zhōngguórén de míngzi hé xīfāng de hěn bù yíyàng.'],
+          ['姓在前面，名字在后面。','Xìng zài qiánmiàn, míngzi zài hòumiàn.'],
+          ['比如王静：王是姓，静是名字。','Bǐrú Wáng Jìng: Wáng shì xìng, Jìng shì míngzi.'],
+          ['很多名字都有特别的意思，静的意思是安静。','Hěnduō míngzi dōu yǒu tèbié de yìsi, Jìng de yìsi shì ānjìng.'],
+          ['认识新朋友的时候，可以问：您贵姓？','Rènshi xīn péngyou de shíhou, kěyǐ wèn: nín guì xìng?']],
+        pt:'Os nomes chineses são bem diferentes dos ocidentais. O sobrenome vem antes e o nome depois. Por exemplo, Wang Jing: Wang é o sobrenome e Jing é o nome. Muitos nomes têm significados especiais — Jing significa "quieta". Ao conhecer alguém, pode-se perguntar: "qual é o seu honroso sobrenome?" (您贵姓?).',
+        qs:[
+          { q:'中国人的姓在哪儿？', qp:'Zhōngguórén de xìng zài nǎr?', qt:'Onde fica o sobrenome chinês?', opts:[['在前面','zài qiánmiàn','vem antes'],['在后面','zài hòumiàn','vem depois'],['没有姓','méiyǒu xìng','não existe']], ok:0 },
+          { q:'“静”的意思是什么？', qp:'"Jìng" de yìsi shì shénme?', qt:'O que significa "Jing"?', opts:[['很高','hěn gāo','alta'],['安静','ānjìng','quieta'],['幸福','xìngfú','feliz']], ok:1 },
+          { q:'认识新朋友时可以问什么？', qp:'Rènshi xīn péngyou shí kěyǐ wèn shénme?', qt:'O que se pode perguntar ao conhecer alguém?', opts:[['你多重？','nǐ duō zhòng?','quanto você pesa?'],['你的工资多少？','nǐ de gōngzī duōshao?','qual seu salário?'],['您贵姓？','nín guì xìng?','qual é o seu sobrenome?']], ok:2 }] },
+      { title:'我的理想',
+        lines:[
+          ['我叫李进，我的理想是当一名老师。','Wǒ jiào Lǐ Jìn, wǒ de lǐxiǎng shì dāng yì míng lǎoshī.'],
+          ['我爸爸就是老师，他工作的时候总是很认真。','Wǒ bàba jiù shì lǎoshī, tā gōngzuò de shíhou zǒngshì hěn rènzhēn.'],
+          ['小时候，他经常给我讲有意思的故事。','Xiǎoshíhou, tā jīngcháng gěi wǒ jiǎng yǒu yìsi de gùshi.'],
+          ['我觉得老师不仅教知识，还改变学生的生活。','Wǒ juéde lǎoshī bùjǐn jiāo zhīshi, hái gǎibiàn xuésheng de shēnghuó.'],
+          ['为了这个理想，我每天都努力学习。','Wèile zhège lǐxiǎng, wǒ měitiān dōu nǔlì xuéxí.']],
+        pt:'Meu nome é Li Jin e meu ideal é ser professor. Meu pai é professor e sempre trabalha com muita dedicação. Quando eu era pequeno, ele costumava me contar histórias interessantes. Acho que o professor não apenas ensina conhecimento, como também muda a vida dos alunos. Por esse ideal, estudo com esforço todos os dias.',
+        qs:[
+          { q:'李进的理想是什么？', qp:'Lǐ Jìn de lǐxiǎng shì shénme?', qt:'Qual é o ideal de Li Jin?', opts:[['当老师','dāng lǎoshī','ser professor'],['当律师','dāng lǜshī','ser advogado'],['当医生','dāng yīshēng','ser médico']], ok:0 },
+          { q:'小时候爸爸经常做什么？', qp:'Xiǎoshíhou bàba jīngcháng zuò shénme?', qt:'O que o pai fazia quando ele era pequeno?', opts:[['带他去旅游','dài tā qù lǚyóu','levava-o para viajar'],['给他讲故事','gěi tā jiǎng gùshi','contava-lhe histórias'],['教他做菜','jiāo tā zuòcài','ensinava-o a cozinhar']], ok:1 }] }
+    );
+    READINGS[2].push(
+      { title:'微信和生活',
+        lines:[
+          ['在中国，几乎每个人都用微信。','Zài Zhōngguó, jīhū měi ge rén dōu yòng wēixìn.'],
+          ['朋友们用它聊天儿、发照片、打电话。','Péngyoumen yòng tā liáo tiānr, fā zhàopiàn, dǎ diànhuà.'],
+          ['过节的时候，大家还互相发红包。','Guòjié de shíhou, dàjiā hái hùxiāng fā hóngbāo.'],
+          ['很多人买东西也用微信付钱。','Hěnduō rén mǎi dōngxi yě yòng wēixìn fù qián.'],
+          ['可以说，现在的生活已经离不开它了。','Kěyǐ shuō, xiànzài de shēnghuó yǐjīng lí bù kāi tā le.']],
+        pt:'Na China, quase todo mundo usa o WeChat. Os amigos o usam para conversar, mandar fotos e ligar. Nos feriados, todos ainda trocam "envelopes vermelhos" (dinheiro) pelo app. Muita gente também paga as compras pelo WeChat. Pode-se dizer que a vida de hoje já não se separa dele.',
+        qs:[
+          { q:'过节的时候大家用微信做什么？', qp:'Guòjié de shíhou dàjiā yòng wēixìn zuò shénme?', qt:'O que se faz no WeChat nos feriados?', opts:[['互相发红包','hùxiāng fā hóngbāo','trocar envelopes vermelhos'],['一起踢足球','yìqǐ tī zúqiú','jogar futebol'],['去图书馆','qù túshūguǎn','ir à biblioteca']], ok:0 },
+          { q:'这段话的意思是什么？', qp:'Zhè duàn huà de yìsi shì shénme?', qt:'Qual é a ideia do texto?', opts:[['微信很贵','wēixìn hěn guì','o WeChat é caro'],['生活离不开微信','shēnghuó lí bù kāi wēixìn','a vida não se separa do WeChat'],['年轻人不用微信','niánqīngrén bú yòng wēixìn','jovens não usam WeChat']], ok:1 }] },
+      { title:'谁请客？',
+        lines:[
+          ['在中国，朋友一起吃饭的时候，很少各付各的。','Zài Zhōngguó, péngyou yìqǐ chīfàn de shíhou, hěn shǎo gè fù gè de.'],
+          ['大家常常为了请客“打架”：我来！我来！','Dàjiā chángcháng wèile qǐngkè "dǎjià": wǒ lái! wǒ lái!'],
+          ['请客的人觉得很有面子。','Qǐngkè de rén juéde hěn yǒu miànzi.'],
+          ['下一次，另外一个朋友会说：这次我请！','Xià yí cì, lìngwài yí ge péngyou huì shuō: zhè cì wǒ qǐng!'],
+          ['这样，友谊就越来越深了。','Zhèyàng, yǒuyì jiù yuè lái yuè shēn le.']],
+        pt:'Na China, quando amigos comem juntos, raramente cada um paga o seu. Todos costumam "brigar" para pagar a conta: "Eu pago! Eu pago!". Quem convida sente que ganha prestígio ("face"). Na próxima vez, outro amigo dirá: "desta vez sou eu que convido!". Assim, a amizade fica cada vez mais profunda.',
+        qs:[
+          { q:'中国朋友吃饭时常常怎么样？', qp:'Zhōngguó péngyou chīfàn shí chángcháng zěnmeyàng?', qt:'O que costuma acontecer na hora da conta?', opts:[['大家都想请客','dàjiā dōu xiǎng qǐngkè','todos querem pagar'],['各付各的','gè fù gè de','cada um paga o seu'],['谁都不付钱','shéi dōu bú fù qián','ninguém paga']], ok:0 },
+          { q:'请客的人觉得怎么样？', qp:'Qǐngkè de rén juéde zěnmeyàng?', qt:'Como se sente quem paga?', opts:[['很难过','hěn nánguò','muito triste'],['很有面子','hěn yǒu miànzi','com prestígio ("face")'],['很生气','hěn shēngqì','com raiva']], ok:1 }] }
+    );
+    READINGS[3].push(
+      { title:'名片的文化',
+        lines:[
+          ['在中国工作，名片是很重要的东西。','Zài Zhōngguó gōngzuò, míngpiàn shì hěn zhòngyào de dōngxi.'],
+          ['给别人名片的时候，要用两只手。','Gěi biérén míngpiàn de shíhou, yào yòng liǎng zhī shǒu.'],
+          ['接受名片以后，最好先认真看一看。','Jiēshòu míngpiàn yǐhòu, zuìhǎo xiān rènzhēn kàn yi kàn.'],
+          ['马上把名片放进口袋，是不礼貌的。','Mǎshàng bǎ míngpiàn fàng jìn kǒudài, shì bù lǐmào de.'],
+          ['这些小事会给人留下好的第一印象。','Zhèxiē xiǎoshì huì gěi rén liúxià hǎo de dì-yī yìnxiàng.']],
+        pt:'Para trabalhar na China, o cartão de visita é algo muito importante. Ao entregar o cartão a alguém, deve-se usar as duas mãos. Depois de receber um cartão, o melhor é primeiro observá-lo com atenção. Guardá-lo imediatamente no bolso é falta de educação. Esses detalhes deixam uma boa primeira impressão.',
+        qs:[
+          { q:'给名片的时候应该怎么做？', qp:'Gěi míngpiàn de shíhou yīnggāi zěnme zuò?', qt:'Como entregar o cartão de visita?', opts:[['用两只手','yòng liǎng zhī shǒu','com as duas mãos'],['放在桌子上','fàng zài zhuōzi shang','deixar na mesa'],['让别人自己拿','ràng biérén zìjǐ ná','deixar a pessoa pegar']], ok:0 },
+          { q:'接受名片以后马上放进口袋，怎么样？', qp:'Jiēshòu míngpiàn yǐhòu mǎshàng fàng jìn kǒudài, zěnmeyàng?', qt:'Guardar o cartão na hora é...?', opts:[['很热情','hěn rèqíng','muito simpático'],['不礼貌','bù lǐmào','falta de educação'],['很正式','hěn zhèngshì','muito formal']], ok:1 }] },
+      { title:'一次失败的面试',
+        lines:[
+          ['去年我参加了一家大公司的面试，结果失败了。','Qùnián wǒ cānjiā le yì jiā dà gōngsī de miànshì, jiéguǒ shībài le.'],
+          ['那天我迟到了十分钟，非常紧张。','Nàtiān wǒ chídào le shí fēnzhōng, fēicháng jǐnzhāng.'],
+          ['面试者问的问题，我也没准备好。','Miànshìzhě wèn de wèntí, wǒ yě méi zhǔnbèi hǎo.'],
+          ['但是我没有放弃，每天复习专业知识。','Dànshì wǒ méiyǒu fàngqì, měitiān fùxí zhuānyè zhīshi.'],
+          ['三个月以后，我终于找到了满意的工作。','Sān ge yuè yǐhòu, wǒ zhōngyú zhǎodào le mǎnyì de gōngzuò.'],
+          ['失败也是一种学习。','Shībài yě shì yì zhǒng xuéxí.']],
+        pt:'No ano passado participei da entrevista de uma grande empresa e falhei. Naquele dia me atrasei dez minutos e fiquei muito nervoso. Também não tinha me preparado para as perguntas do entrevistador. Mas não desisti: revisei o conhecimento da minha área todos os dias. Três meses depois, finalmente encontrei um trabalho satisfatório. O fracasso também é uma forma de aprendizado.',
+        qs:[
+          { q:'那天他为什么紧张？', qp:'Nàtiān tā wèishénme jǐnzhāng?', qt:'Por que ele ficou nervoso naquele dia?', opts:[['迟到了十分钟','chídào le shí fēnzhōng','atrasou dez minutos'],['忘了带钱包','wàng le dài qiánbāo','esqueceu a carteira'],['公司太远了','gōngsī tài yuǎn le','a empresa era longe']], ok:0 },
+          { q:'失败以后他做了什么？', qp:'Shībài yǐhòu tā zuò le shénme?', qt:'O que fez depois de falhar?', opts:[['放弃了找工作','fàngqì le zhǎo gōngzuò','desistiu de procurar'],['每天复习专业知识','měitiān fùxí zhuānyè zhīshi','revisou a matéria todos os dias'],['去国外旅游','qù guówài lǚyóu','viajou para o exterior']], ok:1 }] }
+    );
+    READINGS[4].push(
+      { title:'“铁饭碗”',
+        lines:[
+          ['在中国，人们把非常稳定的工作叫做“铁饭碗”。','Zài Zhōngguó, rénmen bǎ fēicháng wěndìng de gōngzuò jiàozuò "tiě fànwǎn".'],
+          ['意思是：铁做的碗，不容易坏。','Yìsi shì: tiě zuò de wǎn, bù róngyì huài.'],
+          ['很多父母希望孩子找到这样的工作。','Hěnduō fùmǔ xīwàng háizi zhǎodào zhèyàng de gōngzuò.'],
+          ['但是现在，不少年轻人更喜欢有意思的工作。','Dànshì xiànzài, bùshǎo niánqīngrén gèng xǐhuan yǒu yìsi de gōngzuò.'],
+          ['他们觉得，兴趣和发展比稳定更重要。','Tāmen juéde, xìngqù hé fāzhǎn bǐ wěndìng gèng zhòngyào.']],
+        pt:'Na China, chama-se um emprego muito estável de "tigela de arroz de ferro". O sentido é: uma tigela feita de ferro não quebra fácil. Muitos pais desejam que os filhos encontrem um trabalho assim. Mas hoje, muitos jovens preferem trabalhos interessantes. Para eles, interesse e desenvolvimento importam mais que estabilidade.',
+        qs:[
+          { q:'“铁饭碗”是什么意思？', qp:'"Tiě fànwǎn" shì shénme yìsi?', qt:'O que significa "tigela de ferro"?', opts:[['非常稳定的工作','fēicháng wěndìng de gōngzuò','um emprego muito estável'],['很贵的碗','hěn guì de wǎn','uma tigela cara'],['一家饭馆的名字','yì jiā fànguǎn de míngzi','o nome de um restaurante']], ok:0 },
+          { q:'现在很多年轻人觉得什么更重要？', qp:'Xiànzài hěnduō niánqīngrén juéde shénme gèng zhòngyào?', qt:'O que os jovens acham mais importante?', opts:[['稳定','wěndìng','estabilidade'],['兴趣和发展','xìngqù hé fāzhǎn','interesse e desenvolvimento'],['离家近','lí jiā jìn','ficar perto de casa']], ok:1 }] },
+      { title:'安排好时间',
+        lines:[
+          ['小夏觉得自己每天都很忙，可是什么都做不完。','Xiǎo Xià juéde zìjǐ měitiān dōu hěn máng, kěshì shénme dōu zuò bù wán.'],
+          ['朋友告诉她一个方法：把重要的事写在笔记本上。','Péngyou gàosu tā yí ge fāngfǎ: bǎ zhòngyào de shì xiě zài bǐjìběn shang.'],
+          ['每天先做最重要的三件事。','Měitiān xiān zuò zuì zhòngyào de sān jiàn shì.'],
+          ['一个月以后，她的工作顺利多了。','Yí ge yuè yǐhòu, tā de gōngzuò shùnlì duō le.'],
+          ['她说：安排好时间，就等于找到了时间。','Tā shuō: ānpái hǎo shíjiān, jiù děngyú zhǎodào le shíjiān.']],
+        pt:'Xiaoxia sentia que estava sempre ocupada, mas nunca terminava nada. Uma amiga lhe ensinou um método: escrever as coisas importantes no caderno. Todos os dias, fazer primeiro as três coisas mais importantes. Um mês depois, seu trabalho fluía muito melhor. Ela diz: organizar bem o tempo equivale a encontrar tempo.',
+        qs:[
+          { q:'朋友告诉她什么方法？', qp:'Péngyou gàosu tā shénme fāngfǎ?', qt:'Qual método a amiga ensinou?', opts:[['把重要的事写在笔记本上','bǎ zhòngyào de shì xiě zài bǐjìběn shang','anotar o importante no caderno'],['少睡觉多工作','shǎo shuìjiào duō gōngzuò','dormir menos e trabalhar mais'],['换一份工作','huàn yí fèn gōngzuò','mudar de emprego']], ok:0 },
+          { q:'每天应该先做什么？', qp:'Měitiān yīnggāi xiān zuò shénme?', qt:'O que fazer primeiro a cada dia?', opts:[['最容易的事','zuì róngyì de shì','o mais fácil'],['最重要的三件事','zuì zhòngyào de sān jiàn shì','as três coisas mais importantes'],['看手机','kàn shǒujī','olhar o celular']], ok:1 }] }
+    );
+    READINGS[5].push(
+      { title:'“双十一”购物节',
+        lines:[
+          ['每年的十一月十一日是中国的“双十一”购物节。','Měi nián de shíyī yuè shíyī rì shì Zhōngguó de "shuāng shíyī" gòuwù jié.'],
+          ['这一天，几乎所有的购物网站都在打折。','Zhè yì tiān, jīhū suǒyǒu de gòuwù wǎngzhàn dōu zài dǎzhé.'],
+          ['很多人提前把想买的东西放进购物车。','Hěnduō rén tíqián bǎ xiǎng mǎi de dōngxi fàng jìn gòuwùchē.'],
+          ['一到晚上十二点，大家就开始买。','Yí dào wǎnshang shí\'èr diǎn, dàjiā jiù kāishǐ mǎi.'],
+          ['不过要记住：只买对的，不买贵的。','Búguò yào jìzhu: zhǐ mǎi duì de, bù mǎi guì de.']],
+        pt:'Todo dia 11 de novembro é o festival de compras "Onze Duplo" da China. Nesse dia, quase todos os sites de compras dão desconto. Muita gente coloca antecipadamente o que quer no carrinho. Assim que chega a meia-noite, todos começam a comprar. Mas é preciso lembrar: compre apenas o certo, não o caro.',
+        qs:[
+          { q:'“双十一”是哪一天？', qp:'"Shuāng shíyī" shì nǎ yì tiān?', qt:'Que dia é o "Onze Duplo"?', opts:[['十一月十一日','shíyī yuè shíyī rì','11 de novembro'],['一月一日','yī yuè yī rì','1º de janeiro'],['十月一日','shí yuè yī rì','1º de outubro']], ok:0 },
+          { q:'大家什么时候开始买？', qp:'Dàjiā shénme shíhou kāishǐ mǎi?', qt:'Quando as compras começam?', opts:[['早上八点','zǎoshang bā diǎn','às 8h'],['晚上十二点','wǎnshang shí\'èr diǎn','à meia-noite'],['中午','zhōngwǔ','ao meio-dia']], ok:1 }] },
+      { title:'快递小哥',
+        lines:[
+          ['网上购物越来越多，快递员也越来越忙。','Wǎngshàng gòuwù yuè lái yuè duō, kuàidìyuán yě yuè lái yuè máng.'],
+          ['人们叫他们“快递小哥”。','Rénmen jiào tāmen "kuàidì xiǎogē".'],
+          ['不管天气怎么样，他们都要按时送货上门。','Bùguǎn tiānqì zěnmeyàng, tāmen dōu yào ànshí sòng huò shàng mén.'],
+          ['有时候一天要送一百多件东西。','Yǒushíhou yì tiān yào sòng yìbǎi duō jiàn dōngxi.'],
+          ['收到东西的时候，别忘了对他们说声谢谢。','Shōudào dōngxi de shíhou, bié wàng le duì tāmen shuō shēng xièxie.']],
+        pt:'Com o crescimento das compras online, os entregadores estão cada vez mais ocupados. As pessoas os chamam de "irmãozinhos da entrega". Não importa o tempo, eles entregam em domicílio pontualmente. Às vezes entregam mais de cem pacotes por dia. Ao receber suas compras, não esqueça de dizer obrigado a eles.',
+        qs:[
+          { q:'人们叫快递员什么？', qp:'Rénmen jiào kuàidìyuán shénme?', qt:'Como as pessoas chamam os entregadores?', opts:[['快递小哥','kuàidì xiǎogē','irmãozinhos da entrega'],['售货人员','shòuhuò rényuán','vendedores'],['上班族','shàngbānzú','trabalhadores de escritório']], ok:0 },
+          { q:'这段话最后告诉我们什么？', qp:'Zhè duàn huà zuìhòu gàosu wǒmen shénme?', qt:'O que o final do texto pede?', opts:[['多买东西','duō mǎi dōngxi','comprar mais'],['对快递员说谢谢','duì kuàidìyuán shuō xièxie','agradecer aos entregadores'],['自己去商店','zìjǐ qù shāngdiàn','ir à loja pessoalmente']], ok:1 }] }
+    );
+    READINGS[6].push(
+      { title:'早市',
+        lines:[
+          ['很多中国城市都有早市。','Hěnduō Zhōngguó chéngshì dōu yǒu zǎoshì.'],
+          ['天刚亮，市场里就热闹起来了。','Tiān gāng liàng, shìchǎng lǐ jiù rènao qǐlái le.'],
+          ['这里的水果和西红柿都特别新鲜。','Zhèlǐ de shuǐguǒ hé xīhóngshì dōu tèbié xīnxiān.'],
+          ['价格比超市便宜，还可以砍价。','Jiàgé bǐ chāoshì piányi, hái kěyǐ kǎnjià.'],
+          ['对很多长辈来说，逛早市是每天最快乐的时候。','Duì hěnduō zhǎngbèi lái shuō, guàng zǎoshì shì měitiān zuì kuàilè de shíhou.']],
+        pt:'Muitas cidades chinesas têm o mercado matinal. Mal o dia clareia, o mercado já fica movimentado. As frutas e os tomates de lá são especialmente frescos. Os preços são mais baratos que no supermercado e ainda dá para pechinchar. Para muitos idosos, passear no mercado matinal é o momento mais feliz do dia.',
+        qs:[
+          { q:'早市什么时候热闹起来？', qp:'Zǎoshì shénme shíhou rènao qǐlái?', qt:'Quando o mercado fica movimentado?', opts:[['天刚亮','tiān gāng liàng','mal o dia clareia'],['中午','zhōngwǔ','ao meio-dia'],['晚上','wǎnshang','à noite']], ok:0 },
+          { q:'早市的价格怎么样？', qp:'Zǎoshì de jiàgé zěnmeyàng?', qt:'Como são os preços do mercado matinal?', opts:[['比超市贵','bǐ chāoshì guì','mais caros que o supermercado'],['比超市便宜，还能砍价','bǐ chāoshì piányi, hái néng kǎnjià','mais baratos, e dá para pechinchar'],['和商场一样','hé shāngchǎng yíyàng','iguais aos do shopping']], ok:1 }] },
+      { title:'会员卡的秘密',
+        lines:[
+          ['现在很多商店都请顾客办会员卡。','Xiànzài hěnduō shāngdiàn dōu qǐng gùkè bàn huìyuánkǎ.'],
+          ['有了会员卡，买东西可以打折。','Yǒu le huìyuánkǎ, mǎi dōngxi kěyǐ dǎzhé.'],
+          ['商店也能了解顾客的购物习惯。','Shāngdiàn yě néng liǎojiě gùkè de gòuwù xíguàn.'],
+          ['然后给顾客介绍他们可能喜欢的商品。','Ránhòu gěi gùkè jièshào tāmen kěnéng xǐhuan de shāngpǐn.'],
+          ['所以，会员卡对商店和顾客都有好处。','Suǒyǐ, huìyuánkǎ duì shāngdiàn hé gùkè dōu yǒu hǎochù.']],
+        pt:'Hoje muitas lojas convidam os clientes a fazer o cartão de fidelidade. Com o cartão, as compras têm desconto. As lojas também conseguem conhecer os hábitos de compras dos clientes. Depois, apresentam a eles produtos de que talvez gostem. Assim, o cartão traz vantagens tanto para a loja quanto para o cliente.',
+        qs:[
+          { q:'有了会员卡，顾客可以怎么样？', qp:'Yǒu le huìyuánkǎ, gùkè kěyǐ zěnmeyàng?', qt:'O que o cliente ganha com o cartão?', opts:[['买东西打折','mǎi dōngxi dǎzhé','desconto nas compras'],['免费拿东西','miǎnfèi ná dōngxi','levar de graça'],['不用排队','búyòng páiduì','não pegar fila']], ok:0 },
+          { q:'商店用会员卡了解什么？', qp:'Shāngdiàn yòng huìyuánkǎ liǎojiě shénme?', qt:'O que a loja descobre com o cartão?', opts:[['顾客的年龄','gùkè de niánlíng','a idade dos clientes'],['顾客的购物习惯','gùkè de gòuwù xíguàn','os hábitos de compras dos clientes'],['顾客的工资','gùkè de gōngzī','o salário dos clientes']], ok:1 }] }
     );
 
     </script>
