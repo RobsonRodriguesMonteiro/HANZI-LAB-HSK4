@@ -2,7 +2,15 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- Anti-cache: garante que hospedagens (GitHub Pages etc.) sirvam sempre a versão mais nova -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="theme-color" content="#cfe8ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
     <title>Hanzi Lab - HSK 4</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -162,6 +170,104 @@
                 #view-folder .folder-container { margin-top: env(safe-area-inset-top); }
             }
         }
+
+        /* ==================== PRÁTICA DE CONTEÚDO (motor) ==================== */
+        @keyframes fadeInP { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeInP 0.4s ease-out forwards; }
+        @keyframes shake { 0%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-5px)}100%{transform:translateX(0)} }
+        @keyframes slideUpP { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .slide-up { animation: slideUpP 0.4s cubic-bezier(0.16,1,0.3,1) forwards; }
+        @keyframes popP { 0%{transform:scale(0.6);opacity:0} 60%{transform:scale(1.12)} 100%{transform:scale(1);opacity:1} }
+        .pop { animation: popP .45s cubic-bezier(0.16,1,0.3,1) both; }
+        .practice-btn { background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6)); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 8px 20px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,1); transition: all 0.2s cubic-bezier(0.25,1,0.5,1); cursor:pointer; }
+        .practice-btn:active:not(:disabled) { transform: scale(0.96); }
+        .practice-btn-primary { background: linear-gradient(135deg, #0066cc, #005bb5); color: white !important; border: none; box-shadow: 0 8px 20px rgba(0,102,204,0.3); }
+        .practice-btn-success { background: linear-gradient(135deg, #14b8a6, #0d9488); color: white !important; border: none; box-shadow: 0 8px 20px rgba(20,184,166,0.3); }
+        .practice-btn-danger { background: linear-gradient(135deg, #f43f5e, #e11d48); color: white !important; border: none; box-shadow: 0 8px 20px rgba(244,63,94,0.3); }
+        .practice-btn:disabled { background: rgba(255,255,255,0.6); color: rgba(0,0,0,0.3) !important; box-shadow: none; border-color: rgba(255,255,255,0.4); cursor: not-allowed; transform: none; }
+        .practice-card { background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.5)); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 8px 20px rgba(0,0,0,0.04), inset 0 1px 1px rgba(255,255,255,1); transition: all 0.2s cubic-bezier(0.25,1,0.5,1); cursor: pointer; }
+        .practice-card:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); }
+        .practice-card.selected { border-color: #0066cc; background: rgba(0,102,204,0.06); box-shadow: 0 0 0 2px rgba(0,102,204,0.25); transform: scale(0.98); }
+        .practice-card.matched { opacity: 0; pointer-events: none; transform: scale(0.9); }
+        .practice-card.error { border-color: #f43f5e; background: rgba(244,63,94,0.05); animation: shake 0.4s; }
+        .word-block { background: rgba(255,255,255,0.92); border: 1px solid rgba(255,255,255,1); box-shadow: 0 4px 12px rgba(0,0,0,0.05); cursor: pointer; transition: all 0.2s; }
+        .word-block:hover { transform: translateY(-2px); }
+        .word-block.used { background: rgba(0,0,0,0.05); color: transparent !important; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05); pointer-events: none; border-color: transparent; }
+        .word-block.used * { visibility: hidden; }
+        .drop-zone { min-height: 4rem; border-bottom: 2px dashed rgba(148,163,184,0.5); padding-bottom: 0.5rem; }
+        .py-hint { display:block; font-size:0.68rem; font-weight:700; color:#0066cc; opacity:0.85; line-height:1.1; margin-top:2px; }
+        .pt-hint { display:block; font-size:0.68rem; font-weight:600; color:#86868b; line-height:1.15; margin-top:2px; }
+        .gear-fab { position:fixed; bottom:16px; right:14px; z-index:70; width:46px; height:46px; border-radius:15px; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,rgba(255,255,255,0.9),rgba(255,255,255,0.6)); border:1px solid rgba(255,255,255,0.85); box-shadow:0 8px 22px rgba(0,0,0,0.10), inset 0 1px 1px rgba(255,255,255,1); color:#0066cc; cursor:pointer; transition:transform .2s; }
+        .gear-fab:active{ transform:scale(0.93) rotate(30deg); }
+        .modal-overlay { position:fixed; inset:0; z-index:120; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(15,23,42,0.35); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); }
+        .modal-overlay.hidden { display:none; }
+        .modal-sheet { width:100%; max-width:470px; max-height:88vh; max-height:88dvh; overflow-y:auto; border-radius:28px; padding:22px; background:linear-gradient(135deg, rgba(255,255,255,0.92), rgba(255,255,255,0.75)); -webkit-backdrop-filter:blur(30px) saturate(180%); backdrop-filter:blur(30px) saturate(180%); border:1px solid rgba(255,255,255,0.9); box-shadow:0 30px 70px rgba(0,0,0,0.25); }
+        .seg { display:flex; gap:8px; }
+        .seg-btn { flex:1; padding:12px; border-radius:16px; font-weight:800; font-size:0.85rem; border:1px solid rgba(0,0,0,0.08); background:rgba(255,255,255,0.6); color:#475569; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:all .2s; }
+        .seg-btn.on { background:linear-gradient(135deg,#0066cc,#3388ff); color:#fff; border-color:transparent; box-shadow:0 8px 18px rgba(0,102,204,0.3); }
+        .tgl { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 14px; border-radius:16px; background:rgba(255,255,255,0.55); border:1px solid rgba(255,255,255,0.8); margin-bottom:8px; }
+        .tgl-sw { width:46px; height:26px; border-radius:999px; background:rgba(0,0,0,0.15); position:relative; transition:background .2s; flex-shrink:0; cursor:pointer; }
+        .tgl-sw::after { content:''; position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:left .2s; box-shadow:0 2px 6px rgba(0,0,0,0.2); }
+        .tgl-sw.on { background:#0d9488; } .tgl-sw.on::after { left:23px; }
+        .stat-card { border-radius:20px; padding:14px 8px; text-align:center; background:linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.4)); border:1px solid rgba(255,255,255,0.8); }
+        .badge { position:relative; border-radius:18px; padding:12px 8px; text-align:center; border:1px solid rgba(255,255,255,0.8); background:linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.45)); transition:all .2s; }
+        .badge.locked { opacity:0.45; filter:grayscale(0.7); }
+        .badge.unlocked { box-shadow:0 8px 18px rgba(251,191,36,0.25); border-color:rgba(251,191,36,0.55); }
+        .ring-bg { stroke: rgba(0,0,0,0.08); }
+        .update-banner { position:fixed; left:50%; bottom:18px; transform:translateX(-50%) translateY(140%); z-index:130; display:flex; align-items:center; gap:12px; padding:12px 14px 12px 18px; border-radius:18px; background:linear-gradient(135deg,#0066cc,#3388ff); color:#fff; box-shadow:0 16px 40px rgba(0,102,204,0.4); transition:transform .35s cubic-bezier(0.16,1,0.3,1); max-width:calc(100vw - 24px); }
+        .update-banner.show { transform:translateX(-50%) translateY(0); }
+        .update-banner button { background:#fff; color:#0066cc; font-weight:800; font-size:0.8rem; padding:8px 14px; border-radius:12px; border:none; cursor:pointer; white-space:nowrap; }
+        .app-toast { position:fixed; left:50%; bottom:80px; transform:translateX(-50%) translateY(12px); z-index:140; background:rgba(15,23,42,0.94); color:#fff; padding:10px 18px; border-radius:999px; font-weight:700; font-size:0.85rem; box-shadow:0 10px 30px rgba(0,0,0,0.3); opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; }
+        .app-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+        .pr-open { margin-top:10px; width:100%; display:flex; align-items:center; justify-content:center; gap:6px; padding:8px 10px; border-radius:14px; font-size:0.72rem; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; background:linear-gradient(135deg,#0d9488,#14b8a6); color:#fff; border:none; cursor:pointer; box-shadow:0 6px 16px rgba(13,148,136,0.3); transition:transform .15s; }
+        .pr-open:active { transform:scale(0.95); }
+        .hub-item { display:flex; align-items:center; gap:12px; width:100%; text-align:left; padding:13px 14px; border-radius:18px; background:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.85); margin-bottom:8px; cursor:pointer; transition:all .2s; }
+        .hub-item:hover { transform:translateY(-1px); background:rgba(255,255,255,0.85); }
+        .hub-ico { width:42px; height:42px; border-radius:13px; display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0; }
+        .reading-box { background: rgba(255,255,255,0.72); border:1px solid rgba(255,255,255,0.9); border-radius:1.5rem; padding:1.1rem 1.25rem; box-shadow:0 8px 24px rgba(0,0,0,0.05); }
+        /* ==================== TEMA ESCURO ==================== */
+        body, .glass-inner, .glass-panel, .lesson-card, .folder-container, .practice-card, .word-block, .practice-btn, .list-item-glass, .glass-btn, .modal-sheet, .stat-card, .badge, .tgl, .hub-item, .reading-box { transition: background-color .35s ease, color .35s ease, border-color .35s ease; }
+        body.dark { background-color:#0a0f1e; background-image:
+            radial-gradient(at 20% 0%, hsla(230,60%,32%,0.55) 0px, transparent 50%),
+            radial-gradient(at 80% 10%, hsla(265,55%,34%,0.5) 0px, transparent 50%),
+            radial-gradient(at 90% 90%, hsla(190,55%,26%,0.55) 0px, transparent 50%),
+            radial-gradient(at 10% 90%, hsla(210,60%,30%,0.5) 0px, transparent 50%),
+            radial-gradient(at 50% 50%, hsla(240,45%,20%,0.6) 0px, transparent 60%); }
+        body.dark .glass-inner, body.dark .glass-panel, body.dark .lesson-card, body.dark .folder-container,
+        body.dark .practice-card, body.dark .word-block, body.dark .glass-folder-icon, body.dark .list-item-glass,
+        body.dark .glass-btn, body.dark .hub-item, body.dark .reading-box, body.dark .glass-btn-primary {
+            background: linear-gradient(135deg, rgba(30,41,59,0.66), rgba(30,41,59,0.36)) !important;
+            border-color: rgba(148,163,184,0.18) !important; color:#e5e7eb; }
+        body.dark .folder-overlay { background: rgba(10,15,30,0.4) !important; }
+        body.dark .mode-tab.active { background: rgba(59,130,246,0.28) !important; color:#93c5fd !important; border-color:rgba(148,163,184,0.25)!important; }
+        body.dark .practice-btn { background: linear-gradient(135deg, rgba(51,65,85,0.72), rgba(51,65,85,0.42)) !important; color:#e5e7eb !important; border-color:rgba(148,163,184,0.2) !important; }
+        body.dark .practice-btn-primary { background: linear-gradient(135deg,#2563eb,#1d4ed8) !important; color:#fff !important; }
+        body.dark .practice-btn-success { background: linear-gradient(135deg,#0d9488,#0f766e) !important; color:#fff !important; }
+        body.dark .practice-btn-danger  { background: linear-gradient(135deg,#e11d48,#be123c) !important; color:#fff !important; }
+        body.dark .practice-btn:disabled { background: rgba(30,41,59,0.5) !important; color: rgba(229,231,235,0.3) !important; }
+        body.dark .modal-sheet { background:linear-gradient(135deg, rgba(23,32,52,0.94), rgba(23,32,52,0.8)); border-color:rgba(148,163,184,0.2); color:#e8edf5; }
+        body.dark .seg-btn { background:rgba(51,65,85,0.5); color:#c2ccd9; border-color:rgba(148,163,184,0.2); }
+        body.dark .seg-btn.on { background:linear-gradient(135deg,#2563eb,#3b82f6); color:#fff; }
+        body.dark .tgl { background:rgba(30,41,59,0.6); border-color:rgba(148,163,184,0.18); }
+        body.dark .stat-card, body.dark .badge { background:linear-gradient(135deg, rgba(30,41,59,0.6), rgba(30,41,59,0.35)); border-color:rgba(148,163,184,0.18); }
+        body.dark .gear-fab { background:linear-gradient(135deg,rgba(51,65,85,0.85),rgba(51,65,85,0.55)); color:#93c5fd; border-color:rgba(148,163,184,0.28); }
+        body.dark .ring-bg { stroke: rgba(255,255,255,0.12); }
+        body.dark #practiceModal { background-color: rgba(8,12,24,0.94) !important; }
+        body.dark .text-\[\#1d1d1f\], body.dark .text-slate-800, body.dark .text-slate-800\/90, body.dark .text-slate-700 { color:#e8edf5 !important; }
+        body.dark .text-slate-600, body.dark .text-slate-500 { color:#c2ccd9 !important; }
+        body.dark .text-slate-400, body.dark .text-\[\#86868b\] { color:#93a1b5 !important; }
+        body.dark .text-\[\#0066cc\] { color:#7fb2ff !important; }
+        body.dark .py-hint { color:#7fb2ff; }
+        body.dark .bg-white\/70, body.dark .bg-white\/60, body.dark .bg-white\/50, body.dark .bg-white\/40,
+        body.dark .bg-white\/30, body.dark .bg-white\/20 { background-color: rgba(30,41,59,0.55) !important; }
+        body.dark .border-white\/90, body.dark .border-white\/80, body.dark .border-white\/70,
+        body.dark .border-white\/60, body.dark .border-white\/50, body.dark .border-white\/40, body.dark .border-white { border-color: rgba(148,163,184,0.2) !important; }
+        body.dark .bg-slate-200\/50 { background-color: rgba(148,163,184,0.16) !important; }
+        body.dark .bg-teal-50\/95 { background-color: rgba(13,148,136,0.28)!important; }
+        body.dark .bg-rose-50\/95 { background-color: rgba(225,29,72,0.28)!important; }
+        body.dark .text-teal-900 { color:#5eead4!important; } body.dark .text-rose-900 { color:#fecdd3!important; }
+        body.dark .border-teal-200 { border-color: rgba(45,212,191,0.4)!important; } body.dark .border-rose-200 { border-color: rgba(251,113,133,0.4)!important; }
+        body.dark input { background: rgba(30,41,59,0.6) !important; color:#e8edf5 !important; border-color: rgba(148,163,184,0.25) !important; }
     </style>
 </head>
 <body>
@@ -379,6 +485,38 @@
                     </div>
                 </div>
             </main>
+        </div>
+    </div>
+    <!-- ===== BOTÃO DE CONFIGURAÇÕES ===== -->
+    <button id="gearBtn" class="gear-fab" title="Configurações" onclick="openSettings()"><i data-lucide="settings" class="w-5 h-5"></i></button>
+    <div id="settingsModal" class="modal-overlay hidden" onclick="if(event.target===this)closeSettings()"><div class="modal-sheet" id="settingsSheet"></div></div>
+    <!-- ===== MENU DE PRÁTICAS DA LIÇÃO ===== -->
+    <div id="hubModal" class="modal-overlay hidden" onclick="if(event.target===this)closeHub()"><div class="modal-sheet" id="hubSheet"></div></div>
+    <!-- ===== MODO PRÁTICA DE CONTEÚDO ===== -->
+    <div id="practiceModal" class="fixed inset-0 z-[100] flex-col bg-[#f5f5f7]/85 backdrop-blur-2xl" style="display:none;">
+        <div class="flex items-center p-3 md:px-8 max-w-4xl mx-auto w-full pt-4 md:pt-6 gap-2 md:gap-3 shrink-0">
+            <button onclick="closePracticeC()" class="text-slate-400 hover:text-slate-600 transition-colors p-2 bg-white/50 rounded-full shadow-sm border border-white shrink-0"><i data-lucide="x" class="w-5 h-5"></i></button>
+            <div class="flex-1 bg-slate-200/50 h-3 rounded-full overflow-hidden shadow-inner border border-white/50"><div id="pcProgress" class="bg-gradient-to-r from-teal-400 to-blue-500 h-full w-0 transition-all duration-500 rounded-full"></div></div>
+            <span id="pcTurn" class="text-[10px] font-extrabold uppercase tracking-widest text-[#86868b] bg-white/50 border border-white/70 px-2.5 py-1.5 rounded-full whitespace-nowrap shrink-0">Turno 1/4</span>
+            <div class="text-rose-500 font-bold text-lg md:text-xl flex items-center gap-1 shrink-0"><i data-lucide="heart" class="w-5 h-5 md:w-6 md:h-6 fill-rose-500 text-rose-500"></i><span id="pcHearts">6</span></div>
+        </div>
+        <div class="flex-1 overflow-y-auto px-4 py-5 flex flex-col items-center max-w-3xl mx-auto w-full">
+            <h2 id="pcTitle" class="text-lg md:text-2xl font-extrabold text-[#1d1d1f] mb-5 self-start w-full tracking-tight"></h2>
+            <div id="pcArea" class="w-full flex flex-col items-center gap-5 pb-16"></div>
+        </div>
+        <div id="pcFooter" class="border-t border-white/60 p-3 md:p-6 bg-white/40 backdrop-blur-md relative z-10 shrink-0">
+            <div class="max-w-4xl mx-auto flex justify-between items-center gap-3">
+                <div id="pcFeedback" class="hidden absolute left-0 bottom-full w-full p-4 md:px-8 py-5 flex-col slide-up">
+                    <div class="max-w-4xl mx-auto w-full flex items-center gap-4">
+                        <div id="pcFbIcon" class="w-12 h-12 rounded-full flex items-center justify-center text-white shadow-md shrink-0"></div>
+                        <div class="min-w-0"><h3 id="pcFbTitle" class="text-lg md:text-2xl font-extrabold tracking-tight"></h3>
+                        <p id="pcFbText" class="text-sm md:text-lg font-medium opacity-90 mt-1 hidden break-words chinese-text"></p>
+                        <p id="pcFbSub" class="text-xs md:text-sm font-medium opacity-80 hidden break-words"></p></div>
+                    </div>
+                </div>
+                <button id="pcSkip" onclick="pcSkip()" class="practice-btn text-slate-500 font-bold uppercase tracking-wider py-3 px-5 rounded-2xl shrink-0 text-sm">Pular</button>
+                <button id="pcCheck" onclick="pcCheck()" class="practice-btn practice-btn-primary font-bold uppercase tracking-wider py-3 px-6 md:px-8 rounded-2xl w-full md:w-auto md:min-w-[160px] text-sm" disabled>Verificar</button>
+            </div>
         </div>
     </div>
     <script>
@@ -1835,6 +1973,1162 @@
 
         function toggleDesktopSidebar() { isDesktopSidebarOpen = !isDesktopSidebarOpen; document.getElementById('sidebar').classList.toggle('desktop-closed', !isDesktopSidebarOpen); document.getElementById('btn-reopen-desktop').classList.toggle('hidden', isDesktopSidebarOpen); }
         window.onload = init;
+    </script>
+    <script>
+    // ============================================================
+    //  PRÁTICA DE CONTEÚDO — motor de exercícios do HSK 4
+    //  (não altera nada da prática de caracteres nem do conteúdo)
+    // ============================================================
+    const APP_VERSION = '2026-07-03.1';
+    // ---------- PREFERÊNCIAS (tema + recursos de prática) ----------
+    const PREFS_KEY = 'hsk4_prefs_v1';
+    let prefs = { theme:'light', pinyin:true, trad:true, autoAudio:true, slow:false, effects:true };
+    function loadPrefs(){ try{ const p=JSON.parse(localStorage.getItem(PREFS_KEY)); if(p) prefs=Object.assign(prefs,p); }catch(e){} }
+    function savePrefs(){ try{ localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); }catch(e){} }
+    function applyTheme(){ document.body.classList.toggle('dark', prefs.theme==='dark'); try{ const m=document.querySelector('meta[name="theme-color"]'); if(m) m.setAttribute('content', prefs.theme==='dark'?'#0a0f1e':'#cfe8ff'); }catch(e){} }
+    function setTheme(t){ prefs.theme=t; savePrefs(); applyTheme(); renderSettings(); }
+    function togglePref(k){ prefs[k]=!prefs[k]; savePrefs(); renderSettings(); }
+    // ---------- PROGRESSO (XP, dias seguidos, conquistas) ----------
+    const PROGRESS_KEY = 'hsk4_progress_v1';
+    let progress = {};
+    function loadProgress(){ try{ progress = JSON.parse(localStorage.getItem(PROGRESS_KEY)) || {}; }catch(e){ progress={}; } }
+    function saveProgress(){ try{ localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); }catch(e){} }
+    function todayStr(d){ d=d||new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+    function dateDiffDays(a,b){ const da=new Date(a+'T00:00:00'), db=new Date(b+'T00:00:00'); return Math.round((db-da)/86400000); }
+    // Marca o dia como praticado sempre que o app é aberto E uma prática é feita.
+    const ACHIEVEMENTS = [
+        { id:'first',    icon:'sparkles', name:'第一步 Primeiros passos', desc:'1ª prática concluída',   check:p=>(p.sessions||0)>=1 },
+        { id:'streak3',  icon:'flame',    name:'Pegando o ritmo',         desc:'3 dias seguidos',        check:p=>(p.streak||0)>=3 },
+        { id:'streak7',  icon:'flame',    name:'Semana firme',            desc:'7 dias seguidos',        check:p=>(p.streak||0)>=7 },
+        { id:'streak30', icon:'flame',    name:'Mês lendário',            desc:'30 dias seguidos',       check:p=>(p.streak||0)>=30 },
+        { id:'perfect',  icon:'target',   name:'满分 Sem erros',          desc:'Prática 100% correta',   check:p=>!!p.perfect },
+        { id:'xp100',    icon:'star',     name:'100 XP',                  desc:'Somou 100 XP',           check:p=>(p.xp||0)>=100 },
+        { id:'xp500',    icon:'star',     name:'500 XP',                  desc:'Somou 500 XP',           check:p=>(p.xp||0)>=500 },
+        { id:'xp1000',   icon:'trophy',   name:'1000 XP',                 desc:'Somou 1000 XP',          check:p=>(p.xp||0)>=1000 },
+        { id:'sessions10',icon:'book-open',name:'Estudioso',              desc:'10 práticas feitas',     check:p=>(p.sessions||0)>=10 },
+        { id:'writer',   icon:'pencil',   name:'写字 Escritor',           desc:'20 respostas escritas em caracteres', check:p=>(p.typed||0)>=20 },
+        { id:'reader',   icon:'book-open',name:'阅读 Leitor',             desc:'5 textos de leitura concluídos', check:p=>(p.reads||0)>=5 },
+        { id:'explorer', icon:'compass',  name:'Explorador',              desc:'Praticou nas 6 lições',  check:p=>Object.keys(p.lessonSet||{}).length>=6 }
+    ];
+    function checkAchievements(){ progress.achievements=progress.achievements||{}; const nw=[]; ACHIEVEMENTS.forEach(a=>{ if(!progress.achievements[a.id] && a.check(progress)){ progress.achievements[a.id]=todayStr(); nw.push(a); } }); return nw; }
+    function recordPractice(correct, total, lessonN, typedCount, readsCount){
+        const p=progress; const today=todayStr();
+        if(p.lastDate!==today){
+            if(p.lastDate && dateDiffDays(p.lastDate,today)===1) p.streak=(p.streak||0)+1; else p.streak=1;
+            p.lastDate=today; p.days=p.days||{}; p.days[today]=true; p.totalDays=Object.keys(p.days).length;
+        }
+        const pct= total? Math.round(correct/total*100):0;
+        const xpGained = 10 + correct*3;
+        p.xp=(p.xp||0)+xpGained; p.sessions=(p.sessions||0)+1;
+        p.totalCorrect=(p.totalCorrect||0)+correct; p.totalWrong=(p.totalWrong||0)+(total-correct);
+        p.typed=(p.typed||0)+(typedCount||0); p.reads=(p.reads||0)+(readsCount||0);
+        if(pct===100 && total>0) p.perfect=true;
+        if(lessonN){ p.lessonSet=p.lessonSet||{}; p.lessonSet[lessonN]=true; }
+        const newAch=checkAchievements(); saveProgress();
+        return { xpGained, streak:p.streak, newAch, pct };
+    }
+    function resetProgress(){ if(confirm('Zerar todo o seu progresso? Essa ação não pode ser desfeita.')){ progress={}; saveProgress(); renderSettings(); decorateFolder(); } }
+    // Transferir progresso entre navegadores/dispositivos (código manual)
+    function exportProgress(){ try{ const code=btoa(unescape(encodeURIComponent(JSON.stringify(progress)))); prompt('Copie este código e use "Importar progresso" no outro navegador/dispositivo:', code); }catch(e){ appToast('Não foi possível gerar o código.'); } }
+    function importProgress(){ const code=prompt('Cole aqui o código do progresso:'); if(!code) return; try{ const p=JSON.parse(decodeURIComponent(escape(atob(code.trim())))); if(typeof p!=='object') throw 0; progress=p; saveProgress(); appToast('Progresso importado com sucesso!'); renderSettings(); decorateFolder(); }catch(e){ appToast('Código inválido.'); } }
+    // ---------- TOAST + ATUALIZAÇÃO (hospedagem no GitHub) ----------
+    function appToast(msg){ let t=document.getElementById('appToast'); if(!t){ t=document.createElement('div'); t.id='appToast'; t.className='app-toast'; document.body.appendChild(t); } t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'), 2600); }
+    function forceUpdate(){
+        try{ if('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())); }catch(e){}
+        try{ if(window.caches && caches.keys) caches.keys().then(ks=>ks.forEach(k=>caches.delete(k))); }catch(e){}
+        location.replace(location.origin + location.pathname + '?v=' + Date.now());
+    }
+    function showUpdateBanner(){
+        if(document.getElementById('updateBanner')) return;
+        const b=document.createElement('div'); b.id='updateBanner'; b.className='update-banner';
+        b.innerHTML='<div class="flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5"></i><span class="text-sm font-bold">Nova versão disponível</span></div><button onclick="forceUpdate()">Atualizar</button><button onclick="this.parentElement.remove()" style="background:transparent;color:#fff;padding:6px;">✕</button>';
+        document.body.appendChild(b); if(window.lucide) lucide.createIcons();
+        requestAnimationFrame(()=>b.classList.add('show'));
+    }
+    async function checkForUpdate(silent){
+        try{
+            const res=await fetch(location.origin+location.pathname+'?_='+Date.now(), {cache:'no-store'});
+            if(!res.ok){ if(!silent) appToast('Não foi possível verificar agora.'); return; }
+            const txt=await res.text();
+            const m=txt.match(/const APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
+            if(m && m[1] && m[1]!==APP_VERSION) showUpdateBanner();
+            else if(!silent) appToast('Você já está na versão mais recente.');
+        }catch(e){ if(!silent) appToast('Sem conexão para verificar.'); }
+    }
+    // ---------- PAINEL DE CONFIGURAÇÕES ----------
+    function openSettings(){ document.getElementById('settingsModal').classList.remove('hidden'); renderSettings(); }
+    function closeSettings(){ document.getElementById('settingsModal').classList.add('hidden'); }
+    function tglHTML(k, icon, label, desc){
+        return `<div class="tgl"><div class="flex items-center gap-3 min-w-0"><i data-lucide="${icon}" class="w-5 h-5 text-[#0066cc] shrink-0"></i><div class="min-w-0"><div class="text-sm font-extrabold text-[#1d1d1f] leading-tight">${label}</div><div class="text-[10px] text-[#86868b] font-semibold leading-tight mt-0.5">${desc}</div></div></div><div class="tgl-sw ${prefs[k]?'on':''}" onclick="togglePref('${k}')"></div></div>`;
+    }
+    function renderSettings(){
+        const sheet=document.getElementById('settingsSheet'); if(!sheet) return;
+        const p=progress; const dark=prefs.theme==='dark';
+        const streak=p.streak||0, xp=p.xp||0, days=p.totalDays||0, sess=p.sessions||0;
+        const tot=(p.totalCorrect||0)+(p.totalWrong||0); const acc= tot? Math.round((p.totalCorrect||0)/tot*100):0;
+        const badges=ACHIEVEMENTS.map(a=>{ const un=p.achievements && p.achievements[a.id]; return `<div class="badge ${un?'unlocked':'locked'}"><div class="w-9 h-9 mx-auto rounded-xl flex items-center justify-center ${un?'bg-amber-400 text-white':'bg-slate-400/30 text-slate-500'} mb-1"><i data-lucide="${a.icon}" class="w-5 h-5"></i></div><div class="text-[11px] font-extrabold leading-tight text-[#1d1d1f]">${a.name}</div><div class="text-[9px] text-[#86868b] leading-tight mt-0.5">${a.desc}</div></div>`; }).join('');
+        sheet.innerHTML=`
+            <div class="flex items-center justify-between mb-5"><h2 class="text-xl font-extrabold text-[#1d1d1f] flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-[#0066cc]"></i>Configurações</h2><button onclick="closeSettings()" class="p-2 rounded-full bg-white/60 border border-white text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+            <p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-2">Tema</p>
+            <div class="seg mb-6"><button class="seg-btn ${!dark?'on':''}" onclick="setTheme('light')"><i data-lucide="sun" class="w-4 h-4"></i>Claro</button><button class="seg-btn ${dark?'on':''}" onclick="setTheme('dark')"><i data-lucide="moon" class="w-4 h-4"></i>Escuro</button></div>
+            <p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-2">Recursos de prática</p>
+            ${tglHTML('pinyin','type','Mostrar pinyin','Pinyin sob tudo o que estiver em caracteres')}
+            ${tglHTML('trad','languages','Mostrar tradução','Tradução em português nas frases e textos')}
+            ${tglHTML('autoAudio','volume-2','Áudio automático','Toca o áudio da questão automaticamente')}
+            ${tglHTML('slow','turtle','Áudio lento','Fala devagar, para treinar o ouvido')}
+            ${tglHTML('effects','bell','Sons de acerto/erro','Efeito sonoro ao verificar a resposta')}
+            <p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-2 mt-5">Seu progresso</p>
+            <div class="grid grid-cols-3 gap-2 mb-2">
+                <div class="stat-card"><div class="text-2xl font-extrabold text-orange-500 flex items-center justify-center gap-1"><i data-lucide="flame" class="w-5 h-5"></i>${streak}</div><div class="text-[9px] font-bold text-[#86868b] uppercase mt-1">Dias seguidos</div></div>
+                <div class="stat-card"><div class="text-2xl font-extrabold text-[#0066cc]">${xp}</div><div class="text-[9px] font-bold text-[#86868b] uppercase mt-1">XP total</div></div>
+                <div class="stat-card"><div class="text-2xl font-extrabold text-teal-500">${acc}%</div><div class="text-[9px] font-bold text-[#86868b] uppercase mt-1">Acertos</div></div>
+            </div>
+            <div class="grid grid-cols-2 gap-2 mb-6">
+                <div class="stat-card"><div class="text-lg font-extrabold text-[#1d1d1f]">${sess}</div><div class="text-[9px] font-bold text-[#86868b] uppercase mt-1">Práticas feitas</div></div>
+                <div class="stat-card"><div class="text-lg font-extrabold text-[#1d1d1f]">${days}</div><div class="text-[9px] font-bold text-[#86868b] uppercase mt-1">Dias praticados</div></div>
+            </div>
+            <p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-2">Conquistas</p>
+            <div class="grid grid-cols-3 gap-2 mb-5">${badges}</div>
+            <p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-2">Levar progresso para outro navegador</p>
+            <div class="grid grid-cols-2 gap-2 mb-4">
+                <button onclick="exportProgress()" class="text-xs font-bold text-[#0066cc] py-2.5 rounded-xl border border-[#0066cc]/30 bg-white/40 flex items-center justify-center gap-2"><i data-lucide="upload" class="w-4 h-4"></i>Exportar</button>
+                <button onclick="importProgress()" class="text-xs font-bold text-teal-600 py-2.5 rounded-xl border border-teal-500/30 bg-white/40 flex items-center justify-center gap-2"><i data-lucide="download" class="w-4 h-4"></i>Importar</button>
+            </div>
+            <button onclick="checkForUpdate(false)" class="w-full text-sm font-bold text-[#0066cc] py-2.5 rounded-xl border border-[#0066cc]/30 bg-white/40 flex items-center justify-center gap-2 mb-2"><i data-lucide="refresh-cw" class="w-4 h-4"></i>Buscar atualizações</button>
+            <button onclick="resetProgress()" class="w-full text-xs font-bold text-rose-500/80 py-2.5 rounded-xl border border-rose-200/60">Zerar progresso</button>
+            <p class="text-center text-[10px] text-[#86868b] font-semibold mt-3">Versão ${APP_VERSION}</p>`;
+        if(window.lucide) lucide.createIcons();
+    }
+    // ---------- EFEITOS SONOROS (acerto/erro, estilo Duolingo, gerados localmente) ----------
+    let _actx=null;
+    function sfx(ok){
+        if(!prefs.effects) return;
+        try{
+            _actx=_actx||new (window.AudioContext||window.webkitAudioContext)();
+            const notes= ok? [[523.25,0],[659.25,0.09],[783.99,0.18]] : [[220,0],[174.61,0.12]];
+            notes.forEach(([f,d])=>{ const o=_actx.createOscillator(), g=_actx.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(0.0001,_actx.currentTime+d); g.gain.exponentialRampToValueAtTime(0.18,_actx.currentTime+d+0.02); g.gain.exponentialRampToValueAtTime(0.0001,_actx.currentTime+d+0.22); o.connect(g); g.connect(_actx.destination); o.start(_actx.currentTime+d); o.stop(_actx.currentTime+d+0.25); });
+        }catch(e){}
+    }
+    // ---------- ÁUDIO EM CHINÊS PARA A PRÁTICA (reaproveita o motor do app) ----------
+    function speakZhSys(t){
+        if(!('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const u=new SpeechSynthesisUtterance(t);
+        u.lang='zh-CN'; u.rate= prefs.slow?0.55:0.85; u.pitch=1.05;
+        if(typeof bestZhVoice!=='undefined'){ if(!bestZhVoice && typeof pickBestChineseVoice==='function') bestZhVoice=pickBestChineseVoice(); if(bestZhVoice) u.voice=bestZhVoice; }
+        window.speechSynthesis.speak(u);
+    }
+    function playZh(text){
+        const t=(text||'').trim(); if(!t) return;
+        if(typeof unlockSpeechOnce==='function') unlockSpeechOnce();
+        if(typeof currentAudio!=='undefined' && currentAudio){ try{ currentAudio.pause(); }catch(e){} currentAudio=null; }
+        if('speechSynthesis' in window) window.speechSynthesis.cancel();
+        if(typeof googleTtsBroken!=='undefined' && googleTtsBroken){ speakZhSys(t); return; }
+        const url='https://translate.google.com/translate_tts?ie=UTF-8&tl=zh-CN&client=tw-ob&ttsspeed='+(prefs.slow?'0.24':'0.9')+'&q='+encodeURIComponent(t);
+        const audio=new Audio(url); audio.preload='auto';
+        if(typeof currentAudio!=='undefined') currentAudio=audio;
+        let started=false;
+        const useFallback=()=>{ if(started) return; started=true; if(typeof googleTtsBroken!=='undefined') googleTtsBroken=true; try{ audio.pause(); }catch(e){} speakZhSys(t); };
+        audio.onplaying=()=>{ started=true; };
+        audio.onerror=useFallback;
+        setTimeout(()=>{ if(!started) useFallback(); }, 2500);
+        const pr=audio.play(); if(pr && typeof pr.catch==='function') pr.catch(useFallback);
+    }
+    // ---------- PINYIN AUTOMÁTICO (mapas montados a partir do próprio banco) ----------
+    function onlyHanzi(s){ return (s||'').replace(/[^㐀-鿿]/g,''); }
+    function splitSyl(py){
+        return (py||'').toLowerCase().replace(/['’\-]/g,' ')
+            .replace(/([aeiouüāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜ]+(?:ng|n|r)?)(?=[bpmfdtnlgkhjqxzcsrwy])/g,'$1 ')
+            .split(/\s+/).filter(x=>/[a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü]/.test(x));
+    }
+    let WORD_PY=null, CHAR_PY=null, WORD_LIST=null;
+    // Palavras funcionais frequentes: deixam os blocos das frases naturais (uso real)
+    const COMMON_WORDS = [['我们','wǒmen'],['你们','nǐmen'],['他们','tāmen'],['她们','tāmen'],['大家','dàjiā'],['什么','shénme'],['怎么','zěnme'],['因为','yīnwèi'],['所以','suǒyǐ'],['可以','kěyǐ'],['时候','shíhou'],['觉得','juéde'],['知道','zhīdào'],['现在','xiànzài'],['没有','méiyǒu'],['一个','yí ge'],['这个','zhège'],['那个','nàge'],['喜欢','xǐhuan'],['东西','dōngxi'],['以后','yǐhòu'],['以前','yǐqián'],['一起','yìqǐ'],['学生','xuésheng'],['老师','lǎoshī'],['朋友','péngyou'],['如果','rúguǒ'],['应该','yīnggāi'],['非常','fēicháng'],['很多','hěnduō'],['为什么','wèishénme'],['一定','yídìng'],['已经','yǐjīng'],['公园','gōngyuán'],['电脑','diànnǎo'],['电视','diànshì'],['留学生','liúxuéshēng']];
+    function buildPinyinMaps(){
+        if(WORD_PY) return;
+        WORD_PY={}; CHAR_PY={}; WORD_LIST=[];
+        COMMON_WORDS.forEach(([w,p])=>{ WORD_PY[w]=p; WORD_LIST.push(w); });
+        database.forEach(d=>{
+            const w=onlyHanzi(d.w);
+            if(w && !WORD_PY[w] && d.p && !/[…（）()]/.test(d.w)){ WORD_PY[w]=d.p; WORD_LIST.push(w); }
+            // alinhamento caractere ↔ sílaba (quando a contagem bate)
+            [[onlyHanzi(d.w), d.p], [onlyHanzi(d.ex_ch||''), d.ex_py||'']].forEach(([h,p])=>{
+                if(!h||!p) return;
+                const syl=splitSyl(p);
+                if(syl.length===h.length){ for(let i=0;i<h.length;i++){ if(!CHAR_PY[h[i]]) CHAR_PY[h[i]]=syl[i]; } }
+            });
+        });
+        WORD_LIST.sort((a,b)=>b.length-a.length);
+    }
+    function pinyinOf(hz){
+        buildPinyinMaps();
+        const h=onlyHanzi(hz); if(!h) return '';
+        if(WORD_PY[h]) return WORD_PY[h];
+        let out=[]; for(const c of h){ if(CHAR_PY[c]) out.push(CHAR_PY[c]); else return ''; }
+        return out.join(' ');
+    }
+    // ---------- SEGMENTAÇÃO DE FRASES EM BLOCOS (palavras do banco) ----------
+    function segmentZh(sentence){
+        buildPinyinMaps();
+        const s=onlyHanzi(sentence); const blocks=[]; let i=0;
+        while(i<s.length){
+            let hit=null;
+            for(const w of WORD_LIST){ if(w.length>1 && w.length<=6 && s.startsWith(w,i)){ hit=w; break; } }
+            if(hit){ blocks.push(hit); i+=hit.length; } else { blocks.push(s[i]); i++; }
+        }
+        return blocks;
+    }
+    // ---------- POOLS DE CONTEÚDO POR LIÇÃO/TIPO ----------
+    const KINDS = {
+        subst:{ label:'Substantivos', zh:'名词', icon:'box', color:'linear-gradient(135deg,#0066cc,#3388ff)', cats:['Substantivos'] },
+        verb:{ label:'Verbos', zh:'动词', icon:'activity', color:'linear-gradient(135deg,#0d9488,#14b8a6)', cats:['Verbos'] },
+        conn:{ label:'Conectores & Advérbios', zh:'连词·副词', icon:'link-2', color:'linear-gradient(135deg,#7c3aed,#a855f7)', cats:['Advérbios / Conjunções','Gramática'] },
+        expr:{ label:'Expressões e Compostos', zh:'表达', icon:'quote', color:'linear-gradient(135deg,#e11d48,#f43f5e)', cats:['Expressões e Compostos'] },
+        read:{ label:'Leitura & Compreensão', zh:'阅读', icon:'book-open', color:'linear-gradient(135deg,#d97706,#f59e0b)', cats:null },
+        all:{ label:'Prática Geral (tudo)', zh:'综合', icon:'sparkles', color:'linear-gradient(135deg,#334155,#64748b)', cats:null }
+    };
+    function poolFor(lessonN, kind){
+        const cats=KINDS[kind].cats;
+        return database.filter(d=> d.l===lessonN && (cats? cats.includes(d.c) : true));
+    }
+    function usableWords(pool, maxLen){
+        maxLen=maxLen||6;
+        const seen=new Set();
+        return pool.filter(d=>{
+            const h=onlyHanzi(d.w);
+            if(!h || h.length<1 || h.length>maxLen) return false;
+            if(/[…()（）\/A-Za-z]/.test(d.w)) return false;
+            if(seen.has(h)) return false; seen.add(h); return true;
+        });
+    }
+    function usableSents(pool){
+        return pool.filter(d=> d.ex_ch && onlyHanzi(d.ex_ch).length>=4 && onlyHanzi(d.ex_ch).length<=20);
+    }
+    function shuffleA(a){ return a.slice().sort(()=>0.5-Math.random()); }
+    function sampleA(a,n){ return shuffleA(a).slice(0,n); }
+    // ---------- GERADORES DE ATIVIDADES ----------
+    function mkChoosePt(it, words){
+        const opts=[it.t, ...sampleA(words.filter(x=>x.t!==it.t),3).map(x=>x.t)];
+        return { type:'choosePt', item:it, options:shuffleA(opts) };
+    }
+    function mkChooseZh(it, words){
+        const opts=[it, ...sampleA(words.filter(x=>onlyHanzi(x.w)!==onlyHanzi(it.w)),3)];
+        return { type:'chooseZh', item:it, options:shuffleA(opts) };
+    }
+    function mkListen(it, words){
+        const opts=[it, ...sampleA(words.filter(x=>onlyHanzi(x.w)!==onlyHanzi(it.w)),3)];
+        return { type:'listen', item:it, options:shuffleA(opts) };
+    }
+    function mkMatch(words){ return { type:'match', pairs:sampleA(words,4) }; }
+    function mkTypeZh(it){ return { type:'typeZh', item:it }; }
+    function mkTypeHearZh(it){ return { type:'typeHearZh', item:it }; }
+    function mkFill(entry, words){
+        const w=onlyHanzi(entry.w); const sent=entry.ex_ch;
+        if(!w || sent.indexOf(w)===-1) return null;
+        const others=sampleA(words.filter(x=>{ const h=onlyHanzi(x.w); return h!==w && sent.indexOf(h)===-1; }),3);
+        if(others.length<2) return null;
+        return { type:'fillBlank', entry:entry, gap:w, options:shuffleA([entry, ...others]) };
+    }
+    function mkOrder(entry, words){
+        const blocks=segmentZh(entry.ex_ch);
+        if(blocks.length<3 || blocks.length>12) return null;
+        const inSent=new Set(blocks);
+        const distract=sampleA(words.filter(x=>{ const h=onlyHanzi(x.w); return h.length<=4 && !inSent.has(h) && entry.ex_ch.indexOf(h)===-1; }),2).map(x=>onlyHanzi(x.w));
+        return { type:'orderSentence', entry:entry, answer:blocks, pool:shuffleA(blocks.concat(distract)) };
+    }
+    function mkReadQ(text, q){ return { type:'readQ', text:text, q:q }; }
+    // Um turno = ~8 exercícios variados, sorteados a cada vez (nunca igual ao anterior)
+    function buildTurn(lessonN, kind){
+        if(kind==='read') return buildReadingTurn(lessonN);
+        const pool=poolFor(lessonN, kind);
+        const words=usableWords(pool, kind==='expr'?10:6);
+        const sents=usableSents(pool);
+        const acts=[];
+        if(words.length>=4){
+            acts.push(mkMatch(words));
+            sampleA(words,2).forEach(it=>acts.push(mkChoosePt(it,words)));
+            sampleA(words,1).forEach(it=>acts.push(mkChooseZh(it,words)));
+            sampleA(words,1).forEach(it=>acts.push(mkListen(it,words)));
+            const typable=words.filter(x=>onlyHanzi(x.w).length<=4);
+            if(typable.length){ acts.push(mkTypeZh(sampleA(typable,1)[0])); acts.push(mkTypeHearZh(sampleA(typable,1)[0])); }
+        }
+        sampleA(sents,3).forEach(s=>{
+            const a = Math.random()<0.5 ? mkFill(s, words.length?words:usableWords(poolFor(lessonN,'all'),6)) : mkOrder(s, usableWords(poolFor(lessonN,'all'),6));
+            if(a) acts.push(a);
+        });
+        // Prática geral inclui 1 pergunta de leitura, quando houver texto
+        if(kind==='all' && READINGS[lessonN] && Math.random()<0.7){
+            const t=sampleA(READINGS[lessonN],1)[0];
+            acts.push(mkReadQ(t, sampleA(t.qs,1)[0]));
+        }
+        return shuffleA(acts).slice(0, 9);
+    }
+    // Cada turno de leitura traz PELO MENOS DOIS textos, cada um com suas perguntas.
+    function buildReadingTurn(lessonN){
+        const texts=READINGS[lessonN]||[];
+        if(!texts.length) return [];
+        let avail=texts.map((_,i)=>i).filter(i=>!P.usedTexts.includes(i));
+        if(avail.length<2){ P.usedTexts=[]; avail=texts.map((_,i)=>i); } // esgotou: libera para reutilizar com perguntas embaralhadas
+        const pick=shuffleA(avail).slice(0,2);
+        pick.forEach(i=>P.usedTexts.push(i));
+        P.readsDone=(P.readsDone||0)+pick.length;
+        const acts=[];
+        pick.forEach(i=>{ const t=texts[i]; shuffleA(t.qs).forEach(q=>acts.push(mkReadQ(t,q))); });
+        return acts;
+    }
+    // ---------- TEXTOS DE LEITURA E COMPREENSÃO (nível HSK 4) ----------
+    const READINGS = {
+      1:[
+        { title:'我的好朋友',
+          lines:[
+            ['我叫王静，是大学三年级的学生，专业是法律。','Wǒ jiào Wáng Jìng, shì dàxué sān niánjí de xuésheng, zhuānyè shì fǎlǜ.'],
+            ['我们班一共有二十个学生，大家互相帮助。','Wǒmen bān yígòng yǒu èrshí ge xuésheng, dàjiā hùxiāng bāngzhù.'],
+            ['我最好的朋友叫孙月，她的性格非常开朗，也很幽默。','Wǒ zuì hǎo de péngyou jiào Sūn Yuè, tā de xìnggé fēicháng kāilǎng, yě hěn yōumò.'],
+            ['我们不仅有共同的爱好，而且都对踢足球感兴趣。','Wǒmen bùjǐn yǒu gòngtóng de àihào, érqiě dōu duì tī zúqiú gǎn xìngqù.'],
+            ['周末我们经常一起去公园踢球，然后聊天。','Zhōumò wǒmen jīngcháng yìqǐ qù gōngyuán tī qiú, ránhòu liáotiān.'],
+            ['有这样的朋友，我觉得生活很幸福。','Yǒu zhèyàng de péngyou, wǒ juéde shēnghuó hěn xìngfú.']],
+          pt:'Meu nome é Wang Jing, sou aluna do terceiro ano da universidade e meu curso é direito. Nossa turma tem vinte alunos ao todo e todos se ajudam mutuamente. Minha melhor amiga se chama Sun Yue; a personalidade dela é muito alegre e ela é bem-humorada. Não apenas temos passatempos em comum, como também nos interessamos por futebol. Nos fins de semana costumamos jogar bola no parque e depois conversar. Com uma amiga assim, sinto que a vida é muito feliz.',
+          qs:[
+            { q:'王静的专业是什么？', qp:'Wáng Jìng de zhuānyè shì shénme?', qt:'Qual é o curso de Wang Jing?', opts:[['法律','fǎlǜ','direito'],['新闻','xīnwén','jornalismo'],['音乐','yīnyuè','música']], ok:0 },
+            { q:'孙月的性格怎么样？', qp:'Sūn Yuè de xìnggé zěnmeyàng?', qt:'Como é a personalidade de Sun Yue?', opts:[['很安静','hěn ānjìng','muito quieta'],['开朗、幽默','kāilǎng, yōumò','alegre e bem-humorada'],['脾气很坏','píqi hěn huài','de gênio ruim']], ok:1 },
+            { q:'她们周末经常做什么？', qp:'Tāmen zhōumò jīngcháng zuò shénme?', qt:'O que elas costumam fazer no fim de semana?', opts:[['在家加班','zài jiā jiābān','fazer hora extra em casa'],['去商场买衣服','qù shāngchǎng mǎi yīfu','comprar roupas no shopping'],['去公园踢球','qù gōngyuán tī qiú','jogar bola no parque']], ok:2 }] },
+        { title:'七夕节',
+          lines:[
+            ['七夕节是中国的情人节，在农历七月初七。','Qīxī Jié shì Zhōngguó de qíngrén jié, zài nónglì qī yuè chū qī.'],
+            ['这个节日来自牛郎和织女的爱情故事。','Zhège jiérì láizì Niúláng hé Zhīnǚ de àiqíng gùshi.'],
+            ['传说他们一年只能见一次面。','Chuánshuō tāmen yì nián zhǐ néng jiàn yí cì miàn.'],
+            ['现在，很多年轻人在七夕节送礼物，表达爱情。','Xiànzài, hěnduō niánqīngrén zài Qīxī Jié sòng lǐwù, biǎodá àiqíng.'],
+            ['其实，即使没有礼物，两个人互相了解才是最重要的。','Qíshí, jíshǐ méiyǒu lǐwù, liǎng ge rén hùxiāng liǎojiě cái shì zuì zhòngyào de.']],
+          pt:'O Festival Qixi é o Dia dos Namorados da China, no sétimo dia do sétimo mês do calendário lunar. Este feriado vem da história de amor do Vaqueiro e da Tecelã. Diz a lenda que eles só podem se encontrar uma vez por ano. Hoje, muitos jovens dão presentes no Qixi para expressar amor. Na verdade, mesmo sem presentes, o mais importante é os dois se compreenderem mutuamente.',
+          qs:[
+            { q:'七夕节在什么时候？', qp:'Qīxī Jié zài shénme shíhou?', qt:'Quando é o Festival Qixi?', opts:[['农历七月初七','nónglì qī yuè chū qī','7º dia do 7º mês lunar'],['农历正月初一','nónglì zhēngyuè chūyī','1º dia do 1º mês lunar'],['十二月二十五','shí\'èr yuè èrshíwǔ','25 de dezembro']], ok:0 },
+            { q:'七夕节来自谁的故事？', qp:'Qīxī Jié láizì shéi de gùshi?', qt:'De quem é a história por trás do Qixi?', opts:[['罗密欧与朱丽叶','Luómiòǔ yǔ Zhūlìyè','Romeu e Julieta'],['牛郎和织女','Niúláng hé Zhīnǚ','o Vaqueiro e a Tecelã'],['一个普通商人','yí ge pǔtōng shāngrén','um comerciante comum']], ok:1 },
+            { q:'作者觉得什么最重要？', qp:'Zuòzhě juéde shénme zuì zhòngyào?', qt:'O que o autor acha mais importante?', opts:[['贵的礼物','guì de lǐwù','presentes caros'],['浪漫的晚饭','làngmàn de wǎnfàn','um jantar romântico'],['互相了解','hùxiāng liǎojiě','compreender-se mutuamente']], ok:2 }] }
+      ],
+      2:[
+        { title:'马克在中国',
+          lines:[
+            ['马克来自美国，现在在上海的一家公司工作。','Mǎkè láizì Měiguó, xiànzài zài Shànghǎi de yì jiā gōngsī gōngzuò.'],
+            ['刚来中国的时候，他觉得生活很无聊，因为没有朋友。','Gāng lái Zhōngguó de shíhou, tā juéde shēnghuó hěn wúliáo, yīnwèi méiyǒu péngyou.'],
+            ['后来他参加了一个同学聚会，认识了张远。','Hòulái tā cānjiā le yí ge tóngxué jùhuì, rènshi le Zhāng Yuǎn.'],
+            ['他们有共同的兴趣，常常一起踢足球、聊天儿。','Tāmen yǒu gòngtóng de xìngqù, chángcháng yìqǐ tī zúqiú, liáo tiānr.'],
+            ['俗话说：在家靠父母，出门靠朋友。','Súhuà shuō: zài jiā kào fùmǔ, chū mén kào péngyou.'],
+            ['现在马克觉得，真正的友谊比什么都重要。','Xiànzài Mǎkè juéde, zhēnzhèng de yǒuyì bǐ shénme dōu zhòngyào.']],
+          pt:'Mark vem dos EUA e agora trabalha em uma empresa em Xangai. Quando chegou à China, achava a vida muito chata, porque não tinha amigos. Depois participou de uma reunião de colegas e conheceu Zhang Yuan. Eles têm interesses em comum e frequentemente jogam futebol e conversam juntos. Como diz o ditado: em casa apoie-se nos pais, fora de casa apoie-se nos amigos. Agora Mark acha que a verdadeira amizade é mais importante que tudo.',
+          qs:[
+            { q:'马克为什么觉得生活无聊？', qp:'Mǎkè wèishénme juéde shēnghuó wúliáo?', qt:'Por que Mark achava a vida chata?', opts:[['因为没有朋友','yīnwèi méiyǒu péngyou','porque não tinha amigos'],['因为工作太忙','yīnwèi gōngzuò tài máng','porque o trabalho era corrido'],['因为不喜欢上海','yīnwèi bù xǐhuan Shànghǎi','porque não gostava de Xangai']], ok:0 },
+            { q:'马克在哪儿认识了张远？', qp:'Mǎkè zài nǎr rènshi le Zhāng Yuǎn?', qt:'Onde Mark conheceu Zhang Yuan?', opts:[['在图书馆','zài túshūguǎn','na biblioteca'],['在同学聚会上','zài tóngxué jùhuì shang','em uma reunião de colegas'],['在地铁站','zài dìtiězhàn','na estação de metrô']], ok:1 },
+            { q:'马克现在觉得什么最重要？', qp:'Mǎkè xiànzài juéde shénme zuì zhòngyào?', qt:'O que Mark acha mais importante agora?', opts:[['高的收入','gāo de shōurù','renda alta'],['大的房子','dà de fángzi','uma casa grande'],['真正的友谊','zhēnzhèng de yǒuyì','a verdadeira amizade']], ok:2 }] },
+        { title:'女儿的生日',
+          lines:[
+            ['上个周末是我女儿的生日。','Shàng ge zhōumò shì wǒ nǚ\'ér de shēngrì.'],
+            ['我们专门为她准备了一个生日聚会。','Wǒmen zhuānmén wèi tā zhǔnbèi le yí ge shēngrì jùhuì.'],
+            ['她的同学们都来了，大家一起唱歌、吃饭。','Tā de tóngxuémen dōu lái le, dàjiā yìqǐ chànggē, chīfàn.'],
+            ['哥哥送给她一本词典，叔叔送了一个钱包。','Gēge sòng gěi tā yì běn cídiǎn, shūshu sòng le yí ge qiánbāo.'],
+            ['晚上，我们一起看老照片，想起了过去的日子。','Wǎnshang, wǒmen yìqǐ kàn lǎo zhàopiàn, xiǎngqǐ le guòqù de rìzi.'],
+            ['女儿说，这是她最快乐的一个生日。','Nǚ\'ér shuō, zhè shì tā zuì kuàilè de yí ge shēngrì.']],
+          pt:'No fim de semana passado foi o aniversário da minha filha. Preparamos especialmente uma festa de aniversário para ela. Os colegas dela vieram e todos cantaram e comeram juntos. O irmão mais velho lhe deu um dicionário e o tio deu uma carteira. À noite, vimos fotos antigas juntos e lembramos dos velhos tempos. Minha filha disse que foi o aniversário mais feliz dela.',
+          qs:[
+            { q:'上个周末是谁的生日？', qp:'Shàng ge zhōumò shì shéi de shēngrì?', qt:'De quem foi o aniversário?', opts:[['女儿的','nǚ\'ér de','da filha'],['哥哥的','gēge de','do irmão mais velho'],['叔叔的','shūshu de','do tio']], ok:0 },
+            { q:'叔叔送了什么礼物？', qp:'Shūshu sòng le shénme lǐwù?', qt:'O que o tio deu de presente?', opts:[['一本词典','yì běn cídiǎn','um dicionário'],['一个钱包','yí ge qiánbāo','uma carteira'],['一部手机','yí bù shǒujī','um celular']], ok:1 },
+            { q:'晚上大家做了什么？', qp:'Wǎnshang dàjiā zuò le shénme?', qt:'O que fizeram à noite?', opts:[['去医院','qù yīyuàn','foram ao hospital'],['踢足球','tī zúqiú','jogaram futebol'],['看老照片','kàn lǎo zhàopiàn','viram fotos antigas']], ok:2 }] }
+      ],
+      3:[
+        { title:'小雨的面试',
+          lines:[
+            ['小雨大学学的是法律专业，毕业以后想当律师。','Xiǎo Yǔ dàxué xué de shì fǎlǜ zhuānyè, bìyè yǐhòu xiǎng dāng lǜshī.'],
+            ['上个星期，她参加了一家公司的面试。','Shàng ge xīngqī, tā cānjiā le yì jiā gōngsī de miànshì.'],
+            ['面试以前，她非常紧张。','Miànshì yǐqián, tā fēicháng jǐnzhāng.'],
+            ['其实面试者问的问题都挺容易的，和她的专业有关。','Qíshí miànshìzhě wèn de wèntí dōu tǐng róngyì de, hé tā de zhuānyè yǒuguān.'],
+            ['两天以后，公司通知她下星期一开始上班。','Liǎng tiān yǐhòu, gōngsī tōngzhī tā xià xīngqīyī kāishǐ shàngbān.'],
+            ['这份工作不仅收入高，工作环境也很好。','Zhè fèn gōngzuò bùjǐn shōurù gāo, gōngzuò huánjìng yě hěn hǎo.']],
+          pt:'Xiaoyu estudou direito na universidade e quer ser advogada depois de se formar. Na semana passada, participou da entrevista de uma empresa. Antes da entrevista, estava muito nervosa. Na verdade as perguntas do entrevistador foram bem fáceis e tinham a ver com o curso dela. Dois dias depois, a empresa avisou que ela começa a trabalhar na próxima segunda. Este trabalho não apenas tem renda alta, o ambiente também é muito bom.',
+          qs:[
+            { q:'小雨想当什么？', qp:'Xiǎo Yǔ xiǎng dāng shénme?', qt:'O que Xiaoyu quer ser?', opts:[['律师','lǜshī','advogada'],['翻译','fānyì','tradutora'],['经理','jīnglǐ','gerente']], ok:0 },
+            { q:'面试者问的问题怎么样？', qp:'Miànshìzhě wèn de wèntí zěnmeyàng?', qt:'Como foram as perguntas da entrevista?', opts:[['非常难','fēicháng nán','muito difíceis'],['挺容易的','tǐng róngyì de','bem fáceis'],['跟专业没关系','gēn zhuānyè méi guānxi','sem relação com o curso']], ok:1 },
+            { q:'那份工作怎么样？', qp:'Nà fèn gōngzuò zěnmeyàng?', qt:'Como é aquele trabalho?', opts:[['不用上班','búyòng shàngbān','não precisa ir ao escritório'],['收入很低','shōurù hěn dī','renda muito baixa'],['收入高，环境好','shōurù gāo, huánjìng hǎo','renda alta e bom ambiente']], ok:2 }] },
+        { title:'找工作的建议',
+          lines:[
+            ['找工作的时候，第一印象非常重要。','Zhǎo gōngzuò de shíhou, dì-yī yìnxiàng fēicháng zhòngyào.'],
+            ['首先，面试最好提前十分钟到办公室。','Shǒuxiān, miànshì zuìhǎo tíqián shí fēnzhōng dào bàngōngshì.'],
+            ['其次，要穿正式的衣服，注意自己的头发。','Qícì, yào chuān zhèngshì de yīfu, zhùyì zìjǐ de tóufa.'],
+            ['回答问题的时候，要诚实，不要紧张。','Huídá wèntí de shíhou, yào chéngshí, bú yào jǐnzhāng.'],
+            ['不管结果怎么样，都要对自己有信心。','Bùguǎn jiéguǒ zěnmeyàng, dōu yào duì zìjǐ yǒu xìnxīn.'],
+            ['俗话说，万事开头难，机会总是有的。','Súhuà shuō, wàn shì kāitóu nán, jīhuì zǒngshì yǒu de.']],
+          pt:'Ao procurar emprego, a primeira impressão é muito importante. Primeiramente, o melhor é chegar ao escritório dez minutos antes da entrevista. Em segundo lugar, vista roupas formais e preste atenção ao cabelo. Ao responder às perguntas, seja honesto e não fique nervoso. Não importa o resultado, tenha confiança em si mesmo. Como diz o ditado, tudo é difícil no começo, mas oportunidades sempre existem.',
+          qs:[
+            { q:'面试最好什么时候到？', qp:'Miànshì zuìhǎo shénme shíhou dào?', qt:'Quando é melhor chegar à entrevista?', opts:[['提前十分钟','tíqián shí fēnzhōng','dez minutos antes'],['迟到十分钟','chídào shí fēnzhōng','dez minutos atrasado'],['正好准时','zhènghǎo zhǔnshí','exatamente na hora']], ok:0 },
+            { q:'回答问题时应该怎么样？', qp:'Huídá wèntí shí yīnggāi zěnmeyàng?', qt:'Como se deve responder às perguntas?', opts:[['说得越快越好','shuō de yuè kuài yuè hǎo','falar o mais rápido possível'],['要诚实，不紧张','yào chéngshí, bù jǐnzhāng','ser honesto e não ficar nervoso'],['只说自己的缺点','zhǐ shuō zìjǐ de quēdiǎn','falar só dos próprios defeitos']], ok:1 },
+            { q:'这段话主要谈什么？', qp:'Zhè duàn huà zhǔyào tán shénme?', qt:'Sobre o que fala o texto?', opts:[['怎么锻炼身体','zěnme duànliàn shēntǐ','como se exercitar'],['怎么学习外语','zěnme xuéxí wàiyǔ','como aprender línguas'],['找工作的建议','zhǎo gōngzuò de jiànyì','conselhos para procurar emprego']], ok:2 }] }
+      ],
+      4:[
+        { title:'换工作',
+          lines:[
+            ['我叔叔今年已经换了三次工作了。','Wǒ shūshu jīnnián yǐjīng huànle sān cì gōngzuò le.'],
+            ['他总觉得别的工作不仅工资高，而且更容易。','Tā zǒng juéde biéde gōngzuò bùjǐn gōngzī gāo, érqiě gèng róngyì.'],
+            ['其实，经常换工作不一定好。','Qíshí, jīngcháng huàn gōngzuò bù yídìng hǎo.'],
+            ['每次都要适应一个新的环境，慢慢积累的经验也没有了。','Měi cì dōu yào shìyìng yí ge xīn de huánjìng, mànmàn jīlěi de jīngyàn yě méiyǒu le.'],
+            ['对年轻人来说，多学习、积累专业知识才是最重要的。','Duì niánqīngrén lái shuō, duō xuéxí, jīlěi zhuānyè zhīshi cái shì zuì zhòngyào de.'],
+            ['我相信，只要努力，一切都会好起来的。','Wǒ xiāngxìn, zhǐyào nǔlì, yíqiè dōu huì hǎo qǐlái de.']],
+          pt:'Meu tio já mudou de emprego três vezes este ano. Ele sempre acha que os outros empregos não apenas pagam mais, como também são mais fáceis. Na verdade, mudar de emprego com frequência não é necessariamente bom. Cada vez é preciso se adaptar a um ambiente novo, e a experiência acumulada aos poucos se perde. Para os jovens, estudar mais e acumular conhecimento profissional é o mais importante. Eu acredito que, com esforço, tudo vai melhorar.',
+          qs:[
+            { q:'叔叔今年换了几次工作？', qp:'Shūshu jīnnián huànle jǐ cì gōngzuò?', qt:'Quantas vezes o tio mudou de emprego?', opts:[['三次','sān cì','três vezes'],['一次','yí cì','uma vez'],['五次','wǔ cì','cinco vezes']], ok:0 },
+            { q:'作者觉得经常换工作怎么样？', qp:'Zuòzhě juéde jīngcháng huàn gōngzuò zěnmeyàng?', qt:'O que o autor acha de mudar sempre de emprego?', opts:[['非常好','fēicháng hǎo','muito bom'],['不一定好','bù yídìng hǎo','não é necessariamente bom'],['跟收入有关','gēn shōurù yǒuguān','depende da renda']], ok:1 },
+            { q:'对年轻人来说，什么最重要？', qp:'Duì niánqīngrén lái shuō, shénme zuì zhòngyào?', qt:'O que é mais importante para os jovens?', opts:[['工资高','gōngzī gāo','salário alto'],['少加班','shǎo jiābān','fazer poucas horas extras'],['多学习，积累知识','duō xuéxí, jīlěi zhīshi','estudar e acumular conhecimento']], ok:2 }] },
+        { title:'鱼和渔',
+          lines:[
+            ['中国有一句话：授人以鱼不如授人以渔。','Zhōngguó yǒu yí jù huà: shòu rén yǐ yú bùrú shòu rén yǐ yú.'],
+            ['意思是：送别人一条鱼，不如教他找到鱼的方法。','Yìsi shì: sòng biérén yì tiáo yú, bùrú jiāo tā zhǎodào yú de fāngfǎ.'],
+            ['在工作上也是一样。','Zài gōngzuò shang yě shì yíyàng.'],
+            ['别人帮你解决一个问题，你只解决了这一次。','Biérén bāng nǐ jiějué yí ge wèntí, nǐ zhǐ jiějué le zhè yí cì.'],
+            ['如果你学会了解决问题的方法，就再也不怕困难了。','Rúguǒ nǐ xuéhuì le jiějué wèntí de fāngfǎ, jiù zài yě bú pà kùnnan le.'],
+            ['所以，学习方法比答案更重要。','Suǒyǐ, xuéxí fāngfǎ bǐ dá\'àn gèng zhòngyào.']],
+          pt:'Na China há um ditado: melhor ensinar a pescar do que dar o peixe. Significa: em vez de dar um peixe a alguém, melhor ensinar a pessoa a encontrar o peixe. No trabalho é igual. Se alguém resolve um problema por você, você só resolveu aquela vez. Se você aprender o método de resolver problemas, nunca mais terá medo das dificuldades. Por isso, aprender o método é mais importante que a resposta.',
+          qs:[
+            { q:'"授人以鱼不如授人以渔"是什么意思？', qp:'"Shòu rén yǐ yú bùrú shòu rén yǐ yú" shì shénme yìsi?', qt:'O que significa o ditado?', opts:[['教方法比送东西更好','jiāo fāngfǎ bǐ sòng dōngxi gèng hǎo','ensinar o método é melhor que dar a coisa'],['鱼很好吃','yú hěn hǎochī','peixe é gostoso'],['买鱼要货比三家','mǎi yú yào huò bǐ sān jiā','compare preços ao comprar peixe']], ok:0 },
+            { q:'学会方法以后会怎么样？', qp:'Xuéhuì fāngfǎ yǐhòu huì zěnmeyàng?', qt:'O que acontece ao aprender o método?', opts:[['不用工作了','búyòng gōngzuò le','não precisa mais trabalhar'],['再也不怕困难了','zài yě bú pà kùnnan le','nunca mais teme as dificuldades'],['忘记一切','wàngjì yíqiè','esquece tudo']], ok:1 },
+            { q:'这段话告诉我们什么更重要？', qp:'Zhè duàn huà gàosu wǒmen shénme gèng zhòngyào?', qt:'O que o texto diz ser mais importante?', opts:[['得到答案','dédào dá\'àn','obter a resposta'],['收入和奖金','shōurù hé jiǎngjīn','renda e bônus'],['学习方法','xuéxí fāngfǎ','aprender o método']], ok:2 }] }
+      ],
+      5:[
+        { title:'网上购物',
+          lines:[
+            ['随着互联网的发展，越来越多的人喜欢网上购物。','Suízhe hùliánwǎng de fāzhǎn, yuè lái yuè duō de rén xǐhuan wǎngshàng gòuwù.'],
+            ['网上的商品种类丰富，价格也常常比商店便宜。','Wǎngshàng de shāngpǐn zhǒnglèi fēngfù, jiàgé yě chángcháng bǐ shāngdiàn piányi.'],
+            ['不过，有的东西并不像广告上说的那么好。','Búguò, yǒude dōngxi bìng bú xiàng guǎnggào shang shuō de nàme hǎo.'],
+            ['如果价格太便宜，就要小心上当。','Rúguǒ jiàgé tài piányi, jiù yào xiǎoxīn shàngdàng.'],
+            ['所以，买东西以前最好货比三家，看看其他消费者的意见。','Suǒyǐ, mǎi dōngxi yǐqián zuìhǎo huò bǐ sān jiā, kànkan qítā xiāofèizhě de yìjiàn.'],
+            ['只买对的，不买贵的，这才是聪明的购物习惯。','Zhǐ mǎi duì de, bù mǎi guì de, zhè cái shì cōngming de gòuwù xíguàn.']],
+          pt:'Com o desenvolvimento da internet, cada vez mais pessoas gostam de comprar online. Na internet a variedade de produtos é rica e os preços costumam ser mais baratos que nas lojas. Porém, algumas coisas não são tão boas quanto dizem os anúncios. Se o preço for barato demais, é preciso ter cuidado para não ser enganado. Por isso, antes de comprar, o melhor é comparar em várias lojas e ver a opinião de outros consumidores. Comprar apenas o certo, e não o caro — esse é o hábito de compras inteligente.',
+          qs:[
+            { q:'现在越来越多的人喜欢做什么？', qp:'Xiànzài yuè lái yuè duō de rén xǐhuan zuò shénme?', qt:'O que cada vez mais pessoas gostam de fazer?', opts:[['网上购物','wǎngshàng gòuwù','comprar online'],['去商场排队','qù shāngchǎng páiduì','pegar fila no shopping'],['看电视广告','kàn diànshì guǎnggào','ver anúncios de TV']], ok:0 },
+            { q:'价格太便宜的时候要注意什么？', qp:'Jiàgé tài piányi de shíhou yào zhùyì shénme?', qt:'O que observar quando o preço é barato demais?', opts:[['马上多买','mǎshàng duō mǎi','comprar logo bastante'],['小心上当','xiǎoxīn shàngdàng','cuidado para não ser enganado'],['告诉朋友','gàosu péngyou','avisar os amigos']], ok:1 },
+            { q:'聪明的购物习惯是什么？', qp:'Cōngming de gòuwù xíguàn shì shénme?', qt:'Qual é o hábito de compras inteligente?', opts:[['越贵越好','yuè guì yuè hǎo','quanto mais caro melhor'],['什么都不买','shénme dōu bù mǎi','não comprar nada'],['只买对的，不买贵的','zhǐ mǎi duì de, bù mǎi guì de','comprar o certo, não o caro']], ok:2 }] },
+        { title:'莉莉的裙子',
+          lines:[
+            ['上个星期六，我和莉莉去商场逛街。','Shàng ge xīngqīliù, wǒ hé Lìli qù shāngchǎng guàngjiē.'],
+            ['正好是换季的时候，不少商店都在打折。','Zhènghǎo shì huànjì de shíhou, bùshǎo shāngdiàn dōu zài dǎzhé.'],
+            ['莉莉看上了一条裙子，颜色是今年最流行的。','Lìli kàn shang le yì tiáo qúnzi, yánsè shì jīnnián zuì liúxíng de.'],
+            ['这条裙子比平时便宜了一半还多。','Zhè tiáo qúnzi bǐ píngshí piányi le yíbàn hái duō.'],
+            ['莉莉试了以后，看上去特别好看。','Lìli shì le yǐhòu, kàn shàngqù tèbié hǎokàn.'],
+            ['她马上决定买下来，我们都很高兴。','Tā mǎshàng juédìng mǎi xiàlái, wǒmen dōu hěn gāoxìng.']],
+          pt:'No sábado passado, eu e Lili fomos passear no shopping. Era justamente a época de mudança de estação e muitas lojas estavam em promoção. Lili gostou de uma saia, de uma cor que é a mais na moda este ano. A saia estava mais da metade mais barata do que o normal. Depois de provar, ficou especialmente bonita nela. Ela decidiu comprar na hora e todos ficamos muito contentes.',
+          qs:[
+            { q:'她们什么时候去逛街？', qp:'Tāmen shénme shíhou qù guàngjiē?', qt:'Quando elas foram passear?', opts:[['上个星期六','shàng ge xīngqīliù','no sábado passado'],['昨天晚上','zuótiān wǎnshang','ontem à noite'],['下个周末','xià ge zhōumò','no próximo fim de semana']], ok:0 },
+            { q:'为什么裙子这么便宜？', qp:'Wèishénme qúnzi zhème piányi?', qt:'Por que a saia estava tão barata?', opts:[['质量不好','zhìliàng bù hǎo','a qualidade era ruim'],['换季打折','huànjì dǎzhé','promoção de mudança de estação'],['是旧的','shì jiù de','era usada']], ok:1 },
+            { q:'莉莉试了裙子以后怎么样？', qp:'Lìli shì le qúnzi yǐhòu zěnmeyàng?', qt:'Como ficou a saia depois de provada?', opts:[['太长了','tài cháng le','comprida demais'],['不合适','bù héshì','não serviu'],['特别好看','tèbié hǎokàn','especialmente bonita']], ok:2 }] }
+      ],
+      6:[
+        { title:'忘了买果汁',
+          lines:[
+            ['昨天下午，妻子让我陪她去超市买果汁。','Zuótiān xiàwǔ, qīzi ràng wǒ péi tā qù chāoshì mǎi guǒzhī.'],
+            ['超市里的东西又便宜又好，人也很多。','Chāoshì lǐ de dōngxi yòu piányi yòu hǎo, rén yě hěn duō.'],
+            ['我们买了新鲜的西红柿，七块钱一斤。','Wǒmen mǎi le xīnxiān de xīhóngshì, qī kuài qián yì jīn.'],
+            ['售货员的态度很热情，还给我们介绍打折的商品。','Shòuhuòyuán de tàidu hěn rèqíng, hái gěi wǒmen jièshào dǎzhé de shāngpǐn.'],
+            ['我们还买了面包、蛋糕和一些日用品。','Wǒmen hái mǎi le miànbāo, dàngāo hé yìxiē rìyòngpǐn.'],
+            ['回家以后我才发现，竟然忘了买果汁！','Huí jiā yǐhòu wǒ cái fāxiàn, jìngrán wàngle mǎi guǒzhī!']],
+          pt:'Ontem à tarde, minha esposa me pediu para acompanhá-la ao supermercado para comprar suco. As coisas do supermercado são baratas e boas, e havia muita gente. Compramos tomates frescos, a sete yuan o jin. A atendente foi muito simpática e ainda nos apresentou os produtos em promoção. Também compramos pão, bolo e alguns artigos de uso diário. Só depois de chegar em casa percebi que, surpreendentemente, esqueci de comprar o suco!',
+          qs:[
+            { q:'妻子让"我"去超市买什么？', qp:'Qīzi ràng "wǒ" qù chāoshì mǎi shénme?', qt:'O que a esposa pediu para comprar?', opts:[['果汁','guǒzhī','suco'],['西红柿','xīhóngshì','tomates'],['面包','miànbāo','pão']], ok:0 },
+            { q:'西红柿多少钱一斤？', qp:'Xīhóngshì duōshao qián yì jīn?', qt:'Quanto custava o jin de tomate?', opts:[['十四块','shísì kuài','catorze yuan'],['七块','qī kuài','sete yuan'],['两块','liǎng kuài','dois yuan']], ok:1 },
+            { q:'回家以后"我"发现了什么？', qp:'Huí jiā yǐhòu "wǒ" fāxiàn le shénme?', qt:'O que "eu" percebi ao chegar em casa?', opts:[['钱包丢了','qiánbāo diū le','perdi a carteira'],['买错了蛋糕','mǎi cuò le dàngāo','comprei o bolo errado'],['忘了买果汁','wàngle mǎi guǒzhī','esqueci de comprar o suco']], ok:2 }] },
+        { title:'书店的活动',
+          lines:[
+            ['为了感谢顾客的支持，新华书店下周举行购书送好礼活动。','Wèile gǎnxiè gùkè de zhīchí, Xīnhuá shūdiàn xià zhōu jǔxíng gòu shū sòng hǎo lǐ huódòng.'],
+            ['购书满100元，送一个漂亮的笔记本。','Gòu shū mǎn yìbǎi yuán, sòng yí ge piàoliang de bǐjìběn.'],
+            ['购书满500元，可以免费办会员卡。','Gòu shū mǎn wǔbǎi yuán, kěyǐ miǎnfèi bàn huìyuánkǎ.'],
+            ['一些图书还有打折，其中小说7.5折。','Yìxiē túshū hái yǒu dǎzhé, qízhōng xiǎoshuō qī diǎn wǔ zhé.'],
+            ['活动第一天，排队排到门口外边去了。','Huódòng dì-yī tiān, páiduì pái dào ménkǒu wàibian qù le.'],
+            ['这次活动受到了广大市民的欢迎。','Zhè cì huódòng shòudàole guǎngdà shìmín de huānyíng.']],
+          pt:'Para agradecer o apoio dos clientes, a livraria Xinhua realizará na próxima semana a promoção "compre livros e ganhe um brinde". Comprando livros a partir de 100 yuan, ganha-se um lindo caderno. A partir de 500 yuan, pode-se fazer o cartão de sócio de graça. Alguns livros ainda têm desconto; entre eles, os romances a 75%. No primeiro dia do evento, a fila chegava até a parte de fora da porta. Esta promoção foi muito bem recebida pela população.',
+          qs:[
+            { q:'书店为什么举行活动？', qp:'Shūdiàn wèishénme jǔxíng huódòng?', qt:'Por que a livraria fez a promoção?', opts:[['为了感谢顾客的支持','wèile gǎnxiè gùkè de zhīchí','para agradecer o apoio dos clientes'],['因为要关门','yīnwèi yào guānmén','porque vai fechar'],['因为换季','yīnwèi huànjì','por causa da mudança de estação']], ok:0 },
+            { q:'购书满500元可以得到什么？', qp:'Gòu shū mǎn wǔbǎi yuán kěyǐ dédào shénme?', qt:'O que se ganha comprando 500 yuan?', opts:[['一个笔记本','yí ge bǐjìběn','um caderno'],['免费办会员卡','miǎnfèi bàn huìyuánkǎ','cartão de sócio grátis'],['一本词典','yì běn cídiǎn','um dicionário']], ok:1 },
+            { q:'活动第一天怎么样？', qp:'Huódòng dì-yī tiān zěnmeyàng?', qt:'Como foi o primeiro dia?', opts:[['没有人来','méiyǒu rén lái','ninguém veio'],['商店没开门','shāngdiàn méi kāimén','a loja não abriu'],['人很多，排长队','rén hěn duō, pái cháng duì','muita gente e fila longa']], ok:2 }] }
+      ]
+    };
+    // ============================================================
+    //  FLUXO DA PRÁTICA (turnos + coração + gabarito)
+    // ============================================================
+    let P = { active:false, lesson:1, kind:'all', turn:1, maxTurns:4, acts:[], idx:0, hearts:6, log:[], usedTexts:[], checking:false, sel:null, matchSel:[], typedOk:0, readsDone:0, ended:false };
+    function pcEl(id){ return document.getElementById(id); }
+    function startPracticeC(lessonN, kind){
+        closeHub();
+        P = { active:true, lesson:lessonN, kind:kind, turn:1, maxTurns:(kind==='read'?3:4), acts:[], idx:0, hearts:6, log:[], usedTexts:[], checking:false, sel:null, matchSel:[], typedOk:0, readsDone:0, ended:false };
+        P.acts = buildTurn(lessonN, kind);
+        if(!P.acts.length){ appToast('Conteúdo insuficiente para esta prática.'); return; }
+        pcEl('pcHearts').innerText = P.hearts;
+        pcEl('pcProgress').style.width = '0%';
+        pcEl('pcTurn').innerText = 'Turno 1/' + P.maxTurns;
+        const m = pcEl('practiceModal'); m.style.display='flex';
+        loadAct();
+    }
+    function closePracticeC(){
+        if(P.idx < P.acts.length && P.active && !P.ended){
+            if(!confirm('Deseja realmente sair? O progresso desta prática será perdido.')) return;
+        }
+        pcEl('practiceModal').style.display='none';
+        P.active=false;
+        if('speechSynthesis' in window) speechSynthesis.cancel();
+    }
+    function pcProgressUpdate(){ pcEl('pcProgress').style.width = Math.round(P.idx / P.acts.length * 100) + '%'; }
+    function enableCheck(on){ pcEl('pcCheck').disabled = !on; }
+    function resetPcFooter(){
+        const fb=pcEl('pcFeedback'); fb.classList.add('hidden');
+        fb.className='hidden absolute left-0 bottom-full w-full p-4 md:px-8 py-5 flex-col slide-up';
+        pcEl('pcSkip').style.display='';
+        const c=pcEl('pcCheck'); c.style.display=''; c.innerText='Verificar';
+        c.classList.remove('practice-btn-danger','practice-btn-success'); c.classList.add('practice-btn-primary');
+        c.onclick=pcCheck; enableCheck(false);
+    }
+    // ---------- pequenos blocos de interface ----------
+    function pyHint(hz){ if(!prefs.pinyin) return ''; const p=pinyinOf(hz); return p? `<span class="py-hint">${p}</span>` : ''; }
+    function zhBtnHTML(hz, extraPt){
+        return `<span class="chinese-text text-lg md:text-xl font-bold leading-tight">${hz}</span>${pyHint(hz)}${(prefs.trad && extraPt)?`<span class="pt-hint">${extraPt}</span>`:''}`;
+    }
+    function audioBtn(text, big){
+        const esc=(text||'').replace(/'/g,"\\'");
+        if(big) return `<button onclick="playZh('${esc}')" class="w-20 h-20 md:w-24 md:h-24 rounded-[2rem] flex items-center justify-center text-white shadow-lg hover:scale-105 active:scale-95 transition-all" style="background:linear-gradient(135deg,#0066cc,#3388ff);"><i data-lucide="volume-2" class="w-9 h-9"></i></button>`;
+        return `<button onclick="playZh('${esc}')" class="w-10 h-10 rounded-xl flex items-center justify-center text-[#0066cc] bg-white/70 border border-white shadow-sm shrink-0 hover:scale-105 transition"><i data-lucide="volume-2" class="w-4 h-4"></i></button>`;
+    }
+    function promptCard(inner){ return `<div class="w-full max-w-2xl mx-auto p-4 md:p-6 reading-box text-center">${inner}</div>`; }
+    // ---------- carregamento de cada exercício ----------
+    const PC_TITLES = { match:'Associe os pares', choosePt:'Qual é a tradução?', chooseZh:'Como se diz em chinês?', listen:'O que você ouviu?', typeZh:'Escreva em caracteres', typeHearZh:'Ouça e escreva em caracteres', fillBlank:'Complete a frase', orderSentence:'Monte a frase', readQ:'Leia e responda' };
+    function loadAct(){
+        if(P.idx >= P.acts.length){ endOfTurn(); return; }
+        P.checking=false; P.sel=null; P.matchSel=[];
+        pcProgressUpdate(); resetPcFooter();
+        const a=P.acts[P.idx];
+        pcEl('pcTitle').innerText = PC_TITLES[a.type]||'';
+        const area=pcEl('pcArea'); area.innerHTML='';
+        if(a.type==='match') renderMatchC(a, area);
+        else if(a.type==='choosePt') renderChoosePt(a, area);
+        else if(a.type==='chooseZh') renderChooseZh(a, area);
+        else if(a.type==='listen') renderListenC(a, area);
+        else if(a.type==='typeZh') renderTypeC(a, area, 'read');
+        else if(a.type==='typeHearZh') renderTypeC(a, area, 'hear');
+        else if(a.type==='fillBlank') renderFillC(a, area);
+        else if(a.type==='orderSentence') renderOrderC(a, area);
+        else if(a.type==='readQ') renderReadQ(a, area);
+        lucide.createIcons();
+    }
+    // ---------- ASSOCIAR PARES ----------
+    function renderMatchC(a, area){
+        const grid=document.createElement('div');
+        grid.className='grid grid-cols-2 gap-3 w-full max-w-lg mx-auto';
+        let cards=[];
+        a.pairs.forEach((p,i)=>{ cards.push({txt:onlyHanzi(p.w)||p.w, zh:true, id:i}); cards.push({txt:p.t, zh:false, id:i}); });
+        shuffleA(cards).forEach(c=>{
+            const b=document.createElement('button');
+            b.className='practice-card rounded-2xl p-3 md:p-4 text-center font-bold text-slate-700 min-h-[4.6rem] flex flex-col items-center justify-center break-words leading-tight';
+            b.innerHTML = c.zh? `<span class="chinese-text text-xl md:text-2xl">${c.txt}</span>${pyHint(c.txt)}` : `<span class="text-sm md:text-base">${c.txt}</span>`;
+            b.onclick=()=>{
+                if(P.checking||b.classList.contains('matched')||b.classList.contains('selected')) return;
+                b.classList.add('selected');
+                if(c.zh && prefs.autoAudio) playZh(c.txt);
+                P.matchSel.push({el:b, c:c});
+                if(P.matchSel.length===2){
+                    P.checking=true;
+                    const [x,y]=P.matchSel;
+                    if(x.c.id===y.c.id && x.c.zh!==y.c.zh){
+                        setTimeout(()=>{
+                            x.el.classList.remove('selected'); y.el.classList.remove('selected');
+                            x.el.classList.add('matched'); y.el.classList.add('matched');
+                            if(!grid.querySelector('.practice-card:not(.matched)')){ logR(true,'Pares associados','', ''); showFb(true); }
+                            else P.checking=false;
+                        },320);
+                    } else {
+                        x.el.classList.add('error'); y.el.classList.add('error'); loseHeart();
+                        setTimeout(()=>{ x.el.classList.remove('error','selected'); y.el.classList.remove('error','selected'); P.checking=false; },600);
+                    }
+                    P.matchSel=[];
+                }
+            };
+            grid.appendChild(b);
+        });
+        area.appendChild(grid); enableCheck(false);
+    }
+    // ---------- opções de múltipla escolha ----------
+    function optionList(area, opts, renderOpt, onSel){
+        const g=document.createElement('div'); g.className='flex flex-col gap-3 w-full max-w-xl mx-auto';
+        opts.forEach((o,i)=>{
+            const b=document.createElement('button');
+            b.className='practice-card w-full text-left p-3.5 md:p-4 rounded-2xl text-slate-700 flex items-center gap-3';
+            b.innerHTML=`<div class="w-5 h-5 rounded-full border-2 border-slate-300 shrink-0 opt-radio"></div><div class="min-w-0">${renderOpt(o)}</div>`;
+            b.onclick=()=>{ if(P.checking) return;
+                Array.from(g.children).forEach(c=>{ c.classList.remove('selected'); const r=c.querySelector('.opt-radio'); if(r){ r.style.background=''; r.style.borderColor=''; } });
+                b.classList.add('selected'); const r=b.querySelector('.opt-radio'); if(r){ r.style.background='#0066cc'; r.style.borderColor='#0066cc'; }
+                onSel(o,i); enableCheck(true);
+            };
+            g.appendChild(b);
+        });
+        area.appendChild(g);
+    }
+    function renderChoosePt(a, area){
+        const w=onlyHanzi(a.item.w)||a.item.w;
+        area.insertAdjacentHTML('beforeend', promptCard(`<div class="flex items-center justify-center gap-3"><div><span class="chinese-text text-3xl md:text-4xl font-bold text-[#1d1d1f]">${w}</span>${pyHint(w)}</div>${audioBtn(w)}</div>`));
+        optionList(area, a.options, o=>`<span class="text-sm md:text-base font-bold leading-snug">${o}</span>`, o=>{ P.sel=o; });
+        if(prefs.autoAudio) setTimeout(()=>playZh(w),350);
+    }
+    function renderChooseZh(a, area){
+        area.insertAdjacentHTML('beforeend', promptCard(`<p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-1">Em português</p><div class="text-xl md:text-2xl font-extrabold text-[#1d1d1f] leading-snug">${a.item.t}</div>`));
+        optionList(area, a.options, o=>zhBtnHTML(onlyHanzi(o.w)||o.w), o=>{ P.sel=o; if(prefs.autoAudio) playZh(onlyHanzi(o.w)||o.w); });
+    }
+    function renderListenC(a, area){
+        const w=onlyHanzi(a.item.w)||a.item.w;
+        area.insertAdjacentHTML('beforeend', `<div class="flex justify-center w-full mb-2 mt-2">${audioBtn(w,true)}</div><p class="text-xs text-slate-500 font-semibold -mt-2">Toque para ouvir de novo</p>`);
+        optionList(area, a.options, o=>zhBtnHTML(onlyHanzi(o.w)||o.w), o=>{ P.sel=o; });
+        setTimeout(()=>playZh(w),400);
+    }
+    // ---------- ESCRITA EM CARACTERES ----------
+    function normHanzi(s){ return (s||'').replace(/[^㐀-鿿]/g,''); }
+    function renderTypeC(a, area, mode){
+        const it=a.item; const w=onlyHanzi(it.w)||it.w;
+        if(mode==='hear'){
+            area.insertAdjacentHTML('beforeend', `<div class="flex justify-center w-full mt-2">${audioBtn(w,true)}</div><p class="text-xs text-slate-500 font-semibold">Ouça e escreva usando CARACTERES (não pinyin)</p>`);
+        } else {
+            area.insertAdjacentHTML('beforeend', promptCard(`<p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-1">Em português</p><div class="text-xl md:text-2xl font-extrabold text-[#1d1d1f] leading-snug">${it.t}</div>${prefs.pinyin?`<span class="py-hint" style="font-size:0.8rem;">${it.p||''}</span>`:''}`));
+            area.insertAdjacentHTML('beforeend', `<p class="text-xs text-slate-500 font-semibold -mt-2">Escreva usando CARACTERES (não pinyin) — use o teclado chinês do seu dispositivo</p>`);
+        }
+        const wrap=document.createElement('div'); wrap.className='w-full max-w-md';
+        wrap.innerHTML=`<input id="pcInput" type="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="输入汉字…" class="chinese-text w-full px-5 py-4 text-xl md:text-2xl font-bold text-center text-[#1d1d1f] bg-white/85 border border-white rounded-2xl shadow-inner focus:outline-none focus:ring-2 focus:ring-[#0066cc]/40">`;
+        area.appendChild(wrap);
+        const inp=wrap.querySelector('#pcInput');
+        inp.addEventListener('input', ()=>enableCheck(inp.value.trim().length>0));
+        inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); if(!pcEl('pcCheck').disabled) pcCheck(); } });
+        setTimeout(()=>{ try{ inp.focus(); }catch(e){} },250);
+        enableCheck(false);
+        if(mode==='hear' && prefs.autoAudio) setTimeout(()=>playZh(w),400);
+    }
+    // ---------- COMPLETAR A FRASE ----------
+    function renderFillC(a, area){
+        const e=a.entry; const gap=a.gap;
+        const sentGap=e.ex_ch.replace(gap,'<span class="inline-block min-w-[60px] px-2 border-b-2 border-dashed border-[#0066cc] text-[#0066cc] font-bold">____</span>');
+        let pyLine='';
+        if(prefs.pinyin && e.ex_py){ const wp=(e.p||'').trim(); pyLine=`<div class="py-hint" style="font-size:0.78rem;">${ wp? e.ex_py.replace(new RegExp(wp.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i'),' ____ ') : e.ex_py }</div>`; }
+        area.insertAdjacentHTML('beforeend', promptCard(`<div class="chinese-text text-xl md:text-2xl font-bold text-[#1d1d1f] leading-relaxed">${sentGap}</div>${pyLine}${prefs.trad?`<div class="pt-hint" style="font-size:0.8rem;">${e.ex_pt||''}</div>`:''}<div class="mt-2 flex justify-center">${audioBtn(e.ex_ch)}</div>`));
+        const g=document.createElement('div'); g.className='grid grid-cols-2 gap-3 w-full max-w-xl mx-auto';
+        a.options.forEach(o=>{
+            const hz=onlyHanzi(o.w)||o.w;
+            const b=document.createElement('button');
+            b.className='practice-card w-full text-center p-3.5 rounded-2xl text-slate-700 flex flex-col items-center';
+            b.innerHTML=zhBtnHTML(hz);
+            b.onclick=()=>{ if(P.checking) return; Array.from(g.children).forEach(c=>c.classList.remove('selected')); b.classList.add('selected'); P.sel=o; if(prefs.autoAudio) playZh(hz); enableCheck(true); };
+            g.appendChild(b);
+        });
+        area.appendChild(g);
+    }
+    // ---------- MONTAR A FRASE ----------
+    function renderOrderC(a, area){
+        const e=a.entry;
+        area.insertAdjacentHTML('beforeend', promptCard(`${prefs.trad?`<p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-1">Traduza / monte em chinês</p><div class="text-base md:text-lg font-extrabold text-[#1d1d1f] leading-snug">${e.ex_pt||''}</div>`:'<p class="text-xs text-slate-500 font-semibold">Ouça e monte a frase na ordem correta</p>'}${prefs.pinyin&&e.ex_py?`<div class="py-hint" style="font-size:0.78rem;">${e.ex_py}</div>`:''}<div class="mt-2 flex justify-center">${audioBtn(e.ex_ch)}</div>`));
+        const drop=document.createElement('div'); drop.id='pcDrop';
+        drop.className='drop-zone flex flex-wrap gap-2 w-full max-w-2xl mx-auto justify-center';
+        area.appendChild(drop);
+        const pool=document.createElement('div'); pool.className='flex flex-wrap justify-center gap-2.5 w-full max-w-2xl mx-auto';
+        a.pool.forEach((blk,i)=>{
+            const b=document.createElement('button');
+            b.className='word-block rounded-xl py-2 px-4 text-slate-700 flex flex-col items-center';
+            b.innerHTML=`<span class="chinese-text text-lg md:text-xl font-bold">${blk}</span>${pyHint(blk)}`;
+            b.onclick=()=>{
+                if(P.checking) return;
+                const clone=b.cloneNode(true);
+                clone.onclick=()=>{ if(P.checking) return; clone.remove(); b.classList.remove('used'); enableCheck(drop.children.length>0); };
+                drop.appendChild(clone); b.classList.add('used');
+                if(prefs.autoAudio) playZh(blk);
+                enableCheck(true);
+            };
+            pool.appendChild(b);
+        });
+        area.appendChild(pool); enableCheck(false);
+        if(prefs.autoAudio) setTimeout(()=>playZh(e.ex_ch),400);
+    }
+    // ---------- LEITURA E COMPREENSÃO ----------
+    function renderReadQ(a, area){
+        const t=a.text; const fullZh=t.lines.map(l=>l[0]).join('');
+        const linesHTML=t.lines.map(l=>`<p class="chinese-text text-base md:text-lg font-medium text-[#1d1d1f] leading-relaxed">${l[0]}</p>${prefs.pinyin?`<p class="py-hint" style="margin:0 0 6px;">${l[1]}</p>`:''}`).join('');
+        area.insertAdjacentHTML('beforeend', `<div class="reading-box w-full max-w-2xl mx-auto text-left">
+            <div class="flex items-center justify-between mb-2"><span class="px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-amber-100 text-amber-700 border border-amber-200">短文 · Texto</span><div class="flex items-center gap-2"><span class="chinese-text text-sm font-bold text-[#86868b]">${t.title}</span>${audioBtn(fullZh)}</div></div>
+            ${linesHTML}
+            ${prefs.trad?`<div class="mt-3 pt-3 border-t border-white/60"><p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-1">Tradução</p><p class="text-xs md:text-sm text-[#86868b] leading-relaxed">${t.pt}</p></div>`:''}
+        </div>`);
+        area.insertAdjacentHTML('beforeend', promptCard(`<div class="flex items-center justify-center gap-2"><div class="chinese-text text-lg md:text-xl font-bold text-[#1d1d1f]">${a.q.q}</div>${audioBtn(a.q.q)}</div>${prefs.pinyin?`<span class="py-hint">${a.q.qp}</span>`:''}${prefs.trad?`<span class="pt-hint">${a.q.qt}</span>`:''}`));
+        optionList(area, shuffleA(a.q.opts.map((o,i)=>({o:o, ok:i===a.q.ok}))), x=>`<span class="chinese-text text-base md:text-lg font-bold leading-snug">${x.o[0]}</span>${prefs.pinyin?`<span class="py-hint">${x.o[1]}</span>`:''}${prefs.trad?`<span class="pt-hint">${x.o[2]}</span>`:''}`, x=>{ P.sel=x; });
+    }
+    // ---------- VERIFICAR / PULAR / CORAÇÕES ----------
+    function logR(ok, zh, py, pt, your){
+        P.log.push({ ok:!!ok, label:(pcEl('pcTitle')||{}).innerText||'', zh:zh||'', py:py||'', pt:pt||'', your:(your||'').trim() });
+    }
+    function pcCheck(){
+        if(P.checking){ P.idx++; loadAct(); return; }
+        const a=P.acts[P.idx];
+        let ok=false, zh='', py='', pt='', your='', audio='';
+        if(a.type==='choosePt'){ ok = P.sel===a.item.t; zh=onlyHanzi(a.item.w)||a.item.w; py=a.item.p; pt=a.item.t; your=P.sel||''; audio=zh; }
+        else if(a.type==='chooseZh'||a.type==='listen'){ ok = P.sel && onlyHanzi(P.sel.w)===onlyHanzi(a.item.w); zh=onlyHanzi(a.item.w)||a.item.w; py=a.item.p; pt=a.item.t; your=P.sel?(onlyHanzi(P.sel.w)||P.sel.w):''; audio=zh; }
+        else if(a.type==='typeZh'||a.type==='typeHearZh'){
+            const inp=pcEl('pcInput'); const val=inp?inp.value:'';
+            ok = normHanzi(val)===onlyHanzi(a.item.w) && normHanzi(val).length>0;
+            if(ok) P.typedOk++;
+            zh=onlyHanzi(a.item.w)||a.item.w; py=a.item.p; pt=a.item.t; your=val; audio=zh;
+        }
+        else if(a.type==='fillBlank'){ ok = P.sel && onlyHanzi(P.sel.w)===a.gap; zh=a.entry.ex_ch; py=a.entry.ex_py; pt=a.entry.ex_pt; your=P.sel?(onlyHanzi(P.sel.w)||P.sel.w):''; audio=a.entry.ex_ch; }
+        else if(a.type==='orderSentence'){
+            const drop=pcEl('pcDrop');
+            const user=Array.from(drop.children).map(x=>x.querySelector('.chinese-text').innerText).join('');
+            ok = user===a.answer.join('');
+            zh=a.entry.ex_ch; py=a.entry.ex_py; pt=a.entry.ex_pt; your=user; audio=a.entry.ex_ch;
+        }
+        else if(a.type==='readQ'){ ok = P.sel && P.sel.ok; const co=a.q.opts[a.q.ok]; zh=co[0]; py=co[1]; pt=co[2]; your=P.sel?P.sel.o[0]:''; audio=co[0]; }
+        else if(a.type==='match'){ return; }
+        logR(ok, zh, py, pt, your);
+        P.checking=true;
+        if(!ok) loseHeart();
+        sfx(ok);
+        if(audio && prefs.autoAudio) playZh(audio);
+        showFb(ok, zh, py, pt);
+    }
+    function pcSkip(){
+        if(P.checking) return; P.checking=true; loseHeart(); sfx(false);
+        const a=P.acts[P.idx];
+        let zh='',py='',pt='';
+        if(a.type==='fillBlank'||a.type==='orderSentence'){ zh=a.entry.ex_ch; py=a.entry.ex_py; pt=a.entry.ex_pt; }
+        else if(a.type==='readQ'){ const co=a.q.opts[a.q.ok]; zh=co[0]; py=co[1]; pt=co[2]; }
+        else if(a.type==='match'){ zh='Associe todos os pares'; }
+        else if(a.item){ zh=onlyHanzi(a.item.w)||a.item.w; py=a.item.p; pt=a.item.t; }
+        logR(false, zh, py, pt, '');
+        showFb(false, zh, py, pt);
+    }
+    function loseHeart(){
+        P.hearts--; pcEl('pcHearts').innerText=Math.max(0,P.hearts);
+        if(P.hearts<=0 && !P.ended){ P.ended=true; setTimeout(()=>{ showSummary(false); },700); }
+    }
+    function showFb(ok, zh, py, pt){
+        const fb=pcEl('pcFeedback');
+        pcEl('pcSkip').style.display='none';
+        const c=pcEl('pcCheck'); c.innerText='Continuar'; c.disabled=false;
+        c.classList.remove('practice-btn-primary');
+        if(ok){
+            fb.className='absolute left-0 bottom-full w-full p-4 md:px-8 py-5 flex flex-col slide-up bg-teal-50/95 backdrop-blur-xl border-t border-teal-200 text-teal-900';
+            pcEl('pcFbIcon').className='w-12 h-12 rounded-full flex items-center justify-center text-white bg-teal-500 shadow-md shrink-0';
+            pcEl('pcFbIcon').innerHTML='<i data-lucide="check" class="w-7 h-7"></i>';
+            pcEl('pcFbTitle').innerText=['很好! Muito bem!','太棒了! Excelente!','对了! Correto!','真厉害! Impressionante!'][Math.floor(Math.random()*4)];
+            pcEl('pcFbText').classList.add('hidden'); pcEl('pcFbSub').classList.add('hidden');
+            c.classList.add('practice-btn-success'); c.classList.remove('practice-btn-danger');
+        } else {
+            fb.className='absolute left-0 bottom-full w-full p-4 md:px-8 py-5 flex flex-col slide-up bg-rose-50/95 backdrop-blur-xl border-t border-rose-200 text-rose-900';
+            pcEl('pcFbIcon').className='w-12 h-12 rounded-full flex items-center justify-center text-white bg-rose-500 shadow-md shrink-0';
+            pcEl('pcFbIcon').innerHTML='<i data-lucide="x" class="w-7 h-7"></i>';
+            pcEl('pcFbTitle').innerText='Resposta correta:';
+            const t=pcEl('pcFbText'); t.innerText=zh||''; t.classList.remove('hidden');
+            const s=pcEl('pcFbSub'); s.innerText=[py, pt].filter(Boolean).join(' — '); s.classList.toggle('hidden', !s.innerText);
+            c.classList.add('practice-btn-danger'); c.classList.remove('practice-btn-success');
+        }
+        lucide.createIcons();
+    }
+    // ---------- FIM DE TURNO: continuar ou finalizar? ----------
+    function endOfTurn(){
+        if(P.ended){ showSummary(false); return; }
+        if(P.turn >= P.maxTurns){ showSummary(true); return; }
+        pcProgressUpdate(); resetPcFooter();
+        pcEl('pcSkip').style.display='none'; pcEl('pcCheck').style.display='none';
+        pcEl('pcTitle').innerText='';
+        const done=P.log.filter(x=>x.ok).length;
+        pcEl('pcArea').innerHTML=`<div class="flex flex-col items-center w-full max-w-md mx-auto pt-6 animate-fade-in text-center">
+            <div class="w-20 h-20 rounded-[1.6rem] flex items-center justify-center text-white shadow-lg pop mb-4" style="background:linear-gradient(135deg,#0d9488,#14b8a6);"><i data-lucide="flag" class="w-9 h-9"></i></div>
+            <h2 class="text-2xl font-extrabold text-[#1d1d1f] tracking-tight">Turno ${P.turn} concluído!</h2>
+            <p class="text-sm text-[#86868b] font-semibold mt-2">Acertos até agora: <b class="text-teal-600">${done}</b> de ${P.log.length} · Corações: <b class="text-rose-500">${P.hearts}</b></p>
+            <p class="text-sm text-[#86868b] font-medium mt-1">Quer continuar para o turno ${P.turn+1} (novos exercícios) ou finalizar e ver o gabarito?</p>
+            <div class="flex flex-col sm:flex-row gap-3 w-full mt-6">
+                <button onclick="continueTurn()" class="practice-btn practice-btn-primary flex-1 py-3.5 rounded-2xl font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2"><i data-lucide="play" class="w-4 h-4"></i>Continuar</button>
+                <button onclick="showSummary(true)" class="practice-btn flex-1 py-3.5 rounded-2xl font-bold uppercase tracking-wider text-sm text-slate-600 flex items-center justify-center gap-2"><i data-lucide="flag" class="w-4 h-4"></i>Finalizar</button>
+            </div>
+        </div>`;
+        lucide.createIcons();
+    }
+    function continueTurn(){
+        P.turn++; P.acts=buildTurn(P.lesson, P.kind); P.idx=0;
+        if(!P.acts.length){ showSummary(true); return; }
+        pcEl('pcTurn').innerText='Turno '+P.turn+'/'+P.maxTurns;
+        loadAct();
+    }
+    // ---------- RESUMO FINAL + GABARITO ----------
+    function ringSVG(pct,color){ const r=52,c=2*Math.PI*r,off=c*(1-pct/100); return `<svg viewBox="0 0 120 120" class="w-28 h-28"><circle class="ring-bg" cx="60" cy="60" r="${r}" fill="none" stroke-width="12"/><circle cx="60" cy="60" r="${r}" fill="none" stroke="${color}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 60 60)"/></svg>`; }
+    function showSummary(completed){
+        P.ended=true;
+        const total=P.log.length, correct=P.log.filter(x=>x.ok).length;
+        const res=recordPractice(correct,total,P.lesson,P.typedOk,P.readsDone);
+        pcEl('pcTitle').innerText=''; pcEl('pcProgress').style.width='100%';
+        pcEl('pcFeedback').classList.add('hidden'); pcEl('pcSkip').style.display='none';
+        const pct= total? Math.round(correct/total*100):0;
+        const color= pct>=80?'#14b8a6': pct>=50?'#3388ff':'#f43f5e';
+        const achHTML= res.newAch.length? `<div class="mt-5 w-full"><p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-2 text-center">Novas conquistas</p><div class="flex flex-wrap justify-center gap-2">${res.newAch.map(a=>`<div class="badge unlocked pop flex items-center gap-2 !px-3 !py-2"><div class="w-8 h-8 rounded-lg bg-amber-400 text-white flex items-center justify-center shrink-0"><i data-lucide="${a.icon}" class="w-4 h-4"></i></div><div class="text-left"><div class="text-xs font-extrabold text-[#1d1d1f]">${a.name}</div><div class="text-[9px] text-[#86868b]">${a.desc}</div></div></div>`).join('')}</div></div>`:'';
+        const rows=P.log.map(x=>`<div class="flex items-start gap-3 p-3 rounded-2xl ${x.ok?'bg-teal-50/95 border border-teal-200':'bg-rose-50/95 border border-rose-200'}">
+            <div class="w-6 h-6 rounded-full flex items-center justify-center text-white shrink-0 ${x.ok?'bg-teal-500':'bg-rose-500'}"><i data-lucide="${x.ok?'check':'x'}" class="w-4 h-4"></i></div>
+            <div class="min-w-0 flex-1"><div class="text-[10px] uppercase tracking-wide font-bold text-[#86868b]">${x.label}</div>
+            <div class="chinese-text text-sm font-bold ${x.ok?'text-teal-900':'text-rose-900'} break-words">${x.zh}</div>
+            ${(x.py||x.pt)?`<div class="text-[11px] text-[#86868b] break-words">${[x.py,x.pt].filter(Boolean).join(' — ')}</div>`:''}
+            ${(!x.ok&&x.your)?`<div class="text-xs text-[#86868b]">Sua resposta: <span class="line-through chinese-text">${x.your}</span></div>`:''}</div></div>`).join('');
+        pcEl('pcArea').innerHTML=`<div class="flex flex-col items-center w-full max-w-xl mx-auto pt-1 pb-6 animate-fade-in">
+            <div class="relative flex items-center justify-center pop">${ringSVG(pct,color)}<div class="absolute text-center"><div class="text-3xl font-extrabold text-[#1d1d1f]">${pct}%</div><div class="text-[10px] font-bold text-[#86868b] uppercase">${correct}/${total}</div></div></div>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-[#1d1d1f] mt-4 tracking-tight">${completed?(pct>=80?'太棒了! Excelente!':(pct>=50?'很好! Muito bem!':'Prática concluída!')):'Fim da prática'}</h2>
+            <div class="flex items-center gap-3 mt-3">
+                <div class="px-4 py-2 rounded-2xl bg-white/60 border border-white/80 flex items-center gap-2 text-[#0066cc] font-extrabold"><i data-lucide="zap" class="w-4 h-4"></i>+${res.xpGained} XP</div>
+                <div class="px-4 py-2 rounded-2xl bg-white/60 border border-white/80 flex items-center gap-2 text-orange-500 font-extrabold"><i data-lucide="flame" class="w-4 h-4"></i>${res.streak} ${res.streak===1?'dia':'dias'}</div>
+            </div>
+            ${achHTML}
+            <div class="w-full mt-6"><p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-2">Gabarito — acertos e erros</p><div class="flex flex-col gap-2">${rows||'<p class="text-sm text-[#86868b]">Sem itens.</p>'}</div></div>
+        </div>`;
+        lucide.createIcons();
+        const c=pcEl('pcCheck'); c.style.display=''; c.innerText='Concluir'; c.disabled=false;
+        c.classList.add('practice-btn-success'); c.classList.remove('practice-btn-primary','practice-btn-danger');
+        c.onclick=()=>{ P.active=false; closePracticeC(); decorateFolder(); };
+    }
+    // ---------- MENU DE PRÁTICAS + INTEGRAÇÃO COM A TELA DE LIÇÕES ----------
+    let hubLesson=1;
+    function openHub(n){
+        hubLesson=n;
+        const sheet=document.getElementById('hubSheet');
+        const items=Object.keys(KINDS).map(k=>{
+            const K=KINDS[k];
+            return `<button class="hub-item" onclick="startPracticeC(${n}, '${k}')">
+                <div class="hub-ico" style="background:${K.color};"><i data-lucide="${K.icon}" class="w-5 h-5"></i></div>
+                <div class="min-w-0 flex-1"><div class="text-sm font-extrabold text-[#1d1d1f] leading-tight">${K.label} <span class="chinese-text text-[#86868b] font-bold">${K.zh}</span></div>
+                <div class="text-[10px] text-[#86868b] font-semibold mt-0.5">${k==='read'?'Pequenos textos com perguntas de compreensão':(k==='all'?'Mistura tudo: vocabulário, frases, escrita e leitura':'Exercícios variados focados nesta categoria')}</div></div>
+                <i data-lucide="chevron-right" class="w-4 h-4 text-[#86868b] shrink-0"></i>
+            </button>`;
+        }).join('');
+        sheet.innerHTML=`<div class="flex items-center justify-between mb-4"><h2 class="text-lg font-extrabold text-[#1d1d1f] flex items-center gap-2"><i data-lucide="gamepad-2" class="w-5 h-5 text-teal-600"></i>Prática de Conteúdo — Lição ${n}</h2><button onclick="closeHub()" class="p-2 rounded-full bg-white/60 border border-white text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button></div>
+            <p class="text-[11px] text-[#86868b] font-semibold mb-4">Cada prática tem turnos de exercícios sorteados — nunca vem igual à anterior. Ao fim de cada turno você escolhe continuar ou finalizar.</p>${items}`;
+        document.getElementById('hubModal').classList.remove('hidden');
+        lucide.createIcons();
+    }
+    function closeHub(){ document.getElementById('hubModal').classList.add('hidden'); }
+    function decorateFolder(){
+        // Botão "Prática de Conteúdo" em cada card de lição (sem alterar o HTML original)
+        document.querySelectorAll('#view-folder .lesson-card').forEach((card,i)=>{
+            let b=card.querySelector('.pr-open');
+            if(!b){ b=document.createElement('button'); b.className='pr-open'; card.appendChild(b); }
+            b.innerHTML='<i data-lucide="gamepad-2" class="w-4 h-4"></i> Prática de Conteúdo';
+            b.onclick=(e)=>{ e.stopPropagation(); openHub(i+1); };
+        });
+        // Selo de progresso no topo da pasta
+        const fc=document.querySelector('#view-folder .folder-container');
+        if(fc){
+            let chip=document.getElementById('folderStats');
+            if(!chip){ chip=document.createElement('div'); chip.id='folderStats'; chip.className='flex items-center justify-center gap-3 -mt-4 mb-6'; const h2=fc.querySelector('h2'); if(h2) h2.after(chip); }
+            const p=progress;
+            chip.innerHTML=(p.sessions>0)?`<div class="px-4 py-1.5 rounded-2xl bg-white/60 border border-white/80 flex items-center gap-2 text-orange-500 font-extrabold shadow-sm text-sm"><i data-lucide="flame" class="w-4 h-4"></i>${p.streak||0}<span class="text-[9px] text-[#86868b] font-bold uppercase">dias</span></div><div class="px-4 py-1.5 rounded-2xl bg-white/60 border border-white/80 flex items-center gap-2 text-[#0066cc] font-extrabold shadow-sm text-sm"><i data-lucide="zap" class="w-4 h-4"></i>${p.xp||0}<span class="text-[9px] text-[#86868b] font-bold uppercase">xp</span></div>`:'';
+        }
+        if(window.lucide) lucide.createIcons();
+    }
+    // ---------- INICIALIZAÇÃO ----------
+    document.addEventListener('DOMContentLoaded', ()=>{
+        loadPrefs(); applyTheme(); loadProgress(); buildPinyinMaps();
+        decorateFolder();
+        if(window.lucide) lucide.createIcons();
+        if(location.protocol==='http:'||location.protocol==='https:') setTimeout(()=>checkForUpdate(true),1500);
+    });
+    // ---------- TEXTOS EXTRAS (uso real: mensagens, avisos, anúncios) ----------
+    READINGS[1].push(
+      { title:'新同学（微信消息）',
+        lines:[
+          ['王静，告诉你一个消息：我们班来了一个新同学。','Wáng Jìng, gàosu nǐ yí ge xiāoxi: wǒmen bān lái le yí ge xīn tóngxué.'],
+          ['他叫李进，个子很高，身高一米八。','Tā jiào Lǐ Jìn, gèzi hěn gāo, shēngāo yì mǐ bā.'],
+          ['他不仅学习认真，性格也很幽默。','Tā bùjǐn xuéxí rènzhēn, xìnggé yě hěn yōumò.'],
+          ['听说他特别喜欢打球，周末经常去游泳。','Tīngshuō tā tèbié xǐhuan dǎqiú, zhōumò jīngcháng qù yóuyǒng.'],
+          ['明天我介绍你们认识吧！','Míngtiān wǒ jièshào nǐmen rènshi ba!']],
+        pt:'Wang Jing, uma novidade: chegou um aluno novo na nossa turma. Ele se chama Li Jin, é bem alto, com um metro e oitenta. Ele não apenas estuda com dedicação, como também tem uma personalidade bem-humorada. Ouvi dizer que adora jogar bola e costuma nadar nos fins de semana. Amanhã apresento vocês!',
+        qs:[
+          { q:'李进的身高是多少？', qp:'Lǐ Jìn de shēngāo shì duōshao?', qt:'Qual é a altura de Li Jin?', opts:[['一米八','yì mǐ bā','1,80 m'],['一米六','yì mǐ liù','1,60 m'],['两米','liǎng mǐ','2,00 m']], ok:0 },
+          { q:'李进的性格怎么样？', qp:'Lǐ Jìn de xìnggé zěnmeyàng?', qt:'Como é a personalidade dele?', opts:[['很无聊','hěn wúliáo','muito sem graça'],['很幽默','hěn yōumò','bem-humorada'],['脾气很坏','píqi hěn huài','de gênio ruim']], ok:1 },
+          { q:'他周末经常做什么？', qp:'Tā zhōumò jīngcháng zuò shénme?', qt:'O que ele costuma fazer no fim de semana?', opts:[['加班','jiābān','fazer hora extra'],['做菜','zuòcài','cozinhar'],['去游泳','qù yóuyǒng','nadar']], ok:2 }] },
+      { title:'自我介绍（交友网站）',
+        lines:[
+          ['大家好，我叫高兴，今年二十八岁，是一名新闻工作者。','Dàjiā hǎo, wǒ jiào Gāo Xìng, jīnnián èrshíbā suì, shì yì míng xīnwén gōngzuòzhě.'],
+          ['我的爱好是听音乐、做菜和看爱情电影。','Wǒ de àihào shì tīng yīnyuè, zuòcài hé kàn àiqíng diànyǐng.'],
+          ['我性格安静，但是朋友都说我很幽默。','Wǒ xìnggé ānjìng, dànshì péngyou dōu shuō wǒ hěn yōumò.'],
+          ['我希望找到一个有共同兴趣的人。','Wǒ xīwàng zhǎodào yí ge yǒu gòngtóng xìngqù de rén.'],
+          ['即使很忙，我们也可以互相陪着慢慢变老。','Jíshǐ hěn máng, wǒmen yě kěyǐ hùxiāng péizhe mànmàn biàn lǎo.']],
+        pt:'Olá a todos, meu nome é Gao Xing, tenho 28 anos e sou jornalista. Meus passatempos são ouvir música, cozinhar e ver filmes de romance. Tenho personalidade quieta, mas os amigos dizem que sou bem-humorado. Espero encontrar alguém com interesses em comum. Mesmo com a vida corrida, podemos envelhecer lentamente um ao lado do outro.',
+        qs:[
+          { q:'高兴的工作和什么有关？', qp:'Gāo Xìng de gōngzuò hé shénme yǒuguān?', qt:'Com o que se relaciona o trabalho dele?', opts:[['新闻','xīnwén','jornalismo'],['法律','fǎlǜ','direito'],['音乐','yīnyuè','música']], ok:0 },
+          { q:'朋友觉得他怎么样？', qp:'Péngyou juéde tā zěnmeyàng?', qt:'O que os amigos acham dele?', opts:[['很难过','hěn nánguò','muito triste'],['很幽默','hěn yōumò','bem-humorado'],['很讨厌','hěn tǎoyàn','detestável']], ok:1 },
+          { q:'他想找什么样的人？', qp:'Tā xiǎng zhǎo shénmeyàng de rén?', qt:'Que tipo de pessoa ele procura?', opts:[['个子高的','gèzi gāo de','alguém alto'],['会开车的','huì kāichē de','alguém que dirige'],['有共同兴趣的','yǒu gòngtóng xìngqù de','alguém com interesses em comum']], ok:2 }] },
+      { title:'爷爷和奶奶',
+        lines:[
+          ['我爷爷和奶奶结婚五十年了，从来没红过脸。','Wǒ yéye hé nǎinai jiéhūn wǔshí nián le, cónglái méi hóngguo liǎn.'],
+          ['爷爷脾气好，奶奶做的菜特别好吃。','Yéye píqi hǎo, nǎinai zuò de cài tèbié hǎochī.'],
+          ['他们每天一起听音乐，有说不完的话。','Tāmen měitiān yìqǐ tīng yīnyuè, yǒu shuō bù wán de huà.'],
+          ['奶奶说，爱情不需要天天浪漫。','Nǎinai shuō, àiqíng bù xūyào tiāntiān làngmàn.'],
+          ['最重要的是互相接受对方的缺点。','Zuì zhòngyào de shì hùxiāng jiēshòu duìfāng de quēdiǎn.']],
+        pt:'Meu avô e minha avó estão casados há cinquenta anos e nunca brigaram feio. O vovô tem bom gênio e a comida da vovó é deliciosa. Todos os dias eles ouvem música juntos e têm conversas intermináveis. A vovó diz que o amor não precisa de romance todos os dias. O mais importante é aceitar mutuamente os defeitos um do outro.',
+        qs:[
+          { q:'爷爷和奶奶结婚多长时间了？', qp:'Yéye hé nǎinai jiéhūn duō cháng shíjiān le?', qt:'Há quanto tempo eles são casados?', opts:[['五十年','wǔshí nián','cinquenta anos'],['十五年','shíwǔ nián','quinze anos'],['五年','wǔ nián','cinco anos']], ok:0 },
+          { q:'他们每天一起做什么？', qp:'Tāmen měitiān yìqǐ zuò shénme?', qt:'O que eles fazem juntos todos os dias?', opts:[['去医院','qù yīyuàn','vão ao hospital'],['听音乐','tīng yīnyuè','ouvem música'],['去踢足球','qù tī zúqiú','jogam futebol']], ok:1 },
+          { q:'奶奶觉得爱情最重要的是什么？', qp:'Nǎinai juéde àiqíng zuì zhòngyào de shì shénme?', qt:'O que a vovó acha mais importante no amor?', opts:[['天天送礼物','tiāntiān sòng lǐwù','dar presentes todo dia'],['非常浪漫','fēicháng làngmàn','ser muito romântico'],['互相接受缺点','hùxiāng jiēshòu quēdiǎn','aceitar os defeitos um do outro']], ok:2 }] },
+      { title:'电影之夜（通知）',
+        lines:[
+          ['同学们好！这个星期五晚上七点，学校有电影之夜。','Tóngxuémen hǎo! Zhège xīngqīwǔ wǎnshang qī diǎn, xuéxiào yǒu diànyǐng zhī yè.'],
+          ['这次我们看经典爱情电影《罗马假日》。','Zhè cì wǒmen kàn jīngdiǎn àiqíng diànyǐng «Luómǎ Jiàrì».'],
+          ['电影讲了一个非常感动人的爱情故事。','Diànyǐng jiǎng le yí ge fēicháng gǎndòng rén de àiqíng gùshi.'],
+          ['看完以后，大家可以说说自己的想法。','Kàn wán yǐhòu, dàjiā kěyǐ shuōshuo zìjǐ de xiǎngfǎ.'],
+          ['地点：学校图书馆。欢迎大家参加！','Dìdiǎn: xuéxiào túshūguǎn. Huānyíng dàjiā cānjiā!']],
+        pt:'Olá, colegas! Nesta sexta-feira às 19h a escola terá uma noite de cinema. Desta vez veremos o clássico filme de romance "A Princesa e o Plebeu". O filme conta uma história de amor muito emocionante. Depois da sessão, todos podem compartilhar suas ideias. Local: biblioteca da escola. Todos são bem-vindos!',
+        qs:[
+          { q:'电影之夜是什么时候？', qp:'Diànyǐng zhī yè shì shénme shíhou?', qt:'Quando é a noite de cinema?', opts:[['星期五晚上七点','xīngqīwǔ wǎnshang qī diǎn','sexta às 19h'],['星期六早上','xīngqīliù zǎoshang','sábado de manhã'],['星期天中午','xīngqītiān zhōngwǔ','domingo ao meio-dia']], ok:0 },
+          { q:'这次看什么电影？', qp:'Zhè cì kàn shénme diànyǐng?', qt:'Qual filme será exibido?', opts:[['《泰坦尼克号》','«Tàitǎnníkè Hào»','Titanic'],['《罗马假日》','«Luómǎ Jiàrì»','A Princesa e o Plebeu'],['《诺丁山》','«Nuòdīngshān»','Notting Hill']], ok:1 },
+          { q:'活动的地点在哪儿？', qp:'Huódòng de dìdiǎn zài nǎr?', qt:'Onde é o evento?', opts:[['体育馆','tǐyùguǎn','no ginásio'],['公园','gōngyuán','no parque'],['学校图书馆','xuéxiào túshūguǎn','na biblioteca da escola']], ok:2 }] }
+    );
+    READINGS[2].push(
+      { title:'同学聚会（通知）',
+        lines:[
+          ['各位老同学：大家好！','Gèwèi lǎo tóngxué: dàjiā hǎo!'],
+          ['下个星期六晚上六点，我们在校园旁边的饭店有一个聚会。','Xià ge xīngqīliù wǎnshang liù diǎn, wǒmen zài xiàoyuán pángbiān de fàndiàn yǒu yí ge jùhuì.'],
+          ['毕业十年了，很多人都在国外工作，很难见面。','Bìyè shí nián le, hěnduō rén dōu zài guówài gōngzuò, hěn nán jiànmiàn.'],
+          ['这次大家可以一起看老照片，聊聊过去的日子。','Zhè cì dàjiā kěyǐ yìqǐ kàn lǎo zhàopiàn, liáoliao guòqù de rìzi.'],
+          ['如果你愿意参加，请给张远打电话或者发短信。','Rúguǒ nǐ yuànyì cānjiā, qǐng gěi Zhāng Yuǎn dǎ diànhuà huòzhě fā duǎnxìn.']],
+        pt:'Queridos ex-colegas, olá! No próximo sábado às 18h teremos um encontro no restaurante ao lado do campus. Já faz dez anos que nos formamos e muitos trabalham no exterior, é difícil se ver. Desta vez poderemos ver fotos antigas juntos e conversar sobre os velhos tempos. Se quiser participar, ligue para Zhang Yuan ou mande uma mensagem.',
+        qs:[
+          { q:'聚会在什么地方？', qp:'Jùhuì zài shénme dìfang?', qt:'Onde será o encontro?', opts:[['校园旁边的饭店','xiàoyuán pángbiān de fàndiàn','no restaurante ao lado do campus'],['张远的家','Zhāng Yuǎn de jiā','na casa de Zhang Yuan'],['学校图书馆','xuéxiào túshūguǎn','na biblioteca']], ok:0 },
+          { q:'为什么大家很难见面？', qp:'Wèishénme dàjiā hěn nán jiànmiàn?', qt:'Por que é difícil se encontrarem?', opts:[['因为没有钱','yīnwèi méiyǒu qián','porque não têm dinheiro'],['很多人在国外工作','hěnduō rén zài guówài gōngzuò','muitos trabalham no exterior'],['因为不是朋友了','yīnwèi bú shì péngyou le','porque não são mais amigos']], ok:1 },
+          { q:'想参加的人应该做什么？', qp:'Xiǎng cānjiā de rén yīnggāi zuò shénme?', qt:'O que deve fazer quem quer participar?', opts:[['直接去饭店','zhíjiē qù fàndiàn','ir direto ao restaurante'],['发电子邮件','fā diànzǐ yóujiàn','mandar e-mail'],['给张远打电话或发短信','gěi Zhāng Yuǎn dǎ diànhuà huò fā duǎnxìn','ligar ou mandar SMS para Zhang Yuan']], ok:2 }] },
+      { title:'借词典（短信）',
+        lines:[
+          ['小丽，不好意思，这么晚给你发短信。','Xiǎo Lì, bù hǎoyìsi, zhème wǎn gěi nǐ fā duǎnxìn.'],
+          ['明天我要参加一个重要的考试，可是我的词典找不到了。','Míngtiān wǒ yào cānjiā yí ge zhòngyào de kǎoshì, kěshì wǒ de cídiǎn zhǎo bú dào le.'],
+          ['能借你的词典用一天吗？','Néng jiè nǐ de cídiǎn yòng yì tiān ma?'],
+          ['考试以后我马上还给你，真的非常感谢！','Kǎoshì yǐhòu wǒ mǎshàng huán gěi nǐ, zhēn de fēicháng gǎnxiè!'],
+          ['如果方便，明天早上我去你家拿。','Rúguǒ fāngbiàn, míngtiān zǎoshang wǒ qù nǐ jiā ná.']],
+        pt:'Xiao Li, desculpe mandar mensagem tão tarde. Amanhã tenho uma prova importante, mas não encontro meu dicionário. Pode me emprestar o seu por um dia? Devolvo logo depois da prova, muito obrigado mesmo! Se for conveniente, passo na sua casa amanhã de manhã para pegar.',
+        qs:[
+          { q:'他为什么需要词典？', qp:'Tā wèishénme xūyào cídiǎn?', qt:'Por que ele precisa do dicionário?', opts:[['明天有重要的考试','míngtiān yǒu zhòngyào de kǎoshì','tem uma prova importante amanhã'],['想送给朋友','xiǎng sòng gěi péngyou','quer dar de presente'],['要去旅行','yào qù lǚxíng','vai viajar']], ok:0 },
+          { q:'他什么时候还词典？', qp:'Tā shénme shíhou huán cídiǎn?', qt:'Quando ele devolve o dicionário?', opts:[['下个月','xià ge yuè','no mês que vem'],['考试以后马上','kǎoshì yǐhòu mǎshàng','logo depois da prova'],['明年','míngnián','no ano que vem']], ok:1 }] },
+      { title:'国外的朋友',
+        lines:[
+          ['我的男朋友去国外读书已经一年了。','Wǒ de nánpéngyou qù guówài dúshū yǐjīng yì nián le.'],
+          ['虽然我们不能常常见面，但是关系还是很好。','Suīrán wǒmen bù néng chángcháng jiànmiàn, dànshì guānxi háishi hěn hǎo.'],
+          ['我们每天都发短信，周末打电话聊天儿。','Wǒmen měitiān dōu fā duǎnxìn, zhōumò dǎ diànhuà liáo tiānr.'],
+          ['他常常给我讲国外生活里有意思的事情。','Tā chángcháng gěi wǒ jiǎng guówài shēnghuó lǐ yǒu yìsi de shìqing.'],
+          ['真正的感情，距离不是问题。','Zhēnzhèng de gǎnqíng, jùlí bú shì wèntí.']],
+        pt:'Meu namorado foi estudar no exterior há um ano. Embora não possamos nos ver com frequência, a relação continua muito boa. Trocamos mensagens todos os dias e nos fins de semana conversamos por telefone. Ele sempre me conta coisas interessantes da vida no exterior. Para um sentimento verdadeiro, a distância não é problema.',
+        qs:[
+          { q:'男朋友去国外做什么？', qp:'Nánpéngyou qù guówài zuò shénme?', qt:'O que o namorado foi fazer no exterior?', opts:[['读书','dúshū','estudar'],['旅游','lǚyóu','viajar'],['工作','gōngzuò','trabalhar']], ok:0 },
+          { q:'他们周末做什么？', qp:'Tāmen zhōumò zuò shénme?', qt:'O que eles fazem no fim de semana?', opts:[['见面吃饭','jiànmiàn chīfàn','encontram-se para comer'],['打电话聊天儿','dǎ diànhuà liáo tiānr','conversam por telefone'],['一起逛街','yìqǐ guàngjiē','passeiam juntos']], ok:1 },
+          { q:'这段话想说什么？', qp:'Zhè duàn huà xiǎng shuō shénme?', qt:'Qual é a ideia principal?', opts:[['国外生活很难','guówài shēnghuó hěn nán','a vida fora é difícil'],['打电话太贵','dǎ diànhuà tài guì','ligar é muito caro'],['真感情不怕距离','zhēn gǎnqíng bú pà jùlí','sentimento verdadeiro não teme distância']], ok:2 }] },
+      { title:'生日舞会（邀请）',
+        lines:[
+          ['亲爱的朋友们：','Qīn\'ài de péngyoumen:'],
+          ['这个星期六是我女儿的十八岁生日。','Zhège xīngqīliù shì wǒ nǚ\'ér de shíbā suì shēngrì.'],
+          ['我们晚上七点在家里有一个小舞会。','Wǒmen wǎnshang qī diǎn zài jiālǐ yǒu yí ge xiǎo wǔhuì.'],
+          ['会有音乐、蛋糕，还有很多好吃的菜。','Huì yǒu yīnyuè, dàngāo, hái yǒu hěnduō hǎochī de cài.'],
+          ['不用带礼物，大家来就是最好的礼物！','Búyòng dài lǐwù, dàjiā lái jiù shì zuì hǎo de lǐwù!']],
+        pt:'Queridos amigos: neste sábado é o aniversário de 18 anos da minha filha. Teremos um pequeno baile em casa às 19h. Haverá música, bolo e muitos pratos gostosos. Não precisa trazer presente — a presença de vocês já é o melhor presente!',
+        qs:[
+          { q:'舞会是为了什么？', qp:'Wǔhuì shì wèile shénme?', qt:'Para que é o baile?', opts:[['女儿的生日','nǚ\'ér de shēngrì','o aniversário da filha'],['朋友的婚礼','péngyou de hūnlǐ','o casamento de um amigo'],['公司的聚会','gōngsī de jùhuì','a festa da empresa']], ok:0 },
+          { q:'舞会几点开始？', qp:'Wǔhuì jǐ diǎn kāishǐ?', qt:'A que horas começa?', opts:[['晚上七点','wǎnshang qī diǎn','às 19h'],['中午十二点','zhōngwǔ shí\'èr diǎn','ao meio-dia'],['早上九点','zǎoshang jiǔ diǎn','às 9h']], ok:1 },
+          { q:'客人需要带什么？', qp:'Kèrén xūyào dài shénme?', qt:'O que os convidados precisam levar?', opts:[['一个蛋糕','yí ge dàngāo','um bolo'],['很贵的礼物','hěn guì de lǐwù','um presente caro'],['什么都不用带','shénme dōu búyòng dài','não precisam levar nada']], ok:2 }] }
+    );
+    READINGS[3].push(
+      { title:'招聘通知',
+        lines:[
+          ['我们公司现在招聘一名英语翻译。','Wǒmen gōngsī xiànzài zhāopìn yì míng Yīngyǔ fānyì.'],
+          ['要求：大学毕业，专业能力强，工作认真。','Yāoqiú: dàxué bìyè, zhuānyè nénglì qiáng, gōngzuò rènzhēn.'],
+          ['我们提供很好的收入和工作环境。','Wǒmen tígōng hěn hǎo de shōurù hé gōngzuò huánjìng.'],
+          ['办公室在市中心，交通非常方便。','Bàngōngshì zài shìzhōngxīn, jiāotōng fēicháng fāngbiàn.'],
+          ['有兴趣的人请把材料发到公司的电子邮件。','Yǒu xìngqù de rén qǐng bǎ cáiliào fā dào gōngsī de diànzǐ yóujiàn.']],
+        pt:'Nossa empresa está recrutando um tradutor de inglês. Requisitos: formação universitária, forte capacidade profissional e dedicação ao trabalho. Oferecemos ótima renda e ambiente de trabalho. O escritório fica no centro, com transporte muito conveniente. Interessados devem enviar os documentos para o e-mail da empresa.',
+        qs:[
+          { q:'公司在招聘什么？', qp:'Gōngsī zài zhāopìn shénme?', qt:'O que a empresa está recrutando?', opts:[['英语翻译','Yīngyǔ fānyì','tradutor de inglês'],['律师','lǜshī','advogado'],['销售经理','xiāoshòu jīnglǐ','gerente de vendas']], ok:0 },
+          { q:'办公室的交通怎么样？', qp:'Bàngōngshì de jiāotōng zěnmeyàng?', qt:'Como é o transporte até o escritório?', opts:[['很不方便','hěn bù fāngbiàn','muito inconveniente'],['非常方便','fēicháng fāngbiàn','muito conveniente'],['需要打车','xūyào dǎchē','só de táxi']], ok:1 },
+          { q:'有兴趣的人应该怎么做？', qp:'Yǒu xìngqù de rén yīnggāi zěnme zuò?', qt:'O que os interessados devem fazer?', opts:[['直接去办公室','zhíjiē qù bàngōngshì','ir direto ao escritório'],['打电话','dǎ diànhuà','telefonar'],['发电子邮件','fā diànzǐ yóujiàn','enviar e-mail']], ok:2 }] },
+      { title:'面试通知（邮件）',
+        lines:[
+          ['王静女士，您好！','Wáng Jìng nǚshì, nín hǎo!'],
+          ['我们已经收到了您的材料，非常感谢。','Wǒmen yǐjīng shōudào le nín de cáiliào, fēicháng gǎnxiè.'],
+          ['请您下星期三上午十点来我们办公室参加面试。','Qǐng nín xià xīngqīsān shàngwǔ shí diǎn lái wǒmen bàngōngshì cānjiā miànshì.'],
+          ['面试一共有两部分：先笔试，然后是正式面试。','Miànshì yígòng yǒu liǎng bùfen: xiān bǐshì, ránhòu shì zhèngshì miànshì.'],
+          ['如果时间不方便，请及时和小李联系。','Rúguǒ shíjiān bù fāngbiàn, qǐng jíshí hé Xiǎo Lǐ liánxì.']],
+        pt:'Prezada Sra. Wang Jing, olá! Recebemos seus documentos, muito obrigado. Pedimos que venha ao nosso escritório na próxima quarta-feira às 10h para a entrevista. A seleção tem duas partes: primeiro a prova escrita e depois a entrevista formal. Se o horário não for conveniente, entre em contato com Xiaoli a tempo.',
+        qs:[
+          { q:'面试是什么时候？', qp:'Miànshì shì shénme shíhou?', qt:'Quando é a entrevista?', opts:[['下星期三上午十点','xià xīngqīsān shàngwǔ shí diǎn','quarta que vem às 10h'],['明天下午','míngtiān xiàwǔ','amanhã à tarde'],['这个周末','zhège zhōumò','neste fim de semana']], ok:0 },
+          { q:'面试的第一部分是什么？', qp:'Miànshì de dì-yī bùfen shì shénme?', qt:'Qual é a primeira parte da seleção?', opts:[['正式面试','zhèngshì miànshì','a entrevista formal'],['笔试','bǐshì','a prova escrita'],['体育考试','tǐyù kǎoshì','prova de esportes']], ok:1 },
+          { q:'时间不方便的话应该做什么？', qp:'Shíjiān bù fāngbiàn dehuà yīnggāi zuò shénme?', qt:'E se o horário não for conveniente?', opts:[['不用来了','búyòng lái le','não precisa vir'],['换一家公司','huàn yì jiā gōngsī','trocar de empresa'],['和小李联系','hé Xiǎo Lǐ liánxì','contatar Xiaoli']], ok:2 }] },
+      { title:'同事生病了（消息）',
+        lines:[
+          ['大家好，告诉大家一件事：小林生病住院了。','Dàjiā hǎo, gàosu dàjiā yí jiàn shì: Xiǎo Lín shēngbìng zhùyuàn le.'],
+          ['医生说问题不大，但是需要休息一个星期。','Yīshēng shuō wèntí bú dà, dànshì xūyào xiūxi yí ge xīngqī.'],
+          ['他负责的工作，这几天先交给小夏。','Tā fùzé de gōngzuò, zhè jǐ tiān xiān jiāo gěi Xiǎo Xià.'],
+          ['明天下午我们去医院看他，愿意去的同事联系我。','Míngtiān xiàwǔ wǒmen qù yīyuàn kàn tā, yuànyì qù de tóngshì liánxì wǒ.'],
+          ['祝小林早日恢复健康！','Zhù Xiǎo Lín zǎorì huīfù jiànkāng!']],
+        pt:'Olá a todos, um aviso: Xiaolin adoeceu e foi internado. O médico disse que não é grave, mas ele precisa descansar uma semana. O trabalho pelo qual ele é responsável ficará por enquanto com Xiaoxia. Amanhã à tarde vamos visitá-lo no hospital; colegas que quiserem ir, falem comigo. Desejamos ao Xiaolin uma rápida recuperação!',
+        qs:[
+          { q:'小林怎么了？', qp:'Xiǎo Lín zěnme le?', qt:'O que aconteceu com Xiaolin?', opts:[['生病住院了','shēngbìng zhùyuàn le','adoeceu e foi internado'],['换工作了','huàn gōngzuò le','mudou de emprego'],['去国外了','qù guówài le','foi para o exterior']], ok:0 },
+          { q:'小林的工作先交给谁？', qp:'Xiǎo Lín de gōngzuò xiān jiāo gěi shéi?', qt:'Com quem fica o trabalho dele?', opts:[['小李','Xiǎo Lǐ','Xiaoli'],['小夏','Xiǎo Xià','Xiaoxia'],['马经理','Mǎ jīnglǐ','o gerente Ma']], ok:1 },
+          { q:'明天下午大家要做什么？', qp:'Míngtiān xiàwǔ dàjiā yào zuò shénme?', qt:'O que farão amanhã à tarde?', opts:[['开会','kāihuì','ter reunião'],['加班','jiābān','fazer hora extra'],['去医院看小林','qù yīyuàn kàn Xiǎo Lín','visitar Xiaolin no hospital']], ok:2 }] },
+      { title:'第一天上班',
+        lines:[
+          ['今天是我第一天上班，我提前半个小时就到了办公室。','Jīntiān shì wǒ dì-yī tiān shàngbān, wǒ tíqián bàn ge xiǎoshí jiù dào le bàngōngshì.'],
+          ['经理向大家介绍了我，同事们都很热心。','Jīnglǐ xiàng dàjiā jièshào le wǒ, tóngshìmen dōu hěn rèxīn.'],
+          ['虽然我有点儿紧张，但是一切都很顺利。','Suīrán wǒ yǒudiǎnr jǐnzhāng, dànshì yíqiè dōu hěn shùnlì.'],
+          ['中午大家一起吃饭，问了我很多问题。','Zhōngwǔ dàjiā yìqǐ chīfàn, wèn le wǒ hěnduō wèntí.'],
+          ['我相信自己会慢慢适应这个新环境。','Wǒ xiāngxìn zìjǐ huì mànmàn shìyìng zhège xīn huánjìng.']],
+        pt:'Hoje foi meu primeiro dia de trabalho e cheguei ao escritório com meia hora de antecedência. O gerente me apresentou a todos e os colegas foram muito acolhedores. Embora eu estivesse um pouco nervoso, tudo correu bem. No almoço todos comeram juntos e me fizeram muitas perguntas. Acredito que vou me adaptar aos poucos a este novo ambiente.',
+        qs:[
+          { q:'"我"什么时候到了办公室？', qp:'"Wǒ" shénme shíhou dào le bàngōngshì?', qt:'Quando "eu" cheguei ao escritório?', opts:[['提前半个小时','tíqián bàn ge xiǎoshí','meia hora antes'],['迟到了十分钟','chídào le shí fēnzhōng','dez minutos atrasado'],['正好准时','zhènghǎo zhǔnshí','em ponto']], ok:0 },
+          { q:'同事们怎么样？', qp:'Tóngshìmen zěnmeyàng?', qt:'Como foram os colegas?', opts:[['很讨厌','hěn tǎoyàn','antipáticos'],['都很热心','dōu hěn rèxīn','muito acolhedores'],['非常安静','fēicháng ānjìng','muito quietos']], ok:1 },
+          { q:'"我"相信什么？', qp:'"Wǒ" xiāngxìn shénme?', qt:'No que "eu" acredito?', opts:[['马上要换工作','mǎshàng yào huàn gōngzuò','que vou mudar de emprego'],['工资会更高','gōngzī huì gèng gāo','que o salário vai subir'],['会慢慢适应新环境','huì mànmàn shìyìng xīn huánjìng','que vou me adaptar aos poucos']], ok:2 }] }
+    );
+    READINGS[4].push(
+      { title:'会议改时间了（通知）',
+        lines:[
+          ['各位同事请注意：','Gèwèi tóngshì qǐng zhùyì:'],
+          ['明天的会议提前到了上午九点。','Míngtiān de huìyì tíqián dào le shàngwǔ jiǔ diǎn.'],
+          ['请大家按时到会议室，不要迟到。','Qǐng dàjiā ànshí dào huìyìshì, bú yào chídào.'],
+          ['会议要谈下个月的工作计划，非常重要。','Huìyì yào tán xià ge yuè de gōngzuò jìhuà, fēicháng zhòngyào.'],
+          ['请把这个消息告诉还不知道的同事，谢谢！','Qǐng bǎ zhège xiāoxi gàosu hái bù zhīdào de tóngshì, xièxie!']],
+        pt:'Atenção, colegas: a reunião de amanhã foi antecipada para as 9h. Por favor, cheguem pontualmente à sala de reuniões, sem atrasos. A reunião tratará do plano de trabalho do próximo mês e é muito importante. Avisem os colegas que ainda não sabem, obrigado!',
+        qs:[
+          { q:'会议改到了几点？', qp:'Huìyì gǎi dào le jǐ diǎn?', qt:'Para que horas mudou a reunião?', opts:[['上午九点','shàngwǔ jiǔ diǎn','9h da manhã'],['下午三点','xiàwǔ sān diǎn','15h'],['中午十二点','zhōngwǔ shí\'èr diǎn','meio-dia']], ok:0 },
+          { q:'会议要谈什么？', qp:'Huìyì yào tán shénme?', qt:'O que será tratado na reunião?', opts:[['公司的生日','gōngsī de shēngrì','o aniversário da empresa'],['下个月的工作计划','xià ge yuè de gōngzuò jìhuà','o plano de trabalho do próximo mês'],['换办公室','huàn bàngōngshì','a mudança de escritório']], ok:1 },
+          { q:'大家还应该做什么？', qp:'Dàjiā hái yīnggāi zuò shénme?', qt:'O que mais se pede a todos?', opts:[['带上电脑','dài shang diànnǎo','levar o computador'],['准备晚饭','zhǔnbèi wǎnfàn','preparar o jantar'],['告诉还不知道的同事','gàosu hái bù zhīdào de tóngshì','avisar quem ainda não sabe']], ok:2 }] },
+      { title:'原来是你啊！',
+        lines:[
+          ['昨天我在高铁站遇到了一个人，觉得很熟悉。','Zuótiān wǒ zài gāotiě zhàn yùdào le yí ge rén, juéde hěn shúxī.'],
+          ['他叫我的名字，我却差点儿没认出他来。','Tā jiào wǒ de míngzi, wǒ què chàdiǎnr méi rèn chū tā lái.'],
+          ['原来是我的老同学李进！','Yuánlái shì wǒ de lǎo tóngxué Lǐ Jìn!'],
+          ['十年不见，他变化太大了，比以前瘦了很多。','Shí nián bú jiàn, tā biànhuà tài dà le, bǐ yǐqián shòu le hěnduō.'],
+          ['我们聊了很久，还约好下星期一起吃饭。','Wǒmen liáo le hěn jiǔ, hái yuē hǎo xià xīngqī yìqǐ chīfàn.']],
+        pt:'Ontem encontrei uma pessoa na estação de trem de alta velocidade e ela me pareceu familiar. Ele me chamou pelo nome, mas eu quase não o reconheci. Afinal, era meu velho colega Li Jin! Dez anos sem nos ver, ele mudou demais — está bem mais magro que antes. Conversamos por um bom tempo e combinamos de comer juntos na semana que vem.',
+        qs:[
+          { q:'"我"在哪儿遇到了老同学？', qp:'"Wǒ" zài nǎr yùdào le lǎo tóngxué?', qt:'Onde "eu" encontrei o velho colega?', opts:[['高铁站','gāotiě zhàn','na estação de trem-bala'],['办公室','bàngōngshì','no escritório'],['图书馆','túshūguǎn','na biblioteca']], ok:0 },
+          { q:'为什么"我"差点儿没认出他？', qp:'Wèishénme "wǒ" chàdiǎnr méi rèn chū tā?', qt:'Por que quase não o reconheci?', opts:[['天太黑了','tiān tài hēi le','estava escuro'],['他变化太大了','tā biànhuà tài dà le','ele mudou demais'],['我忘了他的名字','wǒ wàng le tā de míngzi','esqueci o nome dele']], ok:1 },
+          { q:'他们约好做什么？', qp:'Tāmen yuē hǎo zuò shénme?', qt:'O que eles combinaram?', opts:[['一起去旅游','yìqǐ qù lǚyóu','viajar juntos'],['一起工作','yìqǐ gōngzuò','trabalhar juntos'],['下星期一起吃饭','xià xīngqī yìqǐ chīfàn','comer juntos na próxima semana']], ok:2 }] },
+      { title:'钱和快乐',
+        lines:[
+          ['很多人觉得，赚的钱越多，生活就越快乐。','Hěnduō rén juéde, zhuàn de qián yuè duō, shēnghuó jiù yuè kuàilè.'],
+          ['其实并不完全是这样。','Qíshí bìng bù wánquán shì zhèyàng.'],
+          ['有的人工资很高，但是每天加班，连休息的时间都没有。','Yǒude rén gōngzī hěn gāo, dànshì měitiān jiābān, lián xiūxi de shíjiān dōu méiyǒu.'],
+          ['身体健康、和家人在一起的时间，这些比收入重要多了。','Shēntǐ jiànkāng, hé jiārén zài yìqǐ de shíjiān, zhèxiē bǐ shōurù zhòngyào duō le.'],
+          ['工作不仅仅是为了赚钱。','Gōngzuò bù jǐnjǐn shì wèi le zhuàn qián.']],
+        pt:'Muitas pessoas acham que, quanto mais dinheiro se ganha, mais feliz é a vida. Na verdade, não é bem assim. Algumas pessoas têm salário alto, mas fazem hora extra todos os dias e não têm nem tempo de descansar. A saúde e o tempo com a família são muito mais importantes que a renda. Trabalhar não é apenas para ganhar dinheiro.',
+        qs:[
+          { q:'有的人工资高，但是怎么样？', qp:'Yǒude rén gōngzī gāo, dànshì zěnmeyàng?', qt:'Algumas pessoas ganham bem, mas...?', opts:[['每天加班，没时间休息','měitiān jiābān, méi shíjiān xiūxi','fazem hora extra sem descanso'],['天天去旅游','tiāntiān qù lǚyóu','viajam todos os dias'],['不用工作','búyòng gōngzuò','não precisam trabalhar']], ok:0 },
+          { q:'什么比收入更重要？', qp:'Shénme bǐ shōurù gèng zhòngyào?', qt:'O que é mais importante que a renda?', opts:[['大房子','dà fángzi','uma casa grande'],['健康和家人','jiànkāng hé jiārén','saúde e família'],['新手机','xīn shǒujī','um celular novo']], ok:1 },
+          { q:'这段话的意思是什么？', qp:'Zhè duàn huà de yìsi shì shénme?', qt:'Qual é a ideia do texto?', opts:[['钱越多越快乐','qián yuè duō yuè kuàilè','mais dinheiro, mais felicidade'],['不应该工作','bù yīnggāi gōngzuò','não se deve trabalhar'],['工作不只是为了钱','gōngzuò bù zhǐshì wèile qián','trabalho não é só pelo dinheiro']], ok:2 }] },
+      { title:'妻子的留言条',
+        lines:[
+          ['亲爱的，我去上班了。','Qīn\'ài de, wǒ qù shàngbān le.'],
+          ['提醒你几件事，别忘记了：','Tíxǐng nǐ jǐ jiàn shì, bié wàngjì le:'],
+          ['第一，把房间打扫一下，今晚叔叔来吃饭。','Dì-yī, bǎ fángjiān dǎsǎo yíxià, jīnwǎn shūshu lái chīfàn.'],
+          ['第二，借的书今天必须还给图书馆。','Dì-èr, jiè de shū jīntiān bìxū huán gěi túshūguǎn.'],
+          ['最后，记得按时吃饭。爱你！','Zuìhòu, jìde ànshí chīfàn. Ài nǐ!']],
+        pt:'Querido, fui trabalhar. Lembretes para você não esquecer: primeiro, dê uma limpada na casa — o tio vem jantar hoje. Segundo, o livro emprestado precisa ser devolvido à biblioteca hoje sem falta. Por último, lembre-se de comer nos horários. Te amo!',
+        qs:[
+          { q:'今晚谁来吃饭？', qp:'Jīnwǎn shéi lái chīfàn?', qt:'Quem vem jantar hoje?', opts:[['叔叔','shūshu','o tio'],['同事','tóngshì','um colega'],['老同学','lǎo tóngxué','um ex-colega']], ok:0 },
+          { q:'书应该还给谁？', qp:'Shū yīnggāi huán gěi shéi?', qt:'Para onde devolver o livro?', opts:[['书店','shūdiàn','a livraria'],['图书馆','túshūguǎn','a biblioteca'],['朋友','péngyou','um amigo']], ok:1 },
+          { q:'这张条是谁写的？', qp:'Zhè zhāng tiáo shì shéi xiě de?', qt:'Quem escreveu o bilhete?', opts:[['叔叔','shūshu','o tio'],['图书馆','túshūguǎn','a biblioteca'],['妻子','qīzi','a esposa']], ok:2 }] }
+    );
+    READINGS[5].push(
+      { title:'购物网站的广告',
+        lines:[
+          ['换季大减价，只有三天！','Huànjì dà jiǎnjià, zhǐyǒu sān tiān!'],
+          ['本网站所有服装和日用品都打折。','Běn wǎngzhàn suǒyǒu fúzhuāng hé rìyòngpǐn dōu dǎzhé.'],
+          ['今年最流行的裙子，比平时便宜一半。','Jīnnián zuì liúxíng de qúnzi, bǐ píngshí piányi yíbàn.'],
+          ['购物满两百元，免费送货上门。','Gòuwù mǎn liǎngbǎi yuán, miǎnfèi sòng huò shàng mén.'],
+          ['机会难得，快上网看看吧！','Jīhuì nándé, kuài shàngwǎng kànkan ba!']],
+        pt:'Grande liquidação de mudança de estação, só por três dias! Neste site, todo o vestuário e os artigos de uso diário estão com desconto. As saias mais na moda deste ano estão pela metade do preço normal. Compras acima de 200 yuan têm entrega gratuita em domicílio. Oportunidade rara — acesse já!',
+        qs:[
+          { q:'减价活动有几天？', qp:'Jiǎnjià huódòng yǒu jǐ tiān?', qt:'Quantos dias dura a liquidação?', opts:[['三天','sān tiān','três dias'],['一个星期','yí ge xīngqī','uma semana'],['一个月','yí ge yuè','um mês']], ok:0 },
+          { q:'什么时候可以免费送货？', qp:'Shénme shíhou kěyǐ miǎnfèi sòng huò?', qt:'Quando a entrega é gratuita?', opts:[['买任何东西','mǎi rènhé dōngxi','em qualquer compra'],['购物满两百元','gòuwù mǎn liǎngbǎi yuán','em compras acima de 200 yuan'],['只有会员','zhǐyǒu huìyuán','só para sócios']], ok:1 },
+          { q:'今年最流行的裙子怎么卖？', qp:'Jīnnián zuì liúxíng de qúnzi zěnme mài?', qt:'Como estão as saias da moda?', opts:[['不打折','bù dǎzhé','sem desconto'],['已经卖光了','yǐjīng mài guāng le','esgotadas'],['便宜一半','piányi yíbàn','pela metade do preço']], ok:2 }] },
+      { title:'一次上当的经历',
+        lines:[
+          ['上个月，我在网上看到一个特别便宜的手机。','Shàng ge yuè, wǒ zài wǎngshàng kàndào yí ge tèbié piányi de shǒujī.'],
+          ['广告做得极其吸引人，我马上就买了。','Guǎnggào zuò de jíqí xīyǐnrén, wǒ mǎshàng jiù mǎi le.'],
+          ['收到以后我才发现，手机并不像广告上说的那么好。','Shōudào yǐhòu wǒ cái fāxiàn, shǒujī bìng bú xiàng guǎnggào shang shuō de nàme hǎo.'],
+          ['我给网站打电话，一直没人接。','Wǒ gěi wǎngzhàn dǎ diànhuà, yìzhí méi rén jiē.'],
+          ['这次我真的上当了：一分钱一分货啊！','Zhè cì wǒ zhēn de shàngdàng le: yì fēn qián yì fēn huò a!']],
+        pt:'No mês passado, vi na internet um celular especialmente barato. O anúncio era extremamente atraente e comprei na hora. Só depois de receber percebi que o celular não era nada como dizia o anúncio. Liguei para o site e ninguém atendeu. Desta vez fui mesmo enganado: o preço reflete a qualidade!',
+        qs:[
+          { q:'"我"为什么马上买了手机？', qp:'"Wǒ" wèishénme mǎshàng mǎi le shǒujī?', qt:'Por que comprou o celular na hora?', opts:[['广告极其吸引人','guǎnggào jíqí xīyǐnrén','o anúncio era muito atraente'],['朋友介绍的','péngyou jièshào de','um amigo indicou'],['手机质量很好','shǒujī zhìliàng hěn hǎo','a qualidade era ótima']], ok:0 },
+          { q:'打电话给网站的结果怎么样？', qp:'Dǎ diànhuà gěi wǎngzhàn de jiéguǒ zěnmeyàng?', qt:'O que aconteceu ao ligar para o site?', opts:[['马上解决了问题','mǎshàng jiějué le wèntí','resolveram na hora'],['一直没人接','yìzhí méi rén jiē','ninguém atendeu'],['他们送了礼物','tāmen sòng le lǐwù','mandaram um brinde']], ok:1 },
+          { q:'这个故事告诉我们什么？', qp:'Zhège gùshi gàosu wǒmen shénme?', qt:'O que a história ensina?', opts:[['网上的东西都很好','wǎngshàng de dōngxi dōu hěn hǎo','tudo online é bom'],['广告都是真的','guǎnggào dōu shì zhēn de','anúncios sempre dizem a verdade'],['一分钱一分货','yì fēn qián yì fēn huò','o preço reflete a qualidade']], ok:2 }] },
+      { title:'在市场砍价',
+        lines:[
+          ['星期天早上，我陪妈妈去市场买东西。','Xīngqītiān zǎoshang, wǒ péi māma qù shìchǎng mǎi dōngxi.'],
+          ['妈妈看上了一件衣服，可是觉得价格太高。','Māma kàn shang le yí jiàn yīfu, kěshì juéde jiàgé tài gāo.'],
+          ['她笑着问：能不能便宜一点儿？','Tā xiàozhe wèn: néng bu néng piányi yìdiǎnr?'],
+          ['她们聊了十分钟，最后价格降低了三十块。','Tāmen liáo le shí fēnzhōng, zuìhòu jiàgé jiàngdī le sānshí kuài.'],
+          ['妈妈说，砍价也是一种生活的艺术。','Māma shuō, kǎnjià yě shì yì zhǒng shēnghuó de yìshù.']],
+        pt:'No domingo de manhã, acompanhei minha mãe ao mercado. Ela gostou de uma roupa, mas achou o preço alto demais. Sorrindo, perguntou: pode fazer um pouco mais barato? Conversaram por dez minutos e, no fim, o preço caiu trinta yuan. Minha mãe diz que pechinchar também é uma arte da vida.',
+        qs:[
+          { q:'妈妈觉得那件衣服怎么样？', qp:'Māma juéde nà jiàn yīfu zěnmeyàng?', qt:'O que a mãe achou da roupa?', opts:[['价格太高','jiàgé tài gāo','o preço era alto demais'],['颜色不好看','yánsè bù hǎokàn','a cor era feia'],['太小了','tài xiǎo le','pequena demais']], ok:0 },
+          { q:'最后价格降低了多少？', qp:'Zuìhòu jiàgé jiàngdī le duōshao?', qt:'Quanto o preço baixou no final?', opts:[['十块','shí kuài','dez yuan'],['三十块','sānshí kuài','trinta yuan'],['一百块','yìbǎi kuài','cem yuan']], ok:1 },
+          { q:'妈妈觉得砍价是什么？', qp:'Māma juéde kǎnjià shì shénme?', qt:'O que a mãe acha de pechinchar?', opts:[['浪费时间','làngfèi shíjiān','perda de tempo'],['很不好意思','hěn bù hǎoyìsi','algo constrangedor'],['生活的艺术','shēnghuó de yìshù','uma arte da vida']], ok:2 }] },
+      { title:'消费者调查',
+        lines:[
+          ['最近有一个关于购物习惯的调查。','Zuìjìn yǒu yí ge guānyú gòuwù xíguàn de diàochá.'],
+          ['调查发现，百分之八十的年轻人喜欢网上购物。','Diàochá fāxiàn, bǎi fēn zhī bāshí de niánqīngrén xǐhuan wǎngshàng gòuwù.'],
+          ['他们觉得网购方便，商品种类也丰富。','Tāmen juéde wǎnggòu fāngbiàn, shāngpǐn zhǒnglèi yě fēngfù.'],
+          ['与之相反，很多长辈还是喜欢去商店，自己看、自己选。','Yǔ zhī xiāngfǎn, hěnduō zhǎngbèi háishi xǐhuan qù shāngdiàn, zìjǐ kàn, zìjǐ xuǎn.'],
+          ['在购物习惯上，年轻人和长辈很不一样。','Zài gòuwù xíguàn shàng, niánqīngrén hé zhǎngbèi hěn bù yíyàng.']],
+        pt:'Recentemente houve uma pesquisa sobre hábitos de compras. A pesquisa revelou que 80% dos jovens gostam de comprar online. Eles acham as compras online convenientes e a variedade de produtos rica. Ao contrário, muitos mais velhos ainda preferem ir à loja, olhar e escolher pessoalmente. Em termos de hábitos de compras, jovens e mais velhos são bem diferentes.',
+        qs:[
+          { q:'百分之多少的年轻人喜欢网购？', qp:'Bǎi fēn zhī duōshao de niánqīngrén xǐhuan wǎnggòu?', qt:'Qual porcentagem dos jovens prefere comprar online?', opts:[['百分之八十','bǎi fēn zhī bāshí','80%'],['百分之五十','bǎi fēn zhī wǔshí','50%'],['百分之二十','bǎi fēn zhī èrshí','20%']], ok:0 },
+          { q:'长辈喜欢怎么买东西？', qp:'Zhǎngbèi xǐhuan zěnme mǎi dōngxi?', qt:'Como os mais velhos preferem comprar?', opts:[['让孩子买','ràng háizi mǎi','pedir aos filhos'],['去商店自己看、自己选','qù shāngdiàn zìjǐ kàn, zìjǐ xuǎn','ir à loja e escolher pessoalmente'],['只在网上买','zhǐ zài wǎngshàng mǎi','só pela internet']], ok:1 },
+          { q:'这个调查是关于什么的？', qp:'Zhège diàochá shì guānyú shénme de?', qt:'Sobre o que é a pesquisa?', opts:[['学习习惯','xuéxí xíguàn','hábitos de estudo'],['运动习惯','yùndòng xíguàn','hábitos de exercício'],['购物习惯','gòuwù xíguàn','hábitos de compras']], ok:2 }] }
+    );
+    READINGS[6].push(
+      { title:'电器商店的服务',
+        lines:[
+          ['我们店的冰箱质量很好，还很便宜。','Wǒmen diàn de bīngxiāng zhìliàng hěn hǎo, hái hěn piányi.'],
+          ['现在正好有打折活动，打完折是999。','Xiànzài zhènghǎo yǒu dǎzhé huódòng, dǎ wán zhé shì jiǔbǎi jiǔshíjiǔ.'],
+          ['您买了以后，我们三日内给您送货上门。','Nín mǎi le yǐhòu, wǒmen sān rì nèi gěi nín sòng huò shàng mén.'],
+          ['一年内都负责免费修理，请您放心。','Yì nián nèi dōu fùzé miǎnfèi xiūlǐ, qǐng nín fàngxīn.'],
+          ['有问题的话，欢迎随时给我们打电话。','Yǒu wèntí dehuà, huānyíng suíshí gěi wǒmen dǎ diànhuà.']],
+        pt:'As geladeiras da nossa loja têm ótima qualidade e ainda são baratas. Agora estamos justamente com promoção: com o desconto, sai por 999. Depois da compra, entregamos em domicílio em até três dias. Durante um ano nos responsabilizamos pelo conserto gratuito, fique tranquilo. Qualquer problema, ligue para nós a qualquer momento.',
+        qs:[
+          { q:'打完折冰箱多少钱？', qp:'Dǎ wán zhé bīngxiāng duōshao qián?', qt:'Quanto custa a geladeira com desconto?', opts:[['999','jiǔbǎi jiǔshíjiǔ','999'],['1999','yìqiān jiǔbǎi jiǔshíjiǔ','1999'],['500','wǔbǎi','500']], ok:0 },
+          { q:'几日内送货上门？', qp:'Jǐ rì nèi sòng huò shàng mén?', qt:'Em quantos dias entregam em casa?', opts:[['七日内','qī rì nèi','em 7 dias'],['三日内','sān rì nèi','em 3 dias'],['当天','dàngtiān','no mesmo dia']], ok:1 },
+          { q:'免费修理的时间是多长？', qp:'Miǎnfèi xiūlǐ de shíjiān shì duō cháng?', qt:'Por quanto tempo o conserto é grátis?', opts:[['三个月','sān ge yuè','três meses'],['半年','bàn nián','meio ano'],['一年','yì nián','um ano']], ok:2 }] },
+      { title:'在超市买西红柿',
+        lines:[
+          ['阿姨，西红柿新鲜吗？怎么卖？','Āyí, xīhóngshì xīnxiān ma? Zěnme mài?'],
+          ['放心吧，保证百分之百新鲜，七块钱一斤。','Fàngxīn ba, bǎozhèng bǎi fēn zhī bǎi xīnxiān, qī kuài qián yì jīn.'],
+          ['有点儿贵啊。听说绿色食品对身体有好处，这是绿色的吗？','Yǒudiǎnr guì a. Tīngshuō lǜsè shípǐn duì shēntǐ yǒu hǎochù, zhè shì lǜsè de ma?'],
+          ['对，生产过程更安全，每天吃一两个对皮肤也好。','Duì, shēngchǎn guòchéng gèng ānquán, měitiān chī yì-liǎng ge duì pífū yě hǎo.'],
+          ['好，那我先买两斤尝尝。','Hǎo, nà wǒ xiān mǎi liǎng jīn chángchang.'],
+          ['一共两斤，十四块。','Yígòng liǎng jīn, shísì kuài.']],
+        pt:'— Tia, os tomates estão frescos? Como é vendido? — Fique tranquilo, garanto que estão 100% frescos, sete yuan o jin. — Um pouco caro, hein. Dizem que alimentos orgânicos fazem bem à saúde; esses são orgânicos? — Sim, o processo de produção é mais seguro, e comer um ou dois por dia também faz bem para a pele. — Está bem, então vou comprar dois jin para provar. — Ao todo dois jin, catorze yuan.',
+        qs:[
+          { q:'西红柿怎么卖？', qp:'Xīhóngshì zěnme mài?', qt:'Como são vendidos os tomates?', opts:[['七块钱一斤','qī kuài qián yì jīn','sete yuan por jin'],['十四块一斤','shísì kuài yì jīn','catorze por jin'],['两块钱一个','liǎng kuài qián yí ge','dois yuan cada']], ok:0 },
+          { q:'绿色食品有什么好处？', qp:'Lǜsè shípǐn yǒu shénme hǎochù?', qt:'Qual a vantagem do alimento orgânico?', opts:[['更便宜','gèng piányi','é mais barato'],['生产过程更安全','shēngchǎn guòchéng gèng ānquán','a produção é mais segura'],['更好看','gèng hǎokàn','é mais bonito']], ok:1 },
+          { q:'客人一共花了多少钱？', qp:'Kèrén yígòng huā le duōshao qián?', qt:'Quanto o cliente gastou no total?', opts:[['七块','qī kuài','sete yuan'],['两块','liǎng kuài','dois yuan'],['十四块','shísì kuài','catorze yuan']], ok:2 }] },
+      { title:'商场的节日活动（通知）',
+        lines:[
+          ['亲爱的顾客朋友们：','Qīn\'ài de gùkè péngyoumen:'],
+          ['一到节日，我们商场就举办各种各样的活动。','Yí dào jiérì, wǒmen shāngchǎng jiù jǔbàn gè zhǒng gè yàng de huódòng.'],
+          ['这个周末，所有服装打七五折。','Zhège zhōumò, suǒyǒu fúzhuāng dǎ qīwǔ zhé.'],
+          ['三楼还为小朋友准备了免费的游戏活动。','Sān lóu hái wèi xiǎopéngyou zhǔnbèi le miǎnfèi de yóuxì huódòng.'],
+          ['欢迎大家来逛逛，祝大家节日快乐！','Huānyíng dàjiā lái guàngguang, zhù dàjiā jiérì kuàilè!']],
+        pt:'Queridos clientes: assim que chega um feriado, nosso shopping organiza todo tipo de atividade. Neste fim de semana, todo o vestuário está com 25% de desconto. No terceiro andar ainda preparamos jogos gratuitos para as crianças. Venham passear e feliz feriado a todos!',
+        qs:[
+          { q:'这个周末服装打几折？', qp:'Zhège zhōumò fúzhuāng dǎ jǐ zhé?', qt:'Qual o desconto nas roupas?', opts:[['七五折','qīwǔ zhé','25% de desconto (75% do preço)'],['五折','wǔ zhé','metade do preço'],['不打折','bù dǎzhé','sem desconto']], ok:0 },
+          { q:'三楼为谁准备了活动？', qp:'Sān lóu wèi shéi zhǔnbèi le huódòng?', qt:'Para quem são as atividades do 3º andar?', opts:[['长辈','zhǎngbèi','os mais velhos'],['小朋友','xiǎopéngyou','as crianças'],['上班族','shàngbānzú','os trabalhadores']], ok:1 },
+          { q:'商场什么时候举办活动？', qp:'Shāngchǎng shénme shíhou jǔbàn huódòng?', qt:'Quando o shopping faz eventos?', opts:[['每天','měitiān','todos os dias'],['只在夏天','zhǐ zài xiàtiān','só no verão'],['一到节日','yí dào jiérì','sempre que chega um feriado']], ok:2 }] },
+      { title:'绿色食品，值得吗？',
+        lines:[
+          ['现在市场上出现了越来越多的绿色食品。','Xiànzài shìchǎng shàng chūxiàn le yuè lái yuè duō de lǜsè shípǐn.'],
+          ['绿色食品比普通食品贵一些，但是更安全。','Lǜsè shípǐn bǐ pǔtōng shípǐn guì yìxiē, dànshì gèng ānquán.'],
+          ['它的生产过程没有污染，对保护环境有巨大的意义。','Tā de shēngchǎn guòchéng méiyǒu wūrǎn, duì bǎohù huánjìng yǒu jùdà de yìyì.'],
+          ['不管从健康方面看，还是从环境方面看，都值得考虑。','Bùguǎn cóng jiànkāng fāngmiàn kàn, háishi cóng huánjìng fāngmiàn kàn, dōu zhídé kǎolǜ.'],
+          ['所以，很多家庭愿意为绿色食品花更多的钱。','Suǒyǐ, hěnduō jiātíng yuànyì wèi lǜsè shípǐn huā gèng duō de qián.']],
+        pt:'Hoje surgem cada vez mais alimentos orgânicos no mercado. Eles são um pouco mais caros que os comuns, porém mais seguros. Seu processo de produção não tem poluição e tem enorme importância para a proteção do meio ambiente. Seja pelo lado da saúde, seja pelo lado do ambiente, valem a pena ser considerados. Por isso, muitas famílias estão dispostas a gastar mais com alimentos orgânicos.',
+        qs:[
+          { q:'绿色食品的价格怎么样？', qp:'Lǜsè shípǐn de jiàgé zěnmeyàng?', qt:'Como é o preço dos orgânicos?', opts:[['比普通食品贵一些','bǐ pǔtōng shípǐn guì yìxiē','um pouco mais caros que os comuns'],['非常便宜','fēicháng piányi','muito baratos'],['和普通食品一样','hé pǔtōng shípǐn yíyàng','iguais aos comuns']], ok:0 },
+          { q:'绿色食品的生产过程怎么样？', qp:'Lǜsè shípǐn de shēngchǎn guòchéng zěnmeyàng?', qt:'Como é a produção dos orgânicos?', opts:[['很快','hěn kuài','muito rápida'],['没有污染','méiyǒu wūrǎn','sem poluição'],['很麻烦','hěn máfan','muito trabalhosa']], ok:1 },
+          { q:'很多家庭愿意做什么？', qp:'Hěnduō jiātíng yuànyì zuò shénme?', qt:'O que muitas famílias estão dispostas a fazer?', opts:[['不买食品','bù mǎi shípǐn','não comprar alimentos'],['只买便宜的','zhǐ mǎi piányi de','comprar só o barato'],['为绿色食品花更多的钱','wèi lǜsè shípǐn huā gèng duō de qián','gastar mais com orgânicos']], ok:2 }] }
+    );
+
     </script>
 </body>
 </html>
