@@ -277,6 +277,43 @@
         body.dark .text-teal-900 { color:#5eead4!important; } body.dark .text-rose-900 { color:#fecdd3!important; }
         body.dark .border-teal-200 { border-color: rgba(45,212,191,0.4)!important; } body.dark .border-rose-200 { border-color: rgba(251,113,133,0.4)!important; }
         body.dark input { background: rgba(30,41,59,0.6) !important; color:#e8edf5 !important; border-color: rgba(148,163,184,0.25) !important; }
+
+        /* ==================== VIDRO ESTILO iOS 27 (chapado, linha fina) ==================== */
+        .glass-panel { background: rgba(255,255,255,0.44); border: 1px solid rgba(255,255,255,0.62); box-shadow: 0 14px 40px rgba(0,0,0,0.06); }
+        .glass-inner { background: rgba(255,255,255,0.38); border: 1px solid rgba(255,255,255,0.58); box-shadow: 0 6px 22px rgba(0,0,0,0.035); }
+        .lesson-card { background: rgba(255,255,255,0.42); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 8px 26px rgba(0,0,0,0.045); }
+        .lesson-card:hover { background: rgba(255,255,255,0.58); box-shadow: 0 14px 34px rgba(0,0,0,0.07); }
+        .folder-container { background: rgba(255,255,255,0.36); border: 1px solid rgba(255,255,255,0.55); box-shadow: 0 22px 60px rgba(0,0,0,0.08); }
+        .practice-card { background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.65); box-shadow: 0 5px 18px rgba(0,0,0,0.035); }
+        .practice-btn { background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.68); box-shadow: 0 5px 16px rgba(0,0,0,0.04); }
+        .word-block { background: rgba(255,255,255,0.62); border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 3px 10px rgba(0,0,0,0.04); }
+        .modal-sheet { background: rgba(255,255,255,0.62); border: 1px solid rgba(255,255,255,0.68); box-shadow: 0 24px 60px rgba(0,0,0,0.16); }
+        .reading-box { background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.62); box-shadow: 0 6px 20px rgba(0,0,0,0.04); }
+        .stat-card, .badge, .tgl, .hub-item { background: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.58); }
+        .gear-fab { background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+        .glass-btn { background: rgba(255,255,255,0.42); border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 3px 10px rgba(0,0,0,0.03); }
+        .list-item-glass { background: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.42); box-shadow: none; }
+        .list-item-glass.active { background: rgba(255,255,255,0.62); border: 1px solid rgba(255,255,255,0.75); box-shadow: 0 5px 16px rgba(0,0,0,0.05); }
+        .mem-front { background: rgba(255,255,255,0.72); border: 1px solid rgba(255,255,255,0.75); }
+        .dlg-bubble { background: rgba(255,255,255,0.58); border: 1px solid rgba(255,255,255,0.68); box-shadow: 0 4px 14px rgba(0,0,0,0.04); }
+        .drawing-board-container { background: rgba(255,255,255,0.42); border: 1px solid rgba(255,255,255,0.62); box-shadow: 0 8px 26px rgba(0,0,0,0.05); }
+        /* ==================== ÁRVORE DE HABILIDADES ==================== */
+        .skill-branch { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:16px; background:rgba(255,255,255,0.45); border:1px solid rgba(255,255,255,0.58); margin-bottom:8px; }
+        body.dark .skill-branch { background:linear-gradient(135deg, rgba(30,41,59,0.6), rgba(30,41,59,0.35)); border-color:rgba(148,163,184,0.18); }
+        .skill-ico { width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#fff; flex-shrink:0; }
+        .skill-bar { height:6px; border-radius:999px; background:rgba(0,0,0,0.08); overflow:hidden; }
+        body.dark .skill-bar { background:rgba(255,255,255,0.12); }
+        .skill-bar > div { height:100%; border-radius:999px; background:linear-gradient(90deg,#14b8a6,#0066cc); transition:width .4s; }
+        .skill-nodes { display:flex; gap:5px; margin-top:4px; }
+        .skill-node { width:14px; height:14px; border-radius:50%; border:2px solid rgba(0,0,0,0.15); background:transparent; display:flex; align-items:center; justify-content:center; }
+        body.dark .skill-node { border-color:rgba(255,255,255,0.25); }
+        .skill-node.on { background:#f59e0b; border-color:#f59e0b; box-shadow:0 0 8px rgba(245,158,11,0.5); }
+        /* ==================== CORREÇÃO MOBILE: engrenagem não cobre botões ==================== */
+        @media (max-width: 767px) {
+            .gear-fab { width:40px; height:40px; border-radius:13px; bottom:calc(10px + env(safe-area-inset-bottom, 0px)); right:10px; opacity:0.92; }
+            #view-folder .folder-container { padding-bottom: 92px; }
+            #view-app .flex-1.p-3 { padding-bottom: 70px; }
+        }
     </style>
 </head>
 <body>
@@ -344,6 +381,14 @@
                     </div>
                     <h3 class="text-xl font-bold text-slate-800 mb-1 chinese-text">第六课</h3>
                     <p class="text-sm text-slate-500 font-semibold tracking-wide uppercase">Lição 6</p>
+                </div>
+                <!-- NOVA LIÇÃO 7 AQUI -->
+                <div class="lesson-card group" onclick="openLesson(7)">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-4 border border-indigo-200 group-hover:scale-110 transition-transform shadow-sm">
+                        <i data-lucide="book-open" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-1 chinese-text">第七课</h3>
+                    <p class="text-sm text-slate-500 font-semibold tracking-wide uppercase">Lição 7</p>
                 </div>
             </div>
         </div>
@@ -1681,7 +1726,259 @@
             { w: "其中", p: "qízhōng", t: "dentro disso, entre esses", c: "Gramática", l: 6, gram_desc: "Substantivo que significa 'dentro disso, entre esses', indicando âmbito ou local.", ex_ch: "一些图书有打折，其中小说7.5折。", ex_py: "Yìxiē túshū yǒu dǎzhé, qízhōng xiǎoshuō qī diǎn wǔ zhé.", ex_pt: "Alguns livros têm desconto; entre eles, romances a 75%." },
             { w: "值得 / 值", p: "zhídé / zhí", t: "valer a pena / valer", c: "Gramática", l: 6, gram_desc: "值得 é verbo (vale a pena fazer algo) e pode ser seguido de verbo ou oração; 值 é adjetivo/verbo que indica que a mercadoria vale o preço, seguido de uma quantia.", ex_ch: "这个行李箱值得考虑。这个手机值五千块。", ex_py: "Zhège xínglixiāng zhídé kǎolǜ. Zhège shǒujī zhí wǔqiān kuài.", ex_pt: "Vale a pena considerar esta mala. Este celular vale cinco mil." },
             { w: "（在）……下", p: "(zài)……xià", t: "sob, em (condição)", c: "Gramática", l: 6, gram_desc: "Estrutura cuja parte central costuma ser substantivo ou verbo dissilábico com modificador, indicando condição ou situação.", ex_ch: "一般情况下，你花的钱越多，买的东西也就越好。", ex_py: "Yìbān qíngkuàng xià, nǐ huā de qián yuè duō, mǎi de dōngxi yě jiù yuè hǎo.", ex_pt: "Em geral, quanto mais você gasta, melhor é o que compra." },
-            { w: "越……越……", p: "yuè……yuè……", t: "quanto mais... mais...", c: "Gramática", l: 6, gram_desc: "Estrutura que indica que algo aumenta na mesma medida em que outra coisa aumenta.", ex_ch: "你花的钱越多，买的东西也就越好。", ex_py: "Nǐ huā de qián yuè duō, mǎi de dōngxi yě jiù yuè hǎo.", ex_pt: "Quanto mais dinheiro você gasta, melhor é o que compra." }
+            { w: "越……越……", p: "yuè……yuè……", t: "quanto mais... mais...", c: "Gramática", l: 6, gram_desc: "Estrutura que indica que algo aumenta na mesma medida em que outra coisa aumenta.", ex_ch: "你花的钱越多，买的东西也就越好。", ex_py: "Nǐ huā de qián yuè duō, mǎi de dōngxi yě jiù yuè hǎo.", ex_pt: "Quanto mais dinheiro você gasta, melhor é o que compra." },
+            // ================== LIÇÃO 7 ==================
+            // SUBSTANTIVOS
+            { w: "鼻子", p: "bízi", t: "nariz", c: "Substantivos", l: 7, ex_ch: "你的鼻子怎么流血了？", ex_py: "Nǐ de bízi zěnme liú xiě le?", ex_pt: "Por que seu nariz está sangrando?" },
+            { w: "纸", p: "zhǐ", t: "papel (lenço)", c: "Substantivos", l: 7, ex_ch: "快用纸擦擦鼻子。", ex_py: "Kuài yòng zhǐ cāca bízi.", ex_pt: "Rápido, limpe o nariz com um lenço de papel." },
+            { w: "气候", p: "qìhòu", t: "clima", c: "Substantivos", l: 7, ex_ch: "我还不习惯北方的气候。", ex_py: "Wǒ hái bù xíguàn běifāng de qìhòu.", ex_pt: "Ainda não me acostumei com o clima do norte." },
+            { w: "天气", p: "tiānqì", t: "tempo (meteorológico)", c: "Substantivos", l: 7, ex_ch: "最近天气时冷时热，容易感冒。", ex_py: "Zuìjìn tiānqì shí lěng shí rè, róngyì gǎnmào.", ex_pt: "Ultimamente o tempo está ora frio, ora quente — é fácil se resfriar." },
+            { w: "北方", p: "běifāng", t: "norte", c: "Substantivos", l: 7, ex_ch: "北方的冬天比南方冷得多。", ex_py: "Běifāng de dōngtiān bǐ nánfāng lěng de duō.", ex_pt: "O inverno do norte é muito mais frio que o do sul." },
+            { w: "南方", p: "nánfāng", t: "sul", c: "Substantivos", l: 7, ex_ch: "中国南方的气候比较湿润。", ex_py: "Zhōngguó nánfāng de qìhòu bǐjiào shīrùn.", ex_pt: "O clima do sul da China é mais úmido." },
+            { w: "春天", p: "chūntiān", t: "primavera", c: "Substantivos", l: 7, ex_ch: "春天到了，天气越来越暖和。", ex_py: "Chūntiān dào le, tiānqì yuè lái yuè nuǎnhuo.", ex_pt: "A primavera chegou, o tempo está cada vez mais quente." },
+            { w: "夏天", p: "xiàtiān", t: "verão", c: "Substantivos", l: 7, ex_ch: "夏天太热，我们去游泳吧。", ex_py: "Xiàtiān tài rè, wǒmen qù yóuyǒng ba.", ex_pt: "O verão está quente demais, vamos nadar." },
+            { w: "冬天", p: "dōngtiān", t: "inverno", c: "Substantivos", l: 7, ex_ch: "冬天出门要注意保暖。", ex_py: "Dōngtiān chūmén yào zhùyì bǎonuǎn.", ex_pt: "No inverno, ao sair, é preciso se manter aquecido." },
+            { w: "医生", p: "yīshēng", t: "médico", c: "Substantivos", l: 7, ex_ch: "身体不舒服就要去看医生。", ex_py: "Shēntǐ bù shūfu jiù yào qù kàn yīshēng.", ex_pt: "Se o corpo não está bem, é preciso ir ao médico." },
+            { w: "大夫", p: "dàifu", t: "médico", c: "Substantivos", l: 7, ex_ch: "大夫说我只是感冒，不严重。", ex_py: "Dàifu shuō wǒ zhǐshì gǎnmào, bù yánzhòng.", ex_pt: "O médico disse que é só um resfriado, nada grave." },
+            { w: "水", p: "shuǐ", t: "água", c: "Substantivos", l: 7, ex_ch: "多喝水对身体有好处。", ex_py: "Duō hē shuǐ duì shēntǐ yǒu hǎochù.", ex_pt: "Beber mais água faz bem ao corpo." },
+            { w: "头", p: "tóu", t: "cabeça", c: "Substantivos", l: 7, ex_ch: "我头疼得厉害，想休息一下。", ex_py: "Wǒ tóu téng de lìhai, xiǎng xiūxi yíxià.", ex_pt: "Minha cabeça dói muito, quero descansar um pouco." },
+            { w: "身体", p: "shēntǐ", t: "corpo", c: "Substantivos", l: 7, ex_ch: "爷爷的身体越来越好了。", ex_py: "Yéye de shēntǐ yuèláiyuè hǎo le.", ex_pt: "A saúde do vovô está cada vez melhor." },
+            { w: "眼睛", p: "yǎnjing", t: "olhos", c: "Substantivos", l: 7, ex_ch: "我的眼睛最近一直跳。", ex_py: "Wǒ de yǎnjing zuìjìn yìzhí tiào.", ex_pt: "Meu olho está tremendo o tempo todo ultimamente." },
+            { w: "肚子", p: "dùzi", t: "barriga", c: "Substantivos", l: 7, ex_ch: "我肚子疼，可能是昨天吃坏了。", ex_py: "Wǒ dùzi téng, kěnéng shì zuótiān chī huài le.", ex_pt: "Minha barriga dói, deve ser algo que comi ontem." },
+            { w: "腿", p: "tuǐ", t: "perna", c: "Substantivos", l: 7, ex_ch: "跑完步以后，我的腿特别累。", ex_py: "Pǎo wán bù yǐhòu, wǒ de tuǐ tèbié lèi.", ex_pt: "Depois de correr, minhas pernas ficam muito cansadas." },
+            { w: "窗户", p: "chuānghu", t: "janela", c: "Substantivos", l: 7, ex_ch: "请打开窗户，换换空气。", ex_py: "Qǐng dǎkāi chuānghu, huànhuan kōngqì.", ex_pt: "Por favor, abra a janela para renovar o ar." },
+            { w: "空气", p: "kōngqì", t: "ar", c: "Substantivos", l: 7, ex_ch: "早上公园里的空气很新鲜。", ex_py: "Zǎoshang gōngyuán lǐ de kōngqì hěn xīnxiān.", ex_pt: "De manhã o ar do parque é muito puro." },
+            { w: "好处", p: "hǎochù", t: "benefício", c: "Substantivos", l: 7, ex_ch: "抽烟对身体一点儿好处也没有。", ex_py: "Chōu yān duì shēntǐ yìdiǎnr hǎochù yě méiyǒu.", ex_pt: "Fumar não traz nenhum benefício ao corpo." },
+            { w: "动作", p: "dòngzuò", t: "gesto, movimento", c: "Substantivos", l: 7, ex_ch: "太极拳的动作很柔和。", ex_py: "Tàijíquán de dòngzuò hěn róuhé.", ex_pt: "Os movimentos do taijiquan são muito suaves." },
+            { w: "家人", p: "jiārén", t: "familiares", c: "Substantivos", l: 7, ex_ch: "周末我喜欢和家人一起散步。", ex_py: "Zhōumò wǒ xǐhuan hé jiārén yìqǐ sànbù.", ex_pt: "No fim de semana gosto de caminhar com a família." },
+            { w: "周围", p: "zhōuwéi", t: "arredores", c: "Substantivos", l: 7, ex_ch: "我家周围有一个很大的公园。", ex_py: "Wǒ jiā zhōuwéi yǒu yí ge hěn dà de gōngyuán.", ex_pt: "Nos arredores da minha casa há um parque bem grande." },
+            { w: "健康", p: "jiànkāng", t: "saúde", c: "Substantivos", l: 7, ex_ch: "健康比什么都重要。", ex_py: "Jiànkāng bǐ shénme dōu zhòngyào.", ex_pt: "Saúde é mais importante do que tudo." },
+            { w: "精神", p: "jīngshén", t: "espírito, mente", c: "Substantivos", l: 7, ex_ch: "睡好觉，精神才会好。", ex_py: "Shuì hǎo jiào, jīngshén cái huì hǎo.", ex_pt: "Só dormindo bem a mente fica bem." },
+            { w: "电脑", p: "diànnǎo", t: "computador", c: "Substantivos", l: 7, ex_ch: "他每天在电脑前工作八个小时。", ex_py: "Tā měitiān zài diànnǎo qián gōngzuò bā ge xiǎoshí.", ex_pt: "Ele trabalha oito horas por dia em frente ao computador." },
+            { w: "远处", p: "yuǎnchù", t: "lugar distante", c: "Substantivos", l: 7, ex_ch: "累了就看看远处的绿色植物。", ex_py: "Lèi le jiù kànkan yuǎnchù de lǜsè zhíwù.", ex_pt: "Quando cansar, olhe as plantas verdes ao longe." },
+            { w: "植物", p: "zhíwù", t: "planta", c: "Substantivos", l: 7, ex_ch: "办公室里放一些植物很不错。", ex_py: "Bàngōngshì lǐ fàng yìxiē zhíwù hěn búcuò.", ex_pt: "Colocar algumas plantas no escritório é uma boa ideia." },
+            { w: "办公室", p: "bàngōngshì", t: "escritório", c: "Substantivos", l: 7, ex_ch: "他现在不在办公室。", ex_py: "Tā xiànzài bú zài bàngōngshì.", ex_pt: "Ele não está no escritório agora." },
+            { w: "公园", p: "gōngyuán", t: "parque", c: "Substantivos", l: 7, ex_ch: "每天早上很多人在公园里锻炼。", ex_py: "Měitiān zǎoshang hěnduō rén zài gōngyuán lǐ duànliàn.", ex_pt: "Toda manhã muitas pessoas se exercitam no parque." },
+            { w: "午饭", p: "wǔfàn", t: "almoço", c: "Substantivos", l: 7, ex_ch: "吃完午饭，出去散散步吧。", ex_py: "Chī wán wǔfàn, chūqù sànsan bù ba.", ex_pt: "Depois do almoço, vamos dar uma caminhada." },
+            { w: "晚饭", p: "wǎnfàn", t: "jantar", c: "Substantivos", l: 7, ex_ch: "晚饭以后不要马上坐下。", ex_py: "Wǎnfàn yǐhòu bú yào mǎshàng zuò xià.", ex_pt: "Depois do jantar, não sente imediatamente." },
+            { w: "教授", p: "jiàoshòu", t: "professor (universitário)", c: "Substantivos", l: 7, ex_ch: "这位教授研究中国古代哲学。", ex_py: "Zhè wèi jiàoshòu yánjiū Zhōngguó gǔdài zhéxué.", ex_pt: "Este professor pesquisa filosofia da China antiga." },
+            { w: "数字", p: "shùzì", t: "número", c: "Substantivos", l: 7, ex_ch: "在中国，八是一个很受欢迎的数字。", ex_py: "Zài Zhōngguó, bā shì yí ge hěn shòu huānyíng de shùzì.", ex_pt: "Na China, o oito é um número muito querido." },
+            { w: "零", p: "líng", t: "zero", c: "Substantivos", l: 7, ex_ch: "今天的气温是零下五度。", ex_py: "Jīntiān de qìwēn shì líng xià wǔ dù.", ex_pt: "A temperatura de hoje é de cinco graus abaixo de zero." },
+            { w: "感情", p: "gǎnqíng", t: "afeto", c: "Substantivos", l: 7, ex_ch: "常常交流可以加深夫妻的感情。", ex_py: "Chángcháng jiāoliú kěyǐ jiāshēn fūqī de gǎnqíng.", ex_pt: "Comunicar-se com frequência aprofunda o afeto do casal." },
+            { w: "夫妻", p: "fūqī", t: "casal", c: "Substantivos", l: 7, ex_ch: "这对夫妻结婚二十年了，感情很深。", ex_py: "Zhè duì fūqī jiéhūn èrshí nián le, gǎnqíng hěn shēn.", ex_pt: "Este casal está casado há vinte anos e o afeto é profundo." },
+            { w: "孩子", p: "háizi", t: "filho, criança", c: "Substantivos", l: 7, ex_ch: "孩子们在公园里跑来跑去。", ex_py: "Háizimen zài gōngyuán lǐ pǎo lái pǎo qù.", ex_pt: "As crianças correm para lá e para cá no parque." },
+            { w: "学校", p: "xuéxiào", t: "escola", c: "Substantivos", l: 7, ex_ch: "我们的学校很大也很漂亮。", ex_py: "Wǒmen de xuéxiào hěn dà yě hěn piàoliang.", ex_pt: "Nossa escola é bem grande e também muito bonita." },
+            { w: "药", p: "yào", t: "remédio", c: "Substantivos", l: 7, ex_ch: "吃了药就好好休息吧。", ex_py: "Chī le yào jiù hǎohǎo xiūxi ba.", ex_pt: "Depois de tomar o remédio, descanse bem." },
+            { w: "时间", p: "shíjiān", t: "tempo", c: "Substantivos", l: 7, ex_ch: "有人说，最好的药是时间。", ex_py: "Yǒu rén shuō, zuì hǎo de yào shì shíjiān.", ex_pt: "Dizem que o melhor remédio é o tempo." },
+            { w: "运动", p: "yùndòng", t: "exercício, esporte", c: "Substantivos", l: 7, ex_ch: "游泳是一项非常好的运动。", ex_py: "Yóuyǒng shì yí xiàng fēicháng hǎo de yùndòng.", ex_pt: "Nadar é um exercício muito bom." },
+            { w: "生活", p: "shēnghuó", t: "vida", c: "Substantivos", l: 7, ex_ch: "这里的生活节奏很慢。", ex_py: "Zhèlǐ de shēnghuó jiézòu hěn màn.", ex_pt: "O ritmo de vida aqui é bem lento." },
+            { w: "方法", p: "fāngfǎ", t: "método", c: "Substantivos", l: 7, ex_ch: "散步是最简单的锻炼方法。", ex_py: "Sànbù shì zuì jiǎndān de duànliàn fāngfǎ.", ex_pt: "Caminhar é o método de exercício mais simples." },
+            { w: "方面", p: "fāngmiàn", t: "aspecto", c: "Substantivos", l: 7, ex_ch: "在健康方面，他有很多好习惯。", ex_py: "Zài jiànkāng fāngmiàn, tā yǒu hěnduō hǎo xíguàn.", ex_pt: "No aspecto da saúde, ele tem muitos bons hábitos." },
+            { w: "情况", p: "qíngkuàng", t: "situação", c: "Substantivos", l: 7, ex_ch: "每个人可以根据自己的身体情况选择运动。", ex_py: "Měi ge rén kěyǐ gēnjù zìjǐ de shēntǐ qíngkuàng xuǎnzé yùndòng.", ex_pt: "Cada um pode escolher o exercício conforme seu estado físico." },
+            { w: "事情", p: "shìqing", t: "coisa, assunto", c: "Substantivos", l: 7, ex_ch: "遇到烦恼的事情，可以和朋友谈谈。", ex_py: "Yùdào fánnǎo de shìqing, kěyǐ hé péngyou tántan.", ex_pt: "Diante de coisas que afligem, pode-se conversar com amigos." },
+            { w: "问题", p: "wèntí", t: "problema, questão", c: "Substantivos", l: 7, ex_ch: "等你身体出现问题了，后悔就来不及了。", ex_py: "Děng nǐ shēntǐ chūxiàn wèntí le, hòuhuǐ jiù láibují le.", ex_pt: "Quando o corpo apresentar problemas, será tarde para se arrepender." },
+            { w: "变化", p: "biànhuà", t: "mudança", c: "Substantivos", l: 7, ex_ch: "立秋以后，天气的变化很大。", ex_py: "Lìqiū yǐhòu, tiānqì de biànhuà hěn dà.", ex_pt: "Depois do início do outono, a mudança do tempo é grande." },
+            { w: "特点", p: "tèdiǎn", t: "característica", c: "Substantivos", l: 7, ex_ch: "太极拳的特点是动作柔和。", ex_py: "Tàijíquán de tèdiǎn shì dòngzuò róuhé.", ex_pt: "A característica do taijiquan são os movimentos suaves." },
+            { w: "机会", p: "jīhuì", t: "oportunidade", c: "Substantivos", l: 7, ex_ch: "散步也是交流的好机会。", ex_py: "Sànbù yě shì jiāoliú de hǎo jīhuì.", ex_pt: "Caminhar também é uma boa oportunidade de conversar." },
+            { w: "印象", p: "yìnxiàng", t: "impressão", c: "Substantivos", l: 7, ex_ch: "第一印象不总是对的。", ex_py: "Dì-yī yìnxiàng bù zǒngshì duì de.", ex_pt: "A primeira impressão nem sempre está correta." },
+            { w: "第一印象", p: "dì-yī yìnxiàng", t: "primeira impressão", c: "Substantivos", l: 7, ex_ch: "良好的第一印象在面试中起着关键作用。", ex_py: "Liánghǎo de dì-yī yìnxiàng zài miànshì zhōng qǐzhe guānjiàn zuòyòng.", ex_pt: "Uma boa primeira impressão exerce papel chave na entrevista." },
+            { w: "脾气", p: "píqi", t: "temperamento, gênio", c: "Substantivos", l: 7, ex_ch: "他很少对孩子发脾气。", ex_py: "Tā hěn shǎo duì háizi fā píqi.", ex_pt: "Ele raramente tem acessos de raiva com os filhos." },
+            { w: "经理", p: "jīnglǐ", t: "gerente", c: "Substantivos", l: 7, ex_ch: "经理对我印象不错。", ex_py: "Jīnglǐ duì wǒ yìnxiàng búcuò.", ex_pt: "O gerente teve uma boa impressão minha." },
+            { w: "服务员", p: "fúwùyuán", t: "garçom", c: "Substantivos", l: 7, ex_ch: "服务员，请给我们两碗米饭。", ex_py: "Fúwùyuán, qǐng gěi wǒmen liǎng wǎn mǐfàn.", ex_pt: "Garçom, duas tigelas de arroz, por favor." },
+            { w: "桌子", p: "zhuōzi", t: "mesa", c: "Substantivos", l: 7, ex_ch: "把药放在桌子上吧。", ex_py: "Bǎ yào fàng zài zhuōzi shang ba.", ex_pt: "Coloque o remédio na mesa." },
+            { w: "碗", p: "wǎn", t: "tigela, louça", c: "Substantivos", l: 7, ex_ch: "吃完饭，我来洗碗。", ex_py: "Chī wán fàn, wǒ lái xǐ wǎn.", ex_pt: "Depois da refeição, eu lavo a louça." },
+            { w: "计划", p: "jìhuà", t: "plano", c: "Substantivos", l: 7, ex_ch: "我的计划是每天跑步半个小时。", ex_py: "Wǒ de jìhuà shì měitiān pǎobù bàn ge xiǎoshí.", ex_pt: "Meu plano é correr meia hora por dia." },
+            { w: "研究生", p: "yánjiūshēng", t: "pós-graduando", c: "Substantivos", l: 7, ex_ch: "她毕业以后想读研究生。", ex_py: "Tā bìyè yǐhòu xiǎng dú yánjiūshēng.", ex_pt: "Depois de se formar, ela quer fazer pós-graduação." },
+            { w: "门口", p: "ménkǒu", t: "entrada, portão", c: "Substantivos", l: 7, ex_ch: "我们在公园门口见面吧。", ex_py: "Wǒmen zài gōngyuán ménkǒu jiànmiàn ba.", ex_pt: "Vamos nos encontrar na entrada do parque." },
+            { w: "爱好", p: "àihào", t: "hobby", c: "Substantivos", l: 7, ex_ch: "跑步是我最大的爱好。", ex_py: "Pǎobù shì wǒ zuì dà de àihào.", ex_pt: "Correr é meu maior hobby." },
+            { w: "次数", p: "cìshù", t: "número de vezes", c: "Substantivos", l: 7, ex_ch: "每星期运动的次数不要少于三次。", ex_py: "Měi xīngqī yùndòng de cìshù bú yào shǎo yú sān cì.", ex_pt: "O número de vezes de exercício por semana não deve ser menor que três." },
+            { w: "目的", p: "mùdì", t: "objetivo", c: "Substantivos", l: 7, ex_ch: "锻炼的目的是保持健康。", ex_py: "Duànliàn de mùdì shì bǎochí jiànkāng.", ex_pt: "O objetivo do exercício é manter a saúde." },
+            { w: "效果", p: "xiàoguǒ", t: "efeito, resultado", c: "Substantivos", l: 7, ex_ch: "这种方法的效果非常好。", ex_py: "Zhè zhǒng fāngfǎ de xiàoguǒ fēicháng hǎo.", ex_pt: "O efeito deste método é muito bom." },
+            { w: "跑步", p: "pǎobù", t: "corrida", c: "Substantivos", l: 7, ex_ch: "我每天早上跑步半个小时。", ex_py: "Wǒ měitiān zǎoshang pǎobù bàn ge xiǎoshí.", ex_pt: "Eu corro meia hora todas as manhãs." },
+            { w: "游泳", p: "yóuyǒng", t: "natação", c: "Substantivos", l: 7, ex_ch: "夏天去游泳最舒服了。", ex_py: "Xiàtiān qù yóuyǒng zuì shūfu le.", ex_pt: "Nadar no verão é o mais gostoso." },
+            { w: "篮球", p: "lánqiú", t: "basquete", c: "Substantivos", l: 7, ex_ch: "弟弟每个周末都去打篮球。", ex_py: "Dìdi měi ge zhōumò dōu qù dǎ lánqiú.", ex_pt: "Meu irmão mais novo joga basquete todo fim de semana." },
+            { w: "足球", p: "zúqiú", t: "futebol", c: "Substantivos", l: 7, ex_ch: "哥哥周末经常去公园踢足球。", ex_py: "Gēge zhōumò jīngcháng qù gōngyuán tī zúqiú.", ex_pt: "Meu irmão mais velho costuma jogar futebol no parque." },
+            { w: "太极", p: "tàijí", t: "taiji", c: "Substantivos", l: 7, ex_ch: "太极是中国古代的哲学概念。", ex_py: "Tàijí shì Zhōngguó gǔdài de zhéxué gàiniàn.", ex_pt: "Taiji é um conceito da filosofia da China antiga." },
+            { w: "太极拳", p: "tàijíquán", t: "taijiquan", c: "Substantivos", l: 7, ex_ch: "早上公园里有很多人打太极拳。", ex_py: "Zǎoshang gōngyuán lǐ yǒu hěnduō rén dǎ tàijíquán.", ex_pt: "De manhã há muita gente praticando taijiquan no parque." },
+            { w: "古代", p: "gǔdài", t: "antiguidade", c: "Substantivos", l: 7, ex_ch: "这个思想来自中国古代。", ex_py: "Zhège sīxiǎng láizì Zhōngguó gǔdài.", ex_pt: "Este pensamento vem da China antiga." },
+            { w: "哲学", p: "zhéxué", t: "filosofia", c: "Substantivos", l: 7, ex_ch: "他对中国哲学很感兴趣。", ex_py: "Tā duì Zhōngguó zhéxué hěn gǎn xìngqù.", ex_pt: "Ele se interessa muito por filosofia chinesa." },
+            { w: "思想", p: "sīxiǎng", t: "pensamento", c: "Substantivos", l: 7, ex_ch: "阴阳是中国哲学里重要的思想。", ex_py: "Yīnyáng shì Zhōngguó zhéxué lǐ zhòngyào de sīxiǎng.", ex_pt: "Yin-yang é um pensamento importante da filosofia chinesa." },
+            { w: "概念", p: "gàiniàn", t: "conceito", c: "Substantivos", l: 7, ex_ch: "这个概念不太容易理解。", ex_py: "Zhège gàiniàn bú tài róngyì lǐjiě.", ex_pt: "Este conceito não é muito fácil de compreender." },
+            { w: "宇宙", p: "yǔzhòu", t: "universo", c: "Substantivos", l: 7, ex_ch: "古代人认为太极是宇宙的本原。", ex_py: "Gǔdài rén rènwéi tàijí shì yǔzhòu de běnyuán.", ex_pt: "Os antigos consideravam o taiji a origem do universo." },
+            { w: "本原", p: "běnyuán", t: "origem primordial", c: "Substantivos", l: 7, ex_ch: "太极指的是宇宙的本原。", ex_py: "Tàijí zhǐ de shì yǔzhòu de běnyuán.", ex_pt: "Taiji refere-se à origem primordial do universo." },
+            { w: "阴阳", p: "yīnyáng", t: "yin-yang", c: "Substantivos", l: 7, ex_ch: "中医的理论和阴阳有关系。", ex_py: "Zhōngyī de lǐlùn hé yīnyáng yǒu guānxi.", ex_pt: "A teoria da medicina chinesa tem relação com o yin-yang." },
+            { w: "理念", p: "lǐniàn", t: "ideia, princípio", c: "Substantivos", l: 7, ex_ch: "太极拳的理念来自中国哲学。", ex_py: "Tàijíquán de lǐniàn láizì Zhōngguó zhéxué.", ex_pt: "Os princípios do taijiquan vêm da filosofia chinesa." },
+            { w: "艺术", p: "yìshù", t: "arte", c: "Substantivos", l: 7, ex_ch: "武术也是一种艺术。", ex_py: "Wǔshù yě shì yì zhǒng yìshù.", ex_pt: "A arte marcial também é uma forma de arte." },
+            { w: "中医", p: "zhōngyī", t: "medicina tradicional chinesa", c: "Substantivos", l: 7, ex_ch: "中医是中国传统的医学。", ex_py: "Zhōngyī shì Zhōngguó chuántǒng de yīxué.", ex_pt: "A medicina chinesa é a medicina tradicional da China." },
+            { w: "理论", p: "lǐlùn", t: "teoria", c: "Substantivos", l: 7, ex_ch: "这个理论说明了太极拳的特点。", ex_py: "Zhège lǐlùn shuōmíng le tàijíquán de tèdiǎn.", ex_pt: "Esta teoria explica as características do taijiquan." },
+            { w: "武术", p: "wǔshù", t: "arte marcial", c: "Substantivos", l: 7, ex_ch: "太极拳是中国有名的武术。", ex_py: "Tàijíquán shì Zhōngguó yǒumíng de wǔshù.", ex_pt: "O taijiquan é uma arte marcial famosa da China." },
+            { w: "拳法", p: "quánfǎ", t: "técnica de luta", c: "Substantivos", l: 7, ex_ch: "这种拳法的速度比较慢。", ex_py: "Zhè zhǒng quánfǎ de sùdù bǐjiào màn.", ex_pt: "A velocidade desta técnica de luta é relativamente lenta." },
+            { w: "速度", p: "sùdù", t: "velocidade", c: "Substantivos", l: 7, ex_ch: "太极拳的速度很慢，动作柔和。", ex_py: "Tàijíquán de sùdù hěn màn, dòngzuò róuhé.", ex_pt: "A velocidade do taijiquan é lenta e os movimentos são suaves." },
+            { w: "中老年人", p: "zhōng-lǎonián rén", t: "pessoas de meia-idade e idosos", c: "Substantivos", l: 7, ex_ch: "太极拳特别适合中老年人。", ex_py: "Tàijíquán tèbié shìhé zhōng-lǎonián rén.", ex_pt: "O taijiquan é especialmente adequado para pessoas de meia-idade e idosos." },
+            { w: "运动量", p: "yùndòngliàng", t: "intensidade de exercício", c: "Substantivos", l: 7, ex_ch: "每个人可以选择合适的运动量。", ex_py: "Měi ge rén kěyǐ xuǎnzé héshì de yùndòngliàng.", ex_pt: "Cada um pode escolher a intensidade de exercício adequada." },
+            { w: "修养", p: "xiūyǎng", t: "cultivo pessoal", c: "Substantivos", l: 7, ex_ch: "练太极拳还能提高修养。", ex_py: "Liàn tàijíquán hái néng tígāo xiūyǎng.", ex_pt: "Praticar taijiquan também eleva o cultivo pessoal." },
+            { w: "调查表", p: "diàochábiǎo", t: "questionário", c: "Substantivos", l: 7, ex_ch: "请大家填一下这张调查表。", ex_py: "Qǐng dàjiā tián yíxià zhè zhāng diàochábiǎo.", ex_pt: "Por favor, preencham este questionário." },
+            // ADJETIVOS
+            { w: "干", p: "gān", t: "seco", c: "Adjetivos", l: 7, ex_ch: "北方的天气太干了。", ex_py: "Běifāng de tiānqì tài gān le.", ex_pt: "O tempo do norte é seco demais." },
+            { w: "冷", p: "lěng", t: "frio", c: "Adjetivos", l: 7, ex_ch: "今天外面很冷。", ex_py: "Jīntiān wàimiàn hěn lěng.", ex_pt: "Hoje está muito frio lá fora." },
+            { w: "热", p: "rè", t: "quente", c: "Adjetivos", l: 7, ex_ch: "夏天的下午特别热。", ex_py: "Xiàtiān de xiàwǔ tèbié rè.", ex_pt: "As tardes de verão são especialmente quentes." },
+            { w: "少", p: "shǎo", t: "pouco", c: "Adjetivos", l: 7, ex_ch: "他平时运动太少了。", ex_py: "Tā píngshí yùndòng tài shǎo le.", ex_pt: "No dia a dia ele se exercita muito pouco." },
+            { w: "严重", p: "yánzhòng", t: "grave", c: "Adjetivos", l: 7, ex_ch: "你的感冒不严重，多喝水就好。", ex_py: "Nǐ de gǎnmào bù yánzhòng, duō hē shuǐ jiù hǎo.", ex_pt: "Seu resfriado não é grave, basta beber bastante água." },
+            { w: "容易", p: "róngyì", t: "fácil", c: "Adjetivos", l: 7, ex_ch: "天气时冷时热，容易感冒。", ex_py: "Tiānqì shí lěng shí rè, róngyì gǎnmào.", ex_pt: "Com o tempo ora frio, ora quente, é fácil se resfriar." },
+            { w: "帅", p: "shuài", t: "estiloso", c: "Adjetivos", l: 7, ex_ch: "他穿这件衣服看上去很帅。", ex_py: "Tā chuān zhè jiàn yīfu kàn shangqu hěn shuài.", ex_pt: "Com esta roupa ele parece muito estiloso." },
+            { w: "绿色", p: "lǜsè", t: "verde", c: "Adjetivos", l: 7, ex_ch: "看看远处的绿色植物，眼睛会舒服一些。", ex_py: "Kànkan yuǎnchù de lǜsè zhíwù, yǎnjing huì shūfu yìxiē.", ex_pt: "Olhar as plantas verdes ao longe deixa os olhos mais confortáveis." },
+            { w: "累", p: "lèi", t: "cansado", c: "Adjetivos", l: 7, ex_ch: "工作了一天，我觉得很累。", ex_py: "Gōngzuò le yì tiān, wǒ juéde hěn lèi.", ex_pt: "Depois de um dia de trabalho, me sinto muito cansado." },
+            { w: "舒服", p: "shūfu", t: "confortável", c: "Adjetivos", l: 7, ex_ch: "我今天有点儿不舒服，头疼。", ex_py: "Wǒ jīntiān yǒudiǎnr bù shūfu, tóu téng.", ex_pt: "Hoje estou um pouco indisposto, com dor de cabeça." },
+            { w: "新鲜", p: "xīnxiān", t: "fresco, puro", c: "Adjetivos", l: 7, ex_ch: "早上的空气特别新鲜。", ex_py: "Zǎoshang de kōngqì tèbié xīnxiān.", ex_pt: "O ar da manhã é especialmente puro." },
+            { w: "辛苦", p: "xīnkǔ", t: "cansativo", c: "Adjetivos", l: 7, ex_ch: "爸爸的工作很辛苦。", ex_py: "Bàba de gōngzuò hěn xīnkǔ.", ex_pt: "O trabalho do papai é muito cansativo." },
+            { w: "幸福", p: "xìngfú", t: "feliz (plenitude)", c: "Adjetivos", l: 7, ex_ch: "家人健康就是最大的幸福。", ex_py: "Jiārén jiànkāng jiù shì zuì dà de xìngfú.", ex_pt: "A saúde da família é a maior felicidade." },
+            { w: "简单", p: "jiǎndān", t: "simples", c: "Adjetivos", l: 7, ex_ch: "散步是最简单的运动。", ex_py: "Sànbù shì zuì jiǎndān de yùndòng.", ex_pt: "Caminhar é o exercício mais simples." },
+            { w: "真正", p: "zhēnzhèng", t: "verdadeiro", c: "Adjetivos", l: 7, ex_ch: "只有身心都健康，才算是真正的健康。", ex_py: "Zhǐyǒu shēnxīn dōu jiànkāng, cái suàn shì zhēnzhèng de jiànkāng.", ex_pt: "Só com corpo e mente saudáveis há verdadeira saúde." },
+            { w: "重要", p: "zhòngyào", t: "importante", c: "Adjetivos", l: 7, ex_ch: "健康比工作更重要。", ex_py: "Jiànkāng bǐ gōngzuò gèng zhòngyào.", ex_pt: "A saúde é mais importante que o trabalho." },
+            { w: "深", p: "shēn", t: "profundo", c: "Adjetivos", l: 7, ex_ch: "他们夫妻的感情很深。", ex_py: "Tāmen fūqī de gǎnqíng hěn shēn.", ex_pt: "O afeto deste casal é muito profundo." },
+            { w: "饱", p: "bǎo", t: "saciado (barriga)", c: "Adjetivos", l: 7, ex_ch: "我吃得太饱了，出去走走吧。", ex_py: "Wǒ chī de tài bǎo le, chūqù zǒuzou ba.", ex_pt: "Comi demais, vamos dar uma volta." },
+            { w: "有意思", p: "yǒu yìsi", t: "interessante", c: "Adjetivos", l: 7, ex_ch: "中国哲学很有意思。", ex_py: "Zhōngguó zhéxué hěn yǒu yìsi.", ex_pt: "A filosofia chinesa é muito interessante." },
+            { w: "热情", p: "rèqíng", t: "caloroso", c: "Adjetivos", l: 7, ex_ch: "公园里的老人对我们很热情。", ex_py: "Gōngyuán lǐ de lǎorén duì wǒmen hěn rèqíng.", ex_pt: "Os idosos do parque são muito calorosos conosco." },
+            { w: "柔和", p: "róuhé", t: "suave", c: "Adjetivos", l: 7, ex_ch: "太极拳的动作很柔和。", ex_py: "Tàijíquán de dòngzuò hěn róuhé.", ex_pt: "Os movimentos do taijiquan são muito suaves." },
+            { w: "基本", p: "jīběn", t: "básico", c: "Adjetivos", l: 7, ex_ch: "我已经学会了太极拳的基本动作。", ex_py: "Wǒ yǐjīng xuéhuì le tàijíquán de jīběn dòngzuò.", ex_pt: "Já aprendi os movimentos básicos do taijiquan." },
+            { w: "合适", p: "héshì", t: "adequado", c: "Adjetivos", l: 7, ex_ch: "你要选择合适的运动量。", ex_py: "Nǐ yào xuǎnzé héshì de yùndòngliàng.", ex_pt: "Você deve escolher a intensidade de exercício adequada." },
+            { w: "美", p: "měi", t: "belo, bonito", c: "Adjetivos", l: 7, ex_ch: "公园早上的风景很美。", ex_py: "Gōngyuán zǎoshang de fēngjǐng hěn měi.", ex_pt: "A paisagem do parque de manhã é muito bela." },
+            { w: "烦恼", p: "fánnǎo", t: "preocupado, aflito", c: "Adjetivos", l: 7, ex_ch: "遇到烦恼的事情，可以和朋友谈谈。", ex_py: "Yùdào fánnǎo de shìqing, kěyǐ hé péngyou tántan.", ex_pt: "Diante de aflições, converse com os amigos." },
+            // ADVÉRBIOS E CONJUNÇÕES
+            { w: "总是", p: "zǒngshì", t: "sempre", c: "Advérbios / Conjunções", l: 7, ex_ch: "他总是很晚才睡觉。", ex_py: "Tā zǒngshì hěn wǎn cái shuìjiào.", ex_pt: "Ele sempre dorme muito tarde." },
+            { w: "最近", p: "zuìjìn", t: "recentemente", c: "Advérbios / Conjunções", l: 7, ex_ch: "最近天气变化大，容易感冒。", ex_py: "Zuìjìn tiānqì biànhuà dà, róngyì gǎnmào.", ex_pt: "Recentemente o tempo muda muito, é fácil se resfriar." },
+            { w: "特别", p: "tèbié", t: "particularmente", c: "Advérbios / Conjunções", l: 7, ex_ch: "今天特别冷，注意保暖。", ex_py: "Jīntiān tèbié lěng, zhùyì bǎonuǎn.", ex_pt: "Hoje está particularmente frio, mantenha-se aquecido." },
+            { w: "一直", p: "yìzhí", t: "o tempo inteiro", c: "Advérbios / Conjunções", l: 7, ex_ch: "他感冒了，一直咳嗽。", ex_py: "Tā gǎnmào le, yìzhí késou.", ex_pt: "Ele está resfriado e tosse o tempo inteiro." },
+            { w: "经常", p: "jīngcháng", t: "com frequência", c: "Advérbios / Conjunções", l: 7, ex_ch: "我经常去公园跑步。", ex_py: "Wǒ jīngcháng qù gōngyuán pǎobù.", ex_pt: "Eu corro no parque com frequência." },
+            { w: "平时", p: "píngshí", t: "no dia a dia", c: "Advérbios / Conjunções", l: 7, ex_ch: "平时我不怎么喝咖啡，只喝茶。", ex_py: "Píngshí wǒ bù zěnme hē kāfēi, zhǐ hē chá.", ex_pt: "No dia a dia não bebo muito café, só chá." },
+            { w: "其实", p: "qíshí", t: "na verdade", c: "Advérbios / Conjunções", l: 7, ex_ch: "其实散步就是很好的运动。", ex_py: "Qíshí sànbù jiù shì hěn hǎo de yùndòng.", ex_pt: "Na verdade caminhar já é um ótimo exercício." },
+            { w: "尤其", p: "yóuqí", t: "especialmente", c: "Advérbios / Conjunções", l: 7, ex_ch: "我喜欢运动，尤其是游泳。", ex_py: "Wǒ xǐhuan yùndòng, yóuqí shì yóuyǒng.", ex_pt: "Gosto de esportes, especialmente natação." },
+            { w: "一定", p: "yídìng", t: "com certeza", c: "Advérbios / Conjunções", l: 7, ex_ch: "你一定要注意身体。", ex_py: "Nǐ yídìng yào zhùyì shēntǐ.", ex_pt: "Você precisa, com certeza, cuidar da saúde." },
+            { w: "另外", p: "lìngwài", t: "além disso", c: "Advérbios / Conjunções", l: 7, ex_ch: "另外，记得多喝水。", ex_py: "Lìngwài, jìde duō hē shuǐ.", ex_pt: "Além disso, lembre-se de beber bastante água." },
+            { w: "完全", p: "wánquán", t: "totalmente", c: "Advérbios / Conjunções", l: 7, ex_ch: "我完全同意你的看法。", ex_py: "Wǒ wánquán tóngyì nǐ de kànfǎ.", ex_pt: "Concordo totalmente com a sua opinião." },
+            { w: "比较", p: "bǐjiào", t: "relativamente", c: "Advérbios / Conjunções", l: 7, ex_ch: "这种运动比较简单。", ex_py: "Zhè zhǒng yùndòng bǐjiào jiǎndān.", ex_pt: "Este tipo de exercício é relativamente simples." },
+            { w: "主要", p: "zhǔyào", t: "principalmente", c: "Advérbios / Conjunções", l: 7, ex_ch: "感冒的主要原因是天气变化。", ex_py: "Gǎnmào de zhǔyào yuányīn shì tiānqì biànhuà.", ex_pt: "A principal causa do resfriado é a mudança do tempo." },
+            { w: "差不多", p: "chàbuduō", t: "quase", c: "Advérbios / Conjunções", l: 7, ex_ch: "我差不多每天都散步。", ex_py: "Wǒ chàbuduō měitiān dōu sànbù.", ex_pt: "Eu caminho quase todos os dias." },
+            { w: "竟然", p: "jìngrán", t: "inesperadamente", c: "Advérbios / Conjunções", l: 7, ex_ch: "没想到她竟然支持我。", ex_py: "Méi xiǎngdào tā jìngrán zhīchí wǒ.", ex_pt: "Para minha surpresa, ela me apoiou." },
+            { w: "多么", p: "duōme", t: "quão", c: "Advérbios / Conjunções", l: 7, ex_ch: "你看，这里的空气多么新鲜啊！", ex_py: "Nǐ kàn, zhèlǐ de kōngqì duōme xīnxiān a!", ex_pt: "Veja como o ar daqui é puro!" },
+            { w: "只", p: "zhǐ", t: "apenas", c: "Advérbios / Conjunções", l: 7, ex_ch: "我昨天只睡了五个小时。", ex_py: "Wǒ zuótiān zhǐ shuì le wǔ ge xiǎoshí.", ex_pt: "Ontem dormi apenas cinco horas." },
+            { w: "才", p: "cái", t: "só então", c: "Advérbios / Conjunções", l: 7, ex_ch: "只有多锻炼，身体才会好。", ex_py: "Zhǐyǒu duō duànliàn, shēntǐ cái huì hǎo.", ex_pt: "Só se exercitando mais é que o corpo fica bem." },
+            { w: "过去", p: "guòqù", t: "no passado", c: "Advérbios / Conjunções", l: 7, ex_ch: "过去他经常抽烟，现在不抽了。", ex_py: "Guòqù tā jīngcháng chōu yān, xiànzài bù chōu le.", ex_pt: "No passado ele fumava muito; agora não fuma mais." },
+            { w: "现在", p: "xiànzài", t: "agora", c: "Advérbios / Conjunções", l: 7, ex_ch: "现在很多年轻人也开始练太极拳。", ex_py: "Xiànzài hěnduō niánqīngrén yě kāishǐ liàn tàijíquán.", ex_pt: "Agora muitos jovens também começaram a praticar taijiquan." },
+            { w: "然后", p: "ránhòu", t: "depois", c: "Advérbios / Conjunções", l: 7, ex_ch: "先吃药，然后好好休息。", ex_py: "Xiān chī yào, ránhòu hǎohǎo xiūxi.", ex_pt: "Primeiro tome o remédio, depois descanse bem." },
+            { w: "重新", p: "chóngxīn", t: "de novo", c: "Advérbios / Conjunções", l: 7, ex_ch: "病好了以后，他重新开始锻炼。", ex_py: "Bìng hǎo le yǐhòu, tā chóngxīn kāishǐ duànliàn.", ex_pt: "Depois de curado, ele voltou a se exercitar." },
+            { w: "不仅", p: "bùjǐn", t: "não só", c: "Advérbios / Conjunções", l: 7, ex_ch: "练太极拳不仅可以保持健康，还能提高修养。", ex_py: "Liàn tàijíquán bùjǐn kěyǐ bǎochí jiànkāng, hái néng tígāo xiūyǎng.", ex_pt: "Praticar taijiquan não só mantém a saúde, como eleva o cultivo pessoal." },
+            { w: "还", p: "hái", t: "ainda, também", c: "Advérbios / Conjunções", l: 7, ex_ch: "散步还可以换换空气。", ex_py: "Sànbù hái kěyǐ huànhuan kōngqì.", ex_pt: "Caminhar também serve para renovar o ar." },
+            { w: "又", p: "yòu", t: "e também (com 既)", c: "Advérbios / Conjunções", l: 7, ex_ch: "散步既可以活动身体，又可以减肥。", ex_py: "Sànbù jì kěyǐ huódòng shēntǐ, yòu kěyǐ jiǎn féi.", ex_pt: "Caminhar movimenta o corpo e também ajuda a emagrecer." },
+            { w: "而且", p: "érqiě", t: "além disso", c: "Advérbios / Conjunções", l: 7, ex_ch: "这个方法简单，而且效果很好。", ex_py: "Zhège fāngfǎ jiǎndān, érqiě xiàoguǒ hěn hǎo.", ex_pt: "Este método é simples e, além disso, o efeito é ótimo." },
+            { w: "所以", p: "suǒyǐ", t: "por isso", c: "Advérbios / Conjunções", l: 7, ex_ch: "天气太干，所以容易感冒。", ex_py: "Tiānqì tài gān, suǒyǐ róngyì gǎnmào.", ex_pt: "O tempo está seco demais, por isso é fácil se resfriar." },
+            { w: "如果", p: "rúguǒ", t: "se", c: "Advérbios / Conjunções", l: 7, ex_ch: "如果明天不下雨，我们就去公园。", ex_py: "Rúguǒ míngtiān bú xiàyǔ, wǒmen jiù qù gōngyuán.", ex_pt: "Se não chover amanhã, vamos ao parque." },
+            { w: "就", p: "jiù", t: "então", c: "Advérbios / Conjunções", l: 7, ex_ch: "要是不舒服，就去看医生。", ex_py: "Yàoshi bù shūfu, jiù qù kàn yīshēng.", ex_pt: "Se não estiver bem, então vá ao médico." },
+            { w: "既", p: "jì", t: "tanto… (como…)", c: "Advérbios / Conjunções", l: 7, ex_ch: "跑步既能锻炼身体，也能让精神变好。", ex_py: "Pǎobù jì néng duànliàn shēntǐ, yě néng ràng jīngshén biàn hǎo.", ex_pt: "Correr tanto exercita o corpo como melhora o ânimo." },
+            { w: "要是", p: "yàoshi", t: "se, caso", c: "Advérbios / Conjunções", l: 7, ex_ch: "要是感冒了，就多喝水多休息。", ex_py: "Yàoshi gǎnmào le, jiù duō hē shuǐ duō xiūxi.", ex_pt: "Caso se resfrie, beba muita água e descanse." },
+            { w: "只有", p: "zhǐyǒu", t: "somente se", c: "Advérbios / Conjunções", l: 7, ex_ch: "只有坚持锻炼，才能保持健康。", ex_py: "Zhǐyǒu jiānchí duànliàn, cái néng bǎochí jiànkāng.", ex_pt: "Somente persistindo nos exercícios se mantém a saúde." },
+            { w: "不管", p: "bùguǎn", t: "não importa", c: "Advérbios / Conjunções", l: 7, ex_ch: "不管刮风下雨，他都去跑步。", ex_py: "Bùguǎn guā fēng xiàyǔ, tā dōu qù pǎobù.", ex_pt: "Não importa vento ou chuva, ele vai correr." },
+            { w: "却", p: "què", t: "mas, entretanto", c: "Advérbios / Conjunções", l: 7, ex_ch: "他知道抽烟不好，却一直不改。", ex_py: "Tā zhīdào chōu yān bù hǎo, què yìzhí bù gǎi.", ex_pt: "Ele sabe que fumar faz mal, mas nunca muda." },
+            { w: "像", p: "xiàng", t: "como, tal qual", c: "Advérbios / Conjunções", l: 7, ex_ch: "太极拳的动作像水一样柔和。", ex_py: "Tàijíquán de dòngzuò xiàng shuǐ yíyàng róuhé.", ex_pt: "Os movimentos do taijiquan são suaves como a água." },
+            { w: "为了", p: "wèile", t: "para, a fim de", c: "Advérbios / Conjunções", l: 7, ex_ch: "为了健康，他每天都锻炼。", ex_py: "Wèile jiànkāng, tā měitiān dōu duànliàn.", ex_pt: "Pela saúde, ele se exercita todos os dias." },
+            { w: "根据", p: "gēnjù", t: "conforme, de acordo com", c: "Advérbios / Conjunções", l: 7, ex_ch: "每个人可以根据自己的情况选择运动。", ex_py: "Měi ge rén kěyǐ gēnjù zìjǐ de qíngkuàng xuǎnzé yùndòng.", ex_pt: "Cada um pode escolher o exercício conforme sua situação." },
+            // EXPRESSÕES IDIOMÁTICAS E TERMOS COMPOSTOS
+            { w: "时冷时热", p: "shí lěng shí rè", t: "ora frio, ora quente", c: "Expressões e Compostos", l: 7, ex_ch: "最近天气时冷时热，很容易感冒。", ex_py: "Zuìjìn tiānqì shí lěng shí rè, hěn róngyì gǎnmào.", ex_pt: "Ultimamente o tempo está ora frio, ora quente — é muito fácil se resfriar." },
+            { w: "看上去", p: "kàn shangqu", t: "parecer", c: "Expressões e Compostos", l: 7, ex_ch: "他看上去很累，让他休息吧。", ex_py: "Tā kàn shangqu hěn lèi, ràng tā xiūxi ba.", ex_pt: "Ele parece muito cansado, deixe-o descansar." },
+            { w: "老样子", p: "lǎo yàngzi", t: "a mesma coisa de sempre", c: "Expressões e Compostos", l: 7, ex_ch: "你最近怎么样？——老样子。", ex_py: "Nǐ zuìjìn zěnmeyàng? —— Lǎo yàngzi.", ex_pt: "Como você anda? — A mesma coisa de sempre." },
+            { w: "一点儿……也没有", p: "yìdiǎnr…… yě méiyǒu", t: "não ter nem um pouco", c: "Expressões e Compostos", l: 7, ex_ch: "抽烟对身体一点儿好处也没有。", ex_py: "Chōu yān duì shēntǐ yìdiǎnr hǎochù yě méiyǒu.", ex_pt: "Fumar não traz nem um pouco de benefício ao corpo." },
+            { w: "换换空气", p: "huànhuan kōngqì", t: "renovar o ar", c: "Expressões e Compostos", l: 7, ex_ch: "打开窗户，换换空气吧。", ex_py: "Dǎkāi chuānghu, huànhuan kōngqì ba.", ex_pt: "Abra a janela para renovar o ar." },
+            { w: "散散步", p: "sànsan bù", t: "dar uma caminhada", c: "Expressões e Compostos", l: 7, ex_ch: "吃完饭出去散散步吧。", ex_py: "Chī wán fàn chūqù sànsan bù ba.", ex_pt: "Depois de comer, vamos dar uma caminhada." },
+            { w: "第一时间", p: "dì-yī shíjiān", t: "imediatamente", c: "Expressões e Compostos", l: 7, ex_ch: "有消息我会第一时间告诉你。", ex_py: "Yǒu xiāoxi wǒ huì dì-yī shíjiān gàosu nǐ.", ex_pt: "Assim que houver notícias, aviso imediatamente." },
+            { w: "三分之二", p: "sān fēn zhī èr", t: "dois terços", c: "Expressões e Compostos", l: 7, ex_ch: "我们班三分之二的学生喜欢运动。", ex_py: "Wǒmen bān sān fēn zhī èr de xuésheng xǐhuan yùndòng.", ex_pt: "Dois terços dos alunos da turma gostam de esportes." },
+            { w: "研究发现", p: "yánjiū fāxiàn", t: "pesquisas descobriram", c: "Expressões e Compostos", l: 7, ex_ch: "研究发现，散步对健康很有好处。", ex_py: "Yánjiū fāxiàn, sànbù duì jiànkāng hěn yǒu hǎochù.", ex_pt: "Pesquisas descobriram que caminhar faz muito bem à saúde." },
+            { w: "身体健康", p: "shēntǐ jiànkāng", t: "saúde física", c: "Expressões e Compostos", l: 7, ex_ch: "祝您身体健康，万事如意！", ex_py: "Zhù nín shēntǐ jiànkāng, wànshì rúyì!", ex_pt: "Desejo saúde e que tudo corra como deseja!" },
+            { w: "开玩笑", p: "kāi wánxiào", t: "brincar", c: "Expressões e Compostos", l: 7, ex_ch: "别生气，我只是在跟你开玩笑。", ex_py: "Bié shēngqì, wǒ zhǐshì zài gēn nǐ kāi wánxiào.", ex_pt: "Não fique bravo, só estou brincando com você." },
+            { w: "发脾气", p: "fā píqi", t: "ter um acesso de raiva", c: "Expressões e Compostos", l: 7, ex_ch: "他很少对孩子发脾气。", ex_py: "Tā hěn shǎo duì háizi fā píqi.", ex_pt: "Ele raramente tem acessos de raiva com os filhos." },
+            { w: "……的话", p: "…… de huà", t: "se… (fecha condição)", c: "Expressões e Compostos", l: 7, ex_ch: "要是不舒服的话，就去看医生。", ex_py: "Yàoshi bù shūfu de huà, jiù qù kàn yīshēng.", ex_pt: "Se não estiver bem, vá ao médico." },
+            { w: "最好的医生是自己", p: "zuì hǎo de yīshēng shì zìjǐ", t: "o melhor médico é você mesmo", c: "Expressões e Compostos", l: 7, ex_ch: "人们常说，最好的医生是自己。", ex_py: "Rénmen cháng shuō, zuì hǎo de yīshēng shì zìjǐ.", ex_pt: "As pessoas costumam dizer que o melhor médico é você mesmo." },
+            { w: "最好的药是时间", p: "zuì hǎo de yào shì shíjiān", t: "o melhor remédio é o tempo", c: "Expressões e Compostos", l: 7, ex_ch: "有人说，最好的药是时间。", ex_py: "Yǒu rén shuō, zuì hǎo de yào shì shíjiān.", ex_pt: "Dizem que o melhor remédio é o tempo." },
+            { w: "最好的运动是散步", p: "zuì hǎo de yùndòng shì sànbù", t: "o melhor exercício é caminhar", c: "Expressões e Compostos", l: 7, ex_ch: "很多医生认为，最好的运动是散步。", ex_py: "Hěnduō yīshēng rènwéi, zuì hǎo de yùndòng shì sànbù.", ex_pt: "Muitos médicos consideram que o melhor exercício é caminhar." },
+            // EXEMPLOS DA LIÇÃO
+            { w: "你的鼻子怎么流血了？快用纸擦擦。", p: "nǐ de bízi zěnme liú xiě le? kuài yòng zhǐ cāca", t: "seu nariz está sangrando — limpe!", c: "Expressões e Compostos", l: 7, ex_ch: "你的鼻子怎么流血了？快用纸擦擦。", ex_py: "Nǐ de bízi zěnme liú xiě le? Kuài yòng zhǐ cāca.", ex_pt: "Por que seu nariz está sangrando? Rápido, limpe com um lenço." },
+            { w: "我还不习惯北方的气候，估计是天气太干。", p: "wǒ hái bù xíguàn běifāng de qìhòu, gūjì shì tiānqì tài gān", t: "não me acostumei com o clima do norte", c: "Expressões e Compostos", l: 7, ex_ch: "我还不习惯北方的气候，估计是天气太干。", ex_py: "Wǒ hái bù xíguàn běifāng de qìhòu, gūjì shì tiānqì tài gān.", ex_pt: "Ainda não me acostumei com o clima do norte, deve ser o tempo seco demais." },
+            { w: "抽烟对身体一点儿好处也没有。", p: "chōu yān duì shēntǐ yìdiǎnr hǎochù yě méiyǒu", t: "fumar não traz benefício algum", c: "Expressões e Compostos", l: 7, ex_ch: "抽烟对身体一点儿好处也没有。", ex_py: "Chōu yān duì shēntǐ yìdiǎnr hǎochù yě méiyǒu.", ex_pt: "Fumar não traz nenhum benefício ao corpo." },
+            { w: "等你身体出现问题了，后悔就来不及了。", p: "děng nǐ shēntǐ chūxiàn wèntí le, hòuhuǐ jiù láibují le", t: "depois será tarde para se arrepender", c: "Expressões e Compostos", l: 7, ex_ch: "等你身体出现问题了，后悔就来不及了。", ex_py: "Děng nǐ shēntǐ chūxiàn wèntí le, hòuhuǐ jiù láibují le.", ex_pt: "Quando o corpo apresentar problemas, será tarde demais para se arrepender." },
+            { w: "只有身体和精神都健康，才算是真正的健康。", p: "zhǐyǒu shēntǐ hé jīngshén dōu jiànkāng, cái suàn shì zhēnzhèng de jiànkāng", t: "verdadeira saúde: corpo e mente", c: "Expressões e Compostos", l: 7, ex_ch: "只有身体和精神都健康，才算是真正的健康。", ex_py: "Zhǐyǒu shēntǐ hé jīngshén dōu jiànkāng, cái suàn shì zhēnzhèng de jiànkāng.", ex_pt: "Só quando corpo e mente estão saudáveis é que há verdadeira saúde." },
+            { w: "散步既可以活动身体，又可以减肥。", p: "sànbù jì kěyǐ huódòng shēntǐ, yòu kěyǐ jiǎn féi", t: "caminhar movimenta e emagrece", c: "Expressões e Compostos", l: 7, ex_ch: "散步既可以活动身体，又可以减肥。", ex_py: "Sàn bù jì kěyǐ huódòng shēntǐ, yòu kěyǐ jiǎn féi.", ex_pt: "Caminhar movimenta o corpo e ao mesmo tempo ajuda a emagrecer." },
+            { w: "我本来以为她会反对，没想到她竟然支持我。", p: "wǒ běnlái yǐwéi tā huì fǎnduì, méi xiǎngdào tā jìngrán zhīchí wǒ", t: "surpreendentemente ela me apoiou", c: "Expressões e Compostos", l: 7, ex_ch: "我本来以为她会反对，没想到她竟然支持我。", ex_py: "Wǒ běnlái yǐwéi tā huì fǎnduì, méi xiǎngdào tā jìngrán zhīchí wǒ.", ex_pt: "Eu achava que ela seria contra, mas para minha surpresa ela me apoiou." },
+            { w: "每个人可以根据自己的身体情况，选择合适的运动量。", p: "měi ge rén kěyǐ gēnjù zìjǐ de shēntǐ qíngkuàng, xuǎnzé héshì de yùndòngliàng", t: "escolher exercício conforme o corpo", c: "Expressões e Compostos", l: 7, ex_ch: "每个人可以根据自己的身体情况，选择合适的运动量。", ex_py: "Měi ge rén kěyǐ gēnjù zìjǐ de shēntǐ qíngkuàng, xuǎnzé héshì de yùndòngliàng.", ex_pt: "Cada um pode escolher a intensidade de exercício adequada conforme seu estado físico." },
+            { w: "经常练习太极拳，不仅可以保持健康，而且还能提高修养。", p: "jīngcháng liànxí tàijíquán, bùjǐn kěyǐ bǎochí jiànkāng, érqiě hái néng tígāo xiūyǎng", t: "taijiquan: saúde e cultivo pessoal", c: "Expressões e Compostos", l: 7, ex_ch: "经常练习太极拳，不仅可以保持健康，而且还能提高修养。", ex_py: "Jīngcháng liànxí tàijíquán, bùjǐn kěyǐ bǎochí jiànkāng, érqiě hái néng tígāo xiūyǎng.", ex_pt: "Praticar taijiquan não só mantém a saúde, como também eleva o cultivo pessoal." },
+            // VERBOS
+            { w: "流血", p: "liú xiě", t: "sangrar", c: "Verbos", l: 7, ex_ch: "他的鼻子怎么流血了？", ex_py: "Tā de bízi zěnme liú xiě le?", ex_pt: "Por que o nariz dele está sangrando?" },
+            { w: "擦", p: "cā", t: "limpar, enxugar", c: "Verbos", l: 7, ex_ch: "快用纸擦擦鼻子。", ex_py: "Kuài yòng zhǐ cāca bízi.", ex_pt: "Rápido, limpe o nariz com um lenço." },
+            { w: "穿", p: "chuān", t: "vestir", c: "Verbos", l: 7, ex_ch: "天冷了，多穿点儿衣服。", ex_py: "Tiān lěng le, duō chuān diǎnr yīfu.", ex_pt: "Esfriou — vista mais roupas." },
+            { w: "感冒", p: "gǎnmào", t: "resfriar-se", c: "Verbos", l: 7, ex_ch: "注意保暖，别感冒了。", ex_py: "Zhùyì bǎonuǎn, bié gǎnmào le.", ex_pt: "Mantenha-se aquecido para não se resfriar." },
+            { w: "咳嗽", p: "késou", t: "tossir", c: "Verbos", l: 7, ex_ch: "他感冒了，一直咳嗽。", ex_py: "Tā gǎnmào le, yìzhí késou.", ex_pt: "Ele está resfriado e tosse o tempo inteiro." },
+            { w: "头疼", p: "tóu téng", t: "doer a cabeça", c: "Verbos", l: 7, ex_ch: "我今天头疼，想早点回家。", ex_py: "Wǒ jīntiān tóu téng, xiǎng zǎo diǎn huí jiā.", ex_pt: "Hoje estou com dor de cabeça e quero ir para casa cedo." },
+            { w: "喝", p: "hē", t: "beber", c: "Verbos", l: 7, ex_ch: "感冒了要多喝水。", ex_py: "Gǎnmào le yào duō hē shuǐ.", ex_pt: "Quando resfriado, é preciso beber muita água." },
+            { w: "注意", p: "zhùyì", t: "prestar atenção", c: "Verbos", l: 7, ex_ch: "你要注意休息，别太累了。", ex_py: "Nǐ yào zhùyì xiūxi, bié tài lèi le.", ex_pt: "Preste atenção ao descanso, não se canse demais." },
+            { w: "保暖", p: "bǎonuǎn", t: "manter-se aquecido", c: "Verbos", l: 7, ex_ch: "冬天出门要注意保暖。", ex_py: "Dōngtiān chūmén yào zhùyì bǎonuǎn.", ex_pt: "No inverno, ao sair, mantenha-se aquecido." },
+            { w: "打开", p: "dǎkāi", t: "abrir", c: "Verbos", l: 7, ex_ch: "请打开窗户，换换空气。", ex_py: "Qǐng dǎkāi chuānghu, huànhuan kōngqì.", ex_pt: "Abra a janela para renovar o ar." },
+            { w: "换", p: "huàn", t: "trocar, renovar", c: "Verbos", l: 7, ex_ch: "出去走走，换换空气。", ex_py: "Chūqù zǒuzou, huànhuan kōngqì.", ex_pt: "Saia para dar uma volta e renovar o ar." },
+            { w: "抽烟", p: "chōu yān", t: "fumar", c: "Verbos", l: 7, ex_ch: "医生让他别再抽烟了。", ex_py: "Yīshēng ràng tā bié zài chōu yān le.", ex_pt: "O médico mandou-o parar de fumar." },
+            { w: "反对", p: "fǎnduì", t: "opor-se", c: "Verbos", l: 7, ex_ch: "我本来以为她会反对。", ex_py: "Wǒ běnlái yǐwéi tā huì fǎnduì.", ex_pt: "Eu achava que ela seria contra." },
+            { w: "出现", p: "chūxiàn", t: "surgir", c: "Verbos", l: 7, ex_ch: "等身体出现问题就晚了。", ex_py: "Děng shēntǐ chūxiàn wèntí jiù wǎn le.", ex_pt: "Quando o corpo apresentar problemas, será tarde." },
+            { w: "后悔", p: "hòuhuǐ", t: "arrepender-se", c: "Verbos", l: 7, ex_ch: "现在不锻炼，以后会后悔的。", ex_py: "Xiànzài bú duànliàn, yǐhòu huì hòuhuǐ de.", ex_pt: "Quem não se exercita agora vai se arrepender depois." },
+            { w: "来不及", p: "láibují", t: "não dar tempo", c: "Verbos", l: 7, ex_ch: "快点儿，要不然就来不及了。", ex_py: "Kuài diǎnr, yàobùrán jiù láibují le.", ex_pt: "Rápido, senão não vai dar tempo." },
+            { w: "担心", p: "dān xīn", t: "preocupar-se", c: "Verbos", l: 7, ex_ch: "妈妈很担心我的身体。", ex_py: "Māma hěn dān xīn wǒ de shēntǐ.", ex_pt: "Minha mãe se preocupa muito com minha saúde." },
+            { w: "影响", p: "yǐngxiǎng", t: "afetar", c: "Verbos", l: 7, ex_ch: "抽烟会影响健康。", ex_py: "Chōu yān huì yǐngxiǎng jiànkāng.", ex_pt: "Fumar afeta a saúde." },
+            { w: "跳", p: "tiào", t: "pular, tremer (olho)", c: "Verbos", l: 7, ex_ch: "我的眼睛一直跳，怎么回事？", ex_py: "Wǒ de yǎnjing yìzhí tiào, zěnme huí shì?", ex_pt: "Meu olho está tremendo sem parar — o que será?" },
+            { w: "休息", p: "xiūxi", t: "descansar", c: "Verbos", l: 7, ex_ch: "累了就好好休息一下。", ex_py: "Lèi le jiù hǎohǎo xiūxi yíxià.", ex_pt: "Se cansar, descanse bem." },
+            { w: "告诉", p: "gàosu", t: "dizer, contar", c: "Verbos", l: 7, ex_ch: "有消息我第一时间告诉你。", ex_py: "Yǒu xiāoxi wǒ dì-yī shíjiān gàosu nǐ.", ex_pt: "Se houver notícias, aviso você imediatamente." },
+            { w: "静坐", p: "jìng zuò", t: "ficar sentado parado", c: "Verbos", l: 7, ex_ch: "不要静坐超过一个小时。", ex_py: "Bú yào jìng zuò chāoguò yí ge xiǎoshí.", ex_pt: "Não fique sentado parado por mais de uma hora." },
+            { w: "超过", p: "chāoguò", t: "ultrapassar", c: "Verbos", l: 7, ex_ch: "每天工作不要超过八个小时。", ex_py: "Měitiān gōngzuò bú yào chāoguò bā ge xiǎoshí.", ex_pt: "Não trabalhe mais de oito horas por dia." },
+            { w: "站起来", p: "zhàn qǐlai", t: "levantar-se", c: "Verbos", l: 7, ex_ch: "工作一个小时后，站起来活动活动。", ex_py: "Gōngzuò yí ge xiǎoshí hòu, zhàn qǐlai huódòng huódòng.", ex_pt: "Depois de uma hora de trabalho, levante-se e mexa-se." },
+            { w: "活动", p: "huódòng", t: "mexer-se", c: "Verbos", l: 7, ex_ch: "站起来活动一下身体吧。", ex_py: "Zhàn qǐlai huódòng yíxià shēntǐ ba.", ex_pt: "Levante-se e movimente um pouco o corpo." },
+            { w: "散步", p: "sàn bù", t: "caminhar", c: "Verbos", l: 7, ex_ch: "晚饭后我们去公园散步。", ex_py: "Wǎnfàn hòu wǒmen qù gōngyuán sàn bù.", ex_pt: "Depois do jantar vamos caminhar no parque." },
+            { w: "希望", p: "xīwàng", t: "desejar", c: "Verbos", l: 7, ex_ch: "我希望家人都身体健康。", ex_py: "Wǒ xīwàng jiārén dōu shēntǐ jiànkāng.", ex_pt: "Desejo que toda a família tenha saúde." },
+            { w: "认为", p: "rènwéi", t: "achar, considerar", c: "Verbos", l: 7, ex_ch: "很多人认为散步是最好的运动。", ex_py: "Hěnduō rén rènwéi sànbù shì zuì hǎo de yùndòng.", ex_pt: "Muitos consideram caminhar o melhor exercício." },
+            { w: "生病", p: "shēng bìng", t: "adoecer", c: "Verbos", l: 7, ex_ch: "他连续加班太累，结果生病了。", ex_py: "Tā liánxù jiābān tài lèi, jiéguǒ shēngbìng le.", ex_pt: "De tanto fazer hora extra, ele acabou adoecendo." },
+            { w: "认识", p: "rènshi", t: "reconhecer, conhecer", c: "Verbos", l: 7, ex_ch: "我在公园认识了很多朋友。", ex_py: "Wǒ zài gōngyuán rènshi le hěnduō péngyou.", ex_pt: "Conheci muitos amigos no parque." },
+            { w: "指", p: "zhǐ", t: "referir-se a", c: "Verbos", l: 7, ex_ch: "太极指的是宇宙的本原。", ex_py: "Tàijí zhǐ de shì yǔzhòu de běnyuán.", ex_pt: "Taiji refere-se à origem do universo." },
+            { w: "算", p: "suàn", t: "contar como", c: "Verbos", l: 7, ex_ch: "只有身心都健康，才算真正的健康。", ex_py: "Zhǐyǒu shēnxīn dōu jiànkāng, cái suàn zhēnzhèng de jiànkāng.", ex_pt: "Só corpo e mente saudáveis contam como verdadeira saúde." },
+            { w: "说明", p: "shuōmíng", t: "explicar", c: "Verbos", l: 7, ex_ch: "这个例子说明了运动的重要性。", ex_py: "Zhège lìzi shuōmíng le yùndòng de zhòngyàoxìng.", ex_pt: "Este exemplo explica a importância do exercício." },
+            { w: "锻炼", p: "duànliàn", t: "exercitar-se", c: "Verbos", l: 7, ex_ch: "经常锻炼身体不容易生病。", ex_py: "Jīngcháng duànliàn shēntǐ bù róngyì shēngbìng.", ex_pt: "Quem se exercita com frequência adoece menos." },
+            { w: "理解", p: "lǐjiě", t: "compreender", c: "Verbos", l: 7, ex_ch: "这个概念不太容易理解。", ex_py: "Zhège gàiniàn bú tài róngyì lǐjiě.", ex_pt: "Este conceito não é fácil de compreender." },
+            { w: "同意", p: "tóngyì", t: "concordar", c: "Verbos", l: 7, ex_ch: "我完全同意你的看法。", ex_py: "Wǒ wánquán tóngyì nǐ de kànfǎ.", ex_pt: "Concordo totalmente com você." },
+            { w: "减肥", p: "jiǎn féi", t: "emagrecer", c: "Verbos", l: 7, ex_ch: "她为了减肥，每天跑步。", ex_py: "Tā wèile jiǎn féi, měitiān pǎobù.", ex_pt: "Para emagrecer, ela corre todos os dias." },
+            { w: "交流", p: "jiāoliú", t: "comunicar-se", c: "Verbos", l: 7, ex_ch: "常常交流可以加深感情。", ex_py: "Chángcháng jiāoliú kěyǐ jiāshēn gǎnqíng.", ex_pt: "Comunicar-se com frequência aprofunda o afeto." },
+            { w: "加深", p: "jiāshēn", t: "aprofundar", c: "Verbos", l: 7, ex_ch: "一起散步可以加深夫妻的感情。", ex_py: "Yìqǐ sànbù kěyǐ jiāshēn fūqī de gǎnqíng.", ex_pt: "Caminhar juntos aprofunda o afeto do casal." },
+            { w: "谈", p: "tán", t: "conversar", c: "Verbos", l: 7, ex_ch: "遇到烦恼可以和朋友谈谈。", ex_py: "Yùdào fánnǎo kěyǐ hé péngyou tántan.", ex_pt: "Diante de aflições, converse com os amigos." },
+            { w: "研究", p: "yánjiū", t: "pesquisar", c: "Verbos", l: 7, ex_ch: "教授正在研究中国古代哲学。", ex_py: "Jiàoshòu zhèngzài yánjiū Zhōngguó gǔdài zhéxué.", ex_pt: "O professor está pesquisando a filosofia da China antiga." },
+            { w: "需要", p: "xūyào", t: "precisar de", c: "Verbos", l: 7, ex_ch: "身体需要休息，也需要运动。", ex_py: "Shēntǐ xūyào xiūxi, yě xūyào yùndòng.", ex_pt: "O corpo precisa de descanso e também de exercício." },
+            { w: "解决", p: "jiějué", t: "resolver", c: "Verbos", l: 7, ex_ch: "这个问题必须马上解决。", ex_py: "Zhège wèntí bìxū mǎshàng jiějué.", ex_pt: "Este problema precisa ser resolvido imediatamente." },
+            { w: "支持", p: "zhīchí", t: "apoiar", c: "Verbos", l: 7, ex_ch: "没想到她竟然支持我。", ex_py: "Méi xiǎngdào tā jìngrán zhīchí wǒ.", ex_pt: "Para minha surpresa, ela me apoiou." },
+            { w: "得到", p: "dédào", t: "obter", c: "Verbos", l: 7, ex_ch: "他的想法得到了大家的支持。", ex_py: "Tā de xiǎngfǎ dédào le dàjiā de zhīchí.", ex_pt: "A ideia dele obteve o apoio de todos." },
+            { w: "关心", p: "guānxīn", t: "preocupar-se com", c: "Verbos", l: 7, ex_ch: "父母总是关心孩子的健康。", ex_py: "Fùmǔ zǒngshì guānxīn háizi de jiànkāng.", ex_pt: "Os pais sempre se preocupam com a saúde dos filhos." },
+            { w: "生气", p: "shēng qì", t: "irritar-se", c: "Verbos", l: 7, ex_ch: "经常生气对身体不好。", ex_py: "Jīngcháng shēng qì duì shēntǐ bù hǎo.", ex_pt: "Irritar-se com frequência faz mal ao corpo." },
+            { w: "习惯", p: "xíguàn", t: "acostumar-se", c: "Verbos", l: 7, ex_ch: "我还不习惯北方的气候。", ex_py: "Wǒ hái bù xíguàn běifāng de qìhòu.", ex_pt: "Ainda não me acostumei com o clima do norte." },
+            { w: "适应", p: "shìyìng", t: "adaptar-se", c: "Verbos", l: 7, ex_ch: "你需要多长时间适应新的环境？", ex_py: "Nǐ xūyào duō cháng shíjiān shìyìng xīn de huánjìng?", ex_pt: "Quanto tempo você leva para se adaptar a um ambiente novo?" },
+            { w: "选择", p: "xuǎnzé", t: "escolher", c: "Verbos", l: 7, ex_ch: "选择合适的运动量很重要。", ex_py: "Xuǎnzé héshì de yùndòngliàng hěn zhòngyào.", ex_pt: "Escolher a intensidade de exercício adequada é muito importante." },
+            { w: "保持", p: "bǎochí", t: "manter", c: "Verbos", l: 7, ex_ch: "经常锻炼可以保持健康。", ex_py: "Jīngcháng duànliàn kěyǐ bǎochí jiànkāng.", ex_pt: "Exercitar-se com frequência mantém a saúde." },
+            { w: "提高", p: "tígāo", t: "elevar, melhorar", c: "Verbos", l: 7, ex_ch: "练太极拳还能提高修养。", ex_py: "Liàn tàijíquán hái néng tígāo xiūyǎng.", ex_pt: "Praticar taijiquan também eleva o cultivo pessoal." },
+            { w: "结合", p: "jiéhé", t: "combinar", c: "Verbos", l: 7, ex_ch: "太极拳把运动和哲学结合在一起。", ex_py: "Tàijíquán bǎ yùndòng hé zhéxué jiéhé zài yìqǐ.", ex_pt: "O taijiquan combina exercício e filosofia." },
+            { w: "练习", p: "liànxí", t: "praticar", c: "Verbos", l: 7, ex_ch: "他每天早上练习太极拳。", ex_py: "Tā měitiān zǎoshang liànxí tàijíquán.", ex_pt: "Ele pratica taijiquan todas as manhãs." },
+            { w: "适合", p: "shìhé", t: "ser adequado a", c: "Verbos", l: 7, ex_ch: "太极拳很适合中老年人。", ex_py: "Tàijíquán hěn shìhé zhōng-lǎonián rén.", ex_pt: "O taijiquan é muito adequado para pessoas de meia-idade e idosos." },
+            { w: "洗碗", p: "xǐ wǎn", t: "lavar a louça", c: "Verbos", l: 7, ex_ch: "晚饭后我来洗碗。", ex_py: "Wǎnfàn hòu wǒ lái xǐ wǎn.", ex_pt: "Depois do jantar eu lavo a louça." },
+            { w: "毕业", p: "bìyè", t: "formar-se", c: "Verbos", l: 7, ex_ch: "大学毕业后，他选择留在北京工作。", ex_py: "Dàxué bìyè hòu, tā xuǎnzé liú zài Běijīng gōngzuò.", ex_pt: "Depois de se formar, ele escolheu ficar trabalhando em Pequim." },
+            { w: "读", p: "dú", t: "estudar, ler", c: "Verbos", l: 7, ex_ch: "她想读研究生。", ex_py: "Tā xiǎng dú yánjiūshēng.", ex_pt: "Ela quer fazer pós-graduação." },
+            { w: "获得", p: "huòdé", t: "obter, alcançar", c: "Verbos", l: 7, ex_ch: "坚持锻炼，就能获得健康。", ex_py: "Jiānchí duànliàn, jiù néng huòdé jiànkāng.", ex_pt: "Persistindo nos exercícios, alcança-se a saúde." },
+            { w: "掉", p: "diào", t: "(resultado de ação após verbo)", c: "Verbos", l: 7, ex_ch: "把不好的习惯改掉吧。", ex_py: "Bǎ bù hǎo de xíguàn gǎi diào ba.", ex_pt: "Livre-se dos maus hábitos." },
+            // GRAMÁTICA
+            { w: "估计", p: "gūjì", t: "dedução aproximada", c: "Gramática", l: 7, gram_desc: "Verbo de dedução aproximada; funciona como predicado, seguido de verbo ou oração.", ex_ch: "我还不习惯北方的气候，估计是天气太干。", ex_py: "Wǒ hái bù xíguàn běifāng de qìhòu, gūjì shì tiānqì tài gān.", ex_pt: "Ainda não me acostumei com o clima do norte; deve ser o tempo seco demais." },
+            { w: "可能", p: "kěnéng", t: "talvez, ser possível", c: "Gramática", l: 7, gram_desc: "Comparado com 估计: verbo modal (só antes do verbo), pode ser adjetivo (不可能) e formar 很可能.", ex_ch: "他可能感冒了，很可能是昨天穿得太少。", ex_py: "Tā kěnéng gǎnmào le, hěn kěnéng shì zuótiān chuān de tài shǎo.", ex_pt: "Ele deve estar resfriado; muito provavelmente vestiu pouco ontem." },
+            { w: "来不及", p: "láibují", t: "não dar tempo", c: "Gramática", l: 7, gram_desc: "Verbo: algo não pode ser feito por falta de tempo.", ex_ch: "等你后悔就来不及了。", ex_py: "Děng nǐ hòuhuǐ jiù láibují le.", ex_pt: "Quando você se arrepender, será tarde demais." },
+            { w: "离合词重叠 AAB", p: "líhécí chóngdié AAB", t: "reduplicação AAB", c: "Gramática", l: 7, gram_desc: "Reduplicação de palavras separáveis (散散步, 帮帮忙): indica curta duração ou tentativa.", ex_ch: "吃完饭出去散散步吧。", ex_py: "Chī wán fàn chūqù sànsan bù ba.", ex_pt: "Depois de comer, vamos dar uma caminhadinha." },
+            { w: "要是……(的话)，就……", p: "yàoshi……(de huà), jiù……", t: "se… então…", c: "Gramática", l: 7, gram_desc: "Estrutura condicional 'se… então…'.", ex_ch: "要是不舒服的话，就去看医生。", ex_py: "Yàoshi bù shūfu de huà, jiù qù kàn yīshēng.", ex_pt: "Se não estiver bem, então vá ao médico." },
+            { w: "既……又/也/还……", p: "jì……yòu/yě/hái……", t: "tanto… como…", c: "Gramática", l: 7, gram_desc: "Duas situações simultâneas, ambas positivas ou ambas negativas.", ex_ch: "散步既可以活动身体，又可以减肥。", ex_py: "Sànbù jì kěyǐ huódòng shēntǐ, yòu kěyǐ jiǎn féi.", ex_pt: "Caminhar tanto movimenta o corpo como ajuda a emagrecer." },
+            { w: "不仅……还……", p: "bùjǐn……hái……", t: "não só… como também…", c: "Gramática", l: 7, gram_desc: "'Não só… como também…': acrescenta uma segunda informação à primeira.", ex_ch: "练太极拳不仅可以保持健康，还能提高修养。", ex_py: "Liàn tàijíquán bùjǐn kěyǐ bǎochí jiànkāng, hái néng tígāo xiūyǎng.", ex_pt: "Praticar taijiquan não só mantém a saúde, como também eleva o cultivo pessoal." },
+            { w: "只有……才……", p: "zhǐyǒu……cái……", t: "só quando… é que…", c: "Gramática", l: 7, gram_desc: "'Só quando… é que…' (condição única e indispensável).", ex_ch: "只有身体和精神都健康，才算是真正的健康。", ex_py: "Zhǐyǒu shēntǐ hé jīngshén dōu jiànkāng, cái suàn shì zhēnzhèng de jiànkāng.", ex_pt: "Só quando corpo e mente estão saudáveis é que há verdadeira saúde." }
         ];
         const basicStrokes = [
             { name: '点', py: 'diǎn', pt: 'Ponto', ex: '不', num: 3 },
@@ -1988,7 +2285,7 @@
     //  PRÁTICA DE CONTEÚDO — motor de exercícios do HSK 4
     //  (não altera nada da prática de caracteres nem do conteúdo)
     // ============================================================
-    const APP_VERSION = '2026-07-04.2';
+    const APP_VERSION = '2026-07-06.1';
     // ---------- PREFERÊNCIAS (tema + recursos de prática) ----------
     const PREFS_KEY = 'hsk4_prefs_v1';
     let prefs = { theme:'light', pinyin:true, trad:true, autoAudio:true, slow:false, effects:true };
@@ -2015,12 +2312,31 @@
         { id:'xp500',    icon:'star',     name:'500 XP',                  desc:'Somou 500 XP',           check:p=>(p.xp||0)>=500 },
         { id:'xp1000',   icon:'trophy',   name:'1000 XP',                 desc:'Somou 1000 XP',          check:p=>(p.xp||0)>=1000 },
         { id:'sessions10',icon:'book-open',name:'Estudioso',              desc:'10 práticas feitas',     check:p=>(p.sessions||0)>=10 },
+        { id:'sessions50',icon:'book-open',name:'Dedicado',               desc:'50 práticas feitas',     check:p=>(p.sessions||0)>=50 },
         { id:'writer',   icon:'pencil',   name:'写字 Escritor',           desc:'20 respostas escritas em caracteres', check:p=>(p.typed||0)>=20 },
         { id:'reader',   icon:'book-open',name:'阅读 Leitor',             desc:'5 textos de leitura concluídos', check:p=>(p.reads||0)>=5 },
-        { id:'explorer', icon:'compass',  name:'Explorador',              desc:'Praticou nas 6 lições',  check:p=>Object.keys(p.lessonSet||{}).length>=6 }
+        { id:'explorer', icon:'compass',  name:'Explorador',              desc:'Praticou nas 7 lições',  check:p=>Object.keys(p.lessonSet||{}).length>=7 }
     ];
-    function checkAchievements(){ progress.achievements=progress.achievements||{}; const nw=[]; ACHIEVEMENTS.forEach(a=>{ if(!progress.achievements[a.id] && a.check(progress)){ progress.achievements[a.id]=todayStr(); nw.push(a); } }); return nw; }
-    function recordPractice(correct, total, lessonN, typedCount, readsCount){
+    // ---------- ÁRVORE DE HABILIDADES LINGUÍSTICAS ----------
+    // Cada ramo tem 4 níveis; cada nível alcançado vira uma conquista.
+    const TIER_NAMES=['Aprendiz','Praticante','Avançado','Mestre'];
+    const TIER_ZH=['初学','熟练','高手','大师'];
+    const SKILLS=[
+        { id:'vocab',  icon:'box',           name:'Vocabulário',           zh:'词汇', unit:'acertos de vocabulário',        color:'linear-gradient(135deg,#0066cc,#3388ff)', tiers:[20,60,150,300] },
+        { id:'write',  icon:'pencil',        name:'Escrita de caracteres', zh:'写字', unit:'respostas escritas em hanzi',   color:'linear-gradient(135deg,#0d9488,#14b8a6)', tiers:[10,30,80,160] },
+        { id:'listen', icon:'headphones',    name:'Audição',               zh:'听力', unit:'exercícios de audição corretos', color:'linear-gradient(135deg,#7c3aed,#a855f7)', tiers:[10,40,100,200] },
+        { id:'read',   icon:'book-open',     name:'Leitura',               zh:'阅读', unit:'perguntas de leitura corretas', color:'linear-gradient(135deg,#d97706,#f59e0b)', tiers:[10,30,80,160] },
+        { id:'sent',   icon:'align-left',    name:'Frases & Gramática',    zh:'语法', unit:'frases corretas',               color:'linear-gradient(135deg,#db2777,#ec4899)', tiers:[15,45,110,220] },
+        { id:'talk',   icon:'message-circle',name:'Comunicação',           zh:'交际', unit:'diálogos corretos',             color:'linear-gradient(135deg,#0891b2,#06b6d4)', tiers:[5,15,40,80] },
+        { id:'culture',icon:'landmark',      name:'Cultura',               zh:'文化', unit:'perguntas culturais corretas',  color:'linear-gradient(135deg,#b45309,#d97706)', tiers:[5,15,40,80] },
+        { id:'streakS',icon:'flame',         name:'Constância',            zh:'坚持', unit:'dias seguidos',                 color:'linear-gradient(135deg,#ea580c,#f97316)', tiers:[3,7,14,30] },
+        { id:'xpS',    icon:'zap',           name:'Experiência',           zh:'经验', unit:'XP acumulado',                  color:'linear-gradient(135deg,#334155,#64748b)', tiers:[200,600,1500,3000] }
+    ];
+    function skv(p,id){ if(id==='streakS') return p.streak||0; if(id==='xpS') return p.xp||0; return (p.sk&&p.sk[id])||0; }
+    const ACH_ALL = ACHIEVEMENTS.slice();
+    SKILLS.forEach(s=> s.tiers.forEach((n,i)=> ACH_ALL.push({ id:'sk_'+s.id+'_'+i, icon:s.icon, name:s.name+' — '+TIER_ZH[i]+' '+TIER_NAMES[i], desc:n+' '+s.unit, check:p=>skv(p,s.id)>=n })));
+    function checkAchievements(){ progress.achievements=progress.achievements||{}; const nw=[]; ACH_ALL.forEach(a=>{ if(!progress.achievements[a.id] && a.check(progress)){ progress.achievements[a.id]=todayStr(); nw.push(a); } }); return nw; }
+    function recordPractice(correct, total, lessonN, typedCount, readsCount, tally){
         const p=progress; const today=todayStr();
         if(p.lastDate!==today){
             if(p.lastDate && dateDiffDays(p.lastDate,today)===1) p.streak=(p.streak||0)+1; else p.streak=1;
@@ -2031,6 +2347,7 @@
         p.xp=(p.xp||0)+xpGained; p.sessions=(p.sessions||0)+1;
         p.totalCorrect=(p.totalCorrect||0)+correct; p.totalWrong=(p.totalWrong||0)+(total-correct);
         p.typed=(p.typed||0)+(typedCount||0); p.reads=(p.reads||0)+(readsCount||0);
+        if(tally){ p.sk=p.sk||{}; Object.keys(tally).forEach(k=>{ p.sk[k]=(p.sk[k]||0)+tally[k]; }); }
         if(pct===100 && total>0) p.perfect=true;
         if(lessonN){ p.lessonSet=p.lessonSet||{}; p.lessonSet[lessonN]=true; }
         const newAch=checkAchievements(); saveProgress();
@@ -2118,7 +2435,24 @@
         const p=progress; const dark=prefs.theme==='dark';
         const streak=p.streak||0, xp=p.xp||0, days=p.totalDays||0, sess=p.sessions||0;
         const tot=(p.totalCorrect||0)+(p.totalWrong||0); const acc= tot? Math.round((p.totalCorrect||0)/tot*100):0;
-        const badges=ACHIEVEMENTS.map(a=>{ const un=p.achievements && p.achievements[a.id]; return `<div class="badge ${un?'unlocked':'locked'}"><div class="w-9 h-9 mx-auto rounded-xl flex items-center justify-center ${un?'bg-amber-400 text-white':'bg-slate-400/30 text-slate-500'} mb-1"><i data-lucide="${a.icon}" class="w-5 h-5"></i></div><div class="text-[11px] font-extrabold leading-tight text-[#1d1d1f]">${a.name}</div><div class="text-[9px] text-[#86868b] leading-tight mt-0.5">${a.desc}</div></div>`; }).join('');
+        // Árvore de habilidades: cada ramo com barra de progresso e 4 níveis
+        const tree=SKILLS.map(s=>{
+            const v=skv(p,s.id);
+            let next=s.tiers.find(t=>v<t); const maxT=s.tiers[s.tiers.length-1];
+            const pctBar= next? Math.min(100, Math.round(v/next*100)) : 100;
+            const lvl=s.tiers.filter(t=>v>=t).length;
+            const nodes=s.tiers.map((t,i)=>`<div class="skill-node ${v>=t?'on':''}" title="${TIER_NAMES[i]}: ${t} ${s.unit}"></div>`).join('');
+            return `<div class="skill-branch">
+                <div class="skill-ico" style="background:${s.color};"><i data-lucide="${s.icon}" class="w-5 h-5"></i></div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-baseline gap-2"><span class="text-xs font-extrabold text-[#1d1d1f]">${s.name} <span class="chinese-text text-[#86868b]">${s.zh}</span></span><span class="text-[10px] font-bold text-[#86868b]">${lvl>0?TIER_ZH[lvl-1]+' '+TIER_NAMES[lvl-1]:'—'} · ${v}${next?'/'+next:' (máx)'}</span></div>
+                    <div class="skill-bar mt-1"><div style="width:${pctBar}%"></div></div>
+                    <div class="skill-nodes">${nodes}</div>
+                </div>
+            </div>`;
+        }).join('');
+        const unlockedCount=Object.keys(p.achievements||{}).length;
+        const badges=ACH_ALL.map(a=>{ const un=p.achievements && p.achievements[a.id]; return `<div class="badge ${un?'unlocked':'locked'}"><div class="w-9 h-9 mx-auto rounded-xl flex items-center justify-center ${un?'bg-amber-400 text-white':'bg-slate-400/30 text-slate-500'} mb-1"><i data-lucide="${a.icon}" class="w-5 h-5"></i></div><div class="text-[11px] font-extrabold leading-tight text-[#1d1d1f]">${a.name}</div><div class="text-[9px] text-[#86868b] leading-tight mt-0.5">${a.desc}</div></div>`; }).join('');
         sheet.innerHTML=`
             <div class="flex items-center justify-between mb-5"><h2 class="text-xl font-extrabold text-[#1d1d1f] flex items-center gap-2"><i data-lucide="settings" class="w-5 h-5 text-[#0066cc]"></i>Configurações</h2><button onclick="closeSettings()" class="p-2 rounded-full bg-white/60 border border-white text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button></div>
             <p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-2">Tema</p>
@@ -2139,7 +2473,9 @@
                 <div class="stat-card"><div class="text-lg font-extrabold text-[#1d1d1f]">${sess}</div><div class="text-[9px] font-bold text-[#86868b] uppercase mt-1">Práticas feitas</div></div>
                 <div class="stat-card"><div class="text-lg font-extrabold text-[#1d1d1f]">${days}</div><div class="text-[9px] font-bold text-[#86868b] uppercase mt-1">Dias praticados</div></div>
             </div>
-            <p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-2">Conquistas</p>
+            <p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-2">Árvore de habilidades <span class="chinese-text">技能树</span></p>
+            <div class="mb-5">${tree}</div>
+            <p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-2">Conquistas (${unlockedCount}/${ACH_ALL.length})</p>
             <div class="grid grid-cols-3 gap-2 mb-5">${badges}</div>
             <p class="text-[10px] uppercase tracking-widest text-[#86868b] font-bold mb-2">Levar progresso para outro navegador</p>
             <div class="grid grid-cols-2 gap-2 mb-4">
@@ -2170,21 +2506,52 @@
         if(typeof bestZhVoice!=='undefined'){ if(!bestZhVoice && typeof pickBestChineseVoice==='function') bestZhVoice=pickBestChineseVoice(); if(bestZhVoice) u.voice=bestZhVoice; }
         window.speechSynthesis.speak(u);
     }
+    // Áudio em três camadas: Google Translate (voz natural) -> Zhiyu (voz neural da
+    // Amazon via StreamElements) -> voz do sistema. Textos longos são fatiados por
+    // pontuação para nunca estourar o limite do serviço (leituras completas funcionam).
+    let _zhTok=0; const _ttsBad=[false,false];
+    function chunkZh(t,max){
+        max=max||170;
+        if(t.length<=max) return [t];
+        const parts=t.split(/(?<=[。！？；，,!?;])/); const out=[]; let cur='';
+        for(const p of parts){ if((cur+p).length>max){ if(cur) out.push(cur); cur=p; } else cur+=p; }
+        if(cur) out.push(cur);
+        return out.length?out:[t];
+    }
+    function ttsUrlZh(prov, txt){
+        const q=encodeURIComponent(txt);
+        if(prov===0) return 'https://translate.google.com/translate_tts?ie=UTF-8&tl=zh-CN&client=tw-ob&ttsspeed='+(prefs.slow?'0.24':'0.9')+'&q='+q;
+        return 'https://api.streamelements.com/kb/v2/speech?voice=Zhiyu&text='+q;
+    }
     function playZh(text){
         const t=(text||'').trim(); if(!t) return;
         if(typeof unlockSpeechOnce==='function') unlockSpeechOnce();
+        _zhTok++; const my=_zhTok;
         if(typeof currentAudio!=='undefined' && currentAudio){ try{ currentAudio.pause(); }catch(e){} currentAudio=null; }
         if('speechSynthesis' in window) window.speechSynthesis.cancel();
-        if(typeof googleTtsBroken!=='undefined' && googleTtsBroken){ speakZhSys(t); return; }
-        const url='https://translate.google.com/translate_tts?ie=UTF-8&tl=zh-CN&client=tw-ob&ttsspeed='+(prefs.slow?'0.24':'0.9')+'&q='+encodeURIComponent(t);
-        const audio=new Audio(url); audio.preload='auto';
-        if(typeof currentAudio!=='undefined') currentAudio=audio;
-        let started=false;
-        const useFallback=()=>{ if(started) return; started=true; if(typeof googleTtsBroken!=='undefined') googleTtsBroken=true; try{ audio.pause(); }catch(e){} speakZhSys(t); };
-        audio.onplaying=()=>{ started=true; };
-        audio.onerror=useFallback;
-        setTimeout(()=>{ if(!started) useFallback(); }, 2500);
-        const pr=audio.play(); if(pr && typeof pr.catch==='function') pr.catch(useFallback);
+        const chunks=chunkZh(t, 170); let idx=0;
+        function fallbackAll(){ if(my!==_zhTok) return; speakZhSys(t); }
+        function playChunk(){
+            if(my!==_zhTok || idx>=chunks.length) return;
+            let prov = _ttsBad[0] ? 1 : 0;
+            (function tryP(){
+                if(my!==_zhTok) return;
+                if(prov>1){ fallbackAll(); return; }
+                if(_ttsBad[prov]){ prov++; tryP(); return; }
+                const a=new Audio(); a.preload='auto';
+                if(typeof currentAudio!=='undefined') currentAudio=a;
+                let started=false, done=false;
+                const fail=()=>{ if(done||started) return; done=true; clearTimeout(guard); if(prov===0) _ttsBad[0]=true; prov++; tryP(); };
+                const guard=setTimeout(fail, 3000);
+                a.oncanplay=()=>{ started=true; clearTimeout(guard); };
+                a.onplaying=()=>{ started=true; clearTimeout(guard); };
+                a.onended=()=>{ if(my!==_zhTok) return; clearTimeout(guard); idx++; playChunk(); };
+                a.onerror=fail;
+                try{ a.src=ttsUrlZh(prov, chunks[idx]); const p=a.play(); if(p && typeof p.catch==='function') p.catch(fail); }
+                catch(e){ fail(); }
+            })();
+        }
+        playChunk();
     }
     // ---------- PINYIN AUTOMÁTICO (mapas montados a partir do próprio banco) ----------
     function onlyHanzi(s){ return (s||'').replace(/[^㐀-鿿]/g,''); }
@@ -2529,7 +2896,7 @@
     function pcEl(id){ return document.getElementById(id); }
     function startPracticeC(lessonN, kind){
         closeHub();
-        P = { active:true, lesson:lessonN, kind:kind, turn:1, maxTurns:(kind==='read'?4:5), acts:[], idx:0, hearts:8, log:[], usedTexts:[], checking:false, sel:null, matchSel:[], typedOk:0, readsDone:0, ended:false, note:'' };
+        P = { active:true, lesson:lessonN, kind:kind, turn:1, maxTurns:(kind==='read'?4:5), acts:[], idx:0, hearts:8, log:[], usedTexts:[], checking:false, sel:null, matchSel:[], typedOk:0, readsDone:0, ended:false, note:'', tally:{} };
         P.acts = buildTurn(lessonN, kind);
         if(!P.acts.length){ appToast('Conteúdo insuficiente para esta prática.'); return; }
         pcEl('pcHearts').innerText = P.hearts;
@@ -2612,7 +2979,7 @@
                     const [x,y]=memState.sel;
                     if(x.c.id===y.c.id && x.c.zh!==y.c.zh){
                         setTimeout(()=>{ x.el.classList.add('done'); y.el.classList.add('done'); memState.done++;
-                            if(memState.done>=memState.total){ logR(true,'Memória concluída','',''); sfx(true); showFb(true); } else P.checking=false; },420);
+                            if(memState.done>=memState.total){ logR(true,'Memória concluída','',''); tallySkills('memory'); sfx(true); showFb(true); } else P.checking=false; },420);
                     } else {
                         loseHeart();
                         setTimeout(()=>{ x.el.classList.remove('flipped'); y.el.classList.remove('flipped'); P.checking=false; },800);
@@ -2669,7 +3036,7 @@
                         setTimeout(()=>{
                             x.el.classList.remove('selected'); y.el.classList.remove('selected');
                             x.el.classList.add('matched'); y.el.classList.add('matched');
-                            if(!grid.querySelector('.practice-card:not(.matched)')){ logR(true,'Pares associados','', ''); showFb(true); }
+                            if(!grid.querySelector('.practice-card:not(.matched)')){ logR(true,'Pares associados','', ''); tallySkills('match'); showFb(true); }
                             else P.checking=false;
                         },320);
                     } else {
@@ -2794,6 +3161,9 @@
     function logR(ok, zh, py, pt, your){
         P.log.push({ ok:!!ok, label:(pcEl('pcTitle')||{}).innerText||'', zh:zh||'', py:py||'', pt:pt||'', your:(your||'').trim() });
     }
+    // Alimenta a árvore de habilidades quando a resposta está correta
+    const SKILL_OF = { choosePt:['vocab'], chooseZh:['vocab'], listen:['listen','vocab'], typeZh:['write'], typeHearZh:['write','listen'], fillBlank:['sent'], orderSentence:['sent'], readQ:['read'], dialog:['talk'], culture:['culture'], match:['vocab'], memory:['vocab'] };
+    function tallySkills(type){ (SKILL_OF[type]||[]).forEach(k=>{ P.tally[k]=(P.tally[k]||0)+1; }); }
     function pcCheck(){
         if(P.checking){ P.idx++; loadAct(); return; }
         const a=P.acts[P.idx];
@@ -2818,6 +3188,7 @@
         else if(a.type==='culture'){ ok = P.sel && P.sel.ok; zh=a.c.opts[a.c.ok]; py=''; pt=a.c.note||''; your=P.sel?P.sel.o:''; audio=''; P.note=a.c.note||''; }
         else if(a.type==='match'||a.type==='memory'){ return; }
         logR(ok, zh, py, pt, your);
+        if(ok) tallySkills(a.type);
         P.checking=true;
         if(!ok) loseHeart();
         sfx(ok);
@@ -2899,7 +3270,7 @@
     function showSummary(completed){
         P.ended=true;
         const total=P.log.length, correct=P.log.filter(x=>x.ok).length;
-        const res=recordPractice(correct,total,P.lesson,P.typedOk,P.readsDone);
+        const res=recordPractice(correct,total,P.lesson,P.typedOk,P.readsDone,P.tally);
         pcEl('pcTitle').innerText=''; pcEl('pcProgress').style.width='100%';
         pcEl('pcFeedback').classList.add('hidden'); pcEl('pcSkip').style.display='none';
         const pct= total? Math.round(correct/total*100):0;
@@ -3497,6 +3868,119 @@
           { q:'有了会员卡，顾客可以怎么样？', qp:'Yǒu le huìyuánkǎ, gùkè kěyǐ zěnmeyàng?', qt:'O que o cliente ganha com o cartão?', opts:[['买东西打折','mǎi dōngxi dǎzhé','desconto nas compras'],['免费拿东西','miǎnfèi ná dōngxi','levar de graça'],['不用排队','búyòng páiduì','não pegar fila']], ok:0 },
           { q:'商店用会员卡了解什么？', qp:'Shāngdiàn yòng huìyuánkǎ liǎojiě shénme?', qt:'O que a loja descobre com o cartão?', opts:[['顾客的年龄','gùkè de niánlíng','a idade dos clientes'],['顾客的购物习惯','gùkè de gòuwù xíguàn','os hábitos de compras dos clientes'],['顾客的工资','gùkè de gōngzī','o salário dos clientes']], ok:1 }] }
     );
+    // ---------- LIÇÃO 7: TEXTOS DE LEITURA (saúde, clima e taijiquan) ----------
+    READINGS[7]=[
+      { title:'医生的话',
+        lines:[
+          ['大夫，我最近总是头疼，还咳嗽。','Dàifu, wǒ zuìjìn zǒngshì tóu téng, hái késou.'],
+          ['你感冒了，不过不严重。','Nǐ gǎnmào le, búguò bù yánzhòng.'],
+          ['最近天气时冷时热，很容易感冒。','Zuìjìn tiānqì shí lěng shí rè, hěn róngyì gǎnmào.'],
+          ['你要多喝水，注意保暖，好好休息。','Nǐ yào duō hē shuǐ, zhùyì bǎonuǎn, hǎohǎo xiūxi.'],
+          ['吃了药，三天以后就会好的。','Chī le yào, sān tiān yǐhòu jiù huì hǎo de.']],
+        pt:'— Doutor, ultimamente estou sempre com dor de cabeça e tossindo. — Você está resfriado, mas não é grave. Ultimamente o tempo está ora frio, ora quente, e é muito fácil se resfriar. Beba bastante água, mantenha-se aquecido e descanse bem. Tomando o remédio, em três dias estará bom.',
+        qs:[
+          { q:'病人怎么了？', qp:'Bìngrén zěnme le?', qt:'O que o paciente tem?', opts:[['头疼，还咳嗽','tóu téng, hái késou','dor de cabeça e tosse'],['肚子疼','dùzi téng','dor de barriga'],['腿疼','tuǐ téng','dor na perna']], ok:0 },
+          { q:'为什么最近容易感冒？', qp:'Wèishénme zuìjìn róngyì gǎnmào?', qt:'Por que é fácil se resfriar?', opts:[['因为工作太忙','yīnwèi gōngzuò tài máng','trabalho demais'],['天气时冷时热','tiānqì shí lěng shí rè','o tempo está ora frio, ora quente'],['因为不吃饭','yīnwèi bù chīfàn','por não comer']], ok:1 },
+          { q:'医生让病人做什么？', qp:'Yīshēng ràng bìngrén zuò shénme?', qt:'O que o médico recomendou?', opts:[['多加班','duō jiābān','mais hora extra'],['去跑步','qù pǎobù','ir correr'],['多喝水，好好休息','duō hē shuǐ, hǎohǎo xiūxi','beber água e descansar']], ok:2 }] },
+      { title:'公园的早晨',
+        lines:[
+          ['早上六点，公园里已经很热闹了。','Zǎoshang liù diǎn, gōngyuán lǐ yǐjīng hěn rènao le.'],
+          ['很多中老年人在打太极拳，动作又慢又柔和。','Hěnduō zhōng-lǎonián rén zài dǎ tàijíquán, dòngzuò yòu màn yòu róuhé.'],
+          ['年轻人喜欢跑步，孩子们跑来跑去。','Niánqīngrén xǐhuan pǎobù, háizimen pǎo lái pǎo qù.'],
+          ['这里的空气特别新鲜，到处都是绿色植物。','Zhèlǐ de kōngqì tèbié xīnxiān, dàochù dōu shì lǜsè zhíwù.'],
+          ['在公园锻炼，既有好空气，又能认识朋友。','Zài gōngyuán duànliàn, jì yǒu hǎo kōngqì, yòu néng rènshi péngyou.']],
+        pt:'Às seis da manhã, o parque já está movimentado. Muitas pessoas de meia-idade e idosos praticam taijiquan, com movimentos lentos e suaves. Os jovens gostam de correr e as crianças correm para lá e para cá. O ar aqui é muito puro e há plantas verdes por toda parte. Exercitar-se no parque garante ar bom e ainda novos amigos.',
+        qs:[
+          { q:'中老年人在公园做什么？', qp:'Zhōng-lǎonián rén zài gōngyuán zuò shénme?', qt:'O que os mais velhos fazem no parque?', opts:[['打太极拳','dǎ tàijíquán','praticam taijiquan'],['打篮球','dǎ lánqiú','jogam basquete'],['踢足球','tī zúqiú','jogam futebol']], ok:0 },
+          { q:'公园里的空气怎么样？', qp:'Gōngyuán lǐ de kōngqì zěnmeyàng?', qt:'Como é o ar do parque?', opts:[['很干','hěn gān','muito seco'],['特别新鲜','tèbié xīnxiān','especialmente puro'],['不太好','bú tài hǎo','não muito bom']], ok:1 },
+          { q:'在公园锻炼有什么好处？', qp:'Zài gōngyuán duànliàn yǒu shénme hǎochù?', qt:'Qual a vantagem de se exercitar no parque?', opts:[['可以买东西','kěyǐ mǎi dōngxi','dá para fazer compras'],['不用花时间','búyòng huā shíjiān','não gasta tempo'],['有好空气，还能认识朋友','yǒu hǎo kōngqì, hái néng rènshi péngyou','ar bom e novos amigos']], ok:2 }] },
+      { title:'研究发现：别坐太久',
+        lines:[
+          ['现在很多人每天在电脑前工作八个小时。','Xiànzài hěnduō rén měitiān zài diànnǎo qián gōngzuò bā ge xiǎoshí.'],
+          ['研究发现，静坐时间太长对健康不好。','Yánjiū fāxiàn, jìng zuò shíjiān tài cháng duì jiànkāng bù hǎo.'],
+          ['工作一个小时后，最好站起来活动活动。','Gōngzuò yí ge xiǎoshí hòu, zuìhǎo zhàn qǐlai huódòng huódòng.'],
+          ['累了可以看看远处的绿色植物，眼睛会舒服一些。','Lèi le kěyǐ kànkan yuǎnchù de lǜsè zhíwù, yǎnjing huì shūfu yìxiē.'],
+          ['另外，吃完午饭出去散散步，换换空气。','Lìngwài, chī wán wǔfàn chūqù sànsan bù, huànhuan kōngqì.']],
+        pt:'Hoje muita gente trabalha oito horas por dia em frente ao computador. Pesquisas descobriram que ficar sentado por muito tempo faz mal à saúde. Depois de uma hora de trabalho, o melhor é levantar e se movimentar. Quando cansar, olhe as plantas verdes ao longe — os olhos ficam mais confortáveis. Além disso, depois do almoço, saia para caminhar e renovar o ar.',
+        qs:[
+          { q:'研究发现了什么？', qp:'Yánjiū fāxiàn le shénme?', qt:'O que a pesquisa descobriu?', opts:[['静坐太长对健康不好','jìng zuò tài cháng duì jiànkāng bù hǎo','ficar muito tempo sentado faz mal'],['电脑对眼睛好','diànnǎo duì yǎnjing hǎo','computador faz bem aos olhos'],['工作越多越好','gōngzuò yuè duō yuè hǎo','quanto mais trabalho melhor']], ok:0 },
+          { q:'眼睛累了应该怎么办？', qp:'Yǎnjing lèi le yīnggāi zěnme bàn?', qt:'O que fazer quando os olhos cansam?', opts:[['继续工作','jìxù gōngzuò','continuar trabalhando'],['看看远处的绿色植物','kànkan yuǎnchù de lǜsè zhíwù','olhar plantas verdes ao longe'],['喝咖啡','hē kāfēi','tomar café']], ok:1 },
+          { q:'吃完午饭最好做什么？', qp:'Chī wán wǔfàn zuìhǎo zuò shénme?', qt:'O que fazer após o almoço?', opts:[['马上睡觉','mǎshàng shuìjiào','dormir na hora'],['坐着看手机','zuòzhe kàn shǒujī','ficar sentado no celular'],['出去散散步','chūqù sànsan bù','sair para caminhar']], ok:2 }] },
+      { title:'爷爷不抽烟了',
+        lines:[
+          ['爷爷过去经常抽烟，家人都很担心他的身体。','Yéye guòqù jīngcháng chōu yān, jiārén dōu hěn dān xīn tā de shēntǐ.'],
+          ['我们告诉他：抽烟对身体一点儿好处也没有。','Wǒmen gàosu tā: chōu yān duì shēntǐ yìdiǎnr hǎochù yě méiyǒu.'],
+          ['去年生了一场病以后，他终于把烟戒掉了。','Qùnián shēng le yì chǎng bìng yǐhòu, tā zhōngyú bǎ yān jiè diào le.'],
+          ['现在他每天早上去公园打太极拳。','Xiànzài tā měitiān zǎoshang qù gōngyuán dǎ tàijíquán.'],
+          ['他的身体越来越好，精神也不错。','Tā de shēntǐ yuè lái yuè hǎo, jīngshén yě búcuò.']],
+        pt:'No passado o vovô fumava muito e a família se preocupava com a saúde dele. Dissemos a ele: fumar não traz nenhum benefício ao corpo. Depois de adoecer no ano passado, ele finalmente largou o cigarro. Agora ele vai ao parque todas as manhãs praticar taijiquan. Sua saúde está cada vez melhor e o ânimo também é bom.',
+        qs:[
+          { q:'家人为什么担心爷爷？', qp:'Jiārén wèishénme dān xīn yéye?', qt:'Por que a família se preocupava?', opts:[['他经常抽烟','tā jīngcháng chōu yān','ele fumava com frequência'],['他不吃饭','tā bù chīfàn','ele não comia'],['他工作太多','tā gōngzuò tài duō','ele trabalhava demais']], ok:0 },
+          { q:'爷爷什么时候戒的烟？', qp:'Yéye shénme shíhou jiè de yān?', qt:'Quando ele largou o cigarro?', opts:[['十年以前','shí nián yǐqián','há dez anos'],['去年生病以后','qùnián shēngbìng yǐhòu','depois de adoecer no ano passado'],['还没戒','hái méi jiè','ainda não largou']], ok:1 },
+          { q:'现在爷爷每天做什么？', qp:'Xiànzài yéye měitiān zuò shénme?', qt:'O que ele faz agora todos os dias?', opts:[['在家看电视','zài jiā kàn diànshì','vê TV em casa'],['去商场逛街','qù shāngchǎng guàngjiē','passeia no shopping'],['去公园打太极拳','qù gōngyuán dǎ tàijíquán','pratica taijiquan no parque']], ok:2 }] },
+      { title:'公司健康周（通知）',
+        lines:[
+          ['各位同事：下星期是公司的健康周。','Gèwèi tóngshì: xià xīngqī shì gōngsī de jiànkāng zhōu.'],
+          ['每天下午三点，大家一起到楼下活动十五分钟。','Měitiān xiàwǔ sān diǎn, dàjiā yìqǐ dào lóu xià huódòng shíwǔ fēnzhōng.'],
+          ['星期三有医生来教大家简单的锻炼方法。','Xīngqīsān yǒu yīshēng lái jiāo dàjiā jiǎndān de duànliàn fāngfǎ.'],
+          ['星期五早上还有太极拳课，欢迎参加。','Xīngqīwǔ zǎoshang hái yǒu tàijíquán kè, huānyíng cānjiā.'],
+          ['身体健康，工作才能做得更好！','Shēntǐ jiànkāng, gōngzuò cái néng zuò de gèng hǎo!']],
+        pt:'Prezados colegas: a próxima semana é a Semana da Saúde da empresa. Todos os dias às 15h, desceremos juntos para nos movimentar por quinze minutos. Na quarta, um médico virá ensinar métodos simples de exercício. Na sexta de manhã haverá também aula de taijiquan — participem! Só com saúde o trabalho pode ser ainda melhor!',
+        qs:[
+          { q:'健康周每天下午大家做什么？', qp:'Jiànkāng zhōu měitiān xiàwǔ dàjiā zuò shénme?', qt:'O que farão todas as tardes?', opts:[['到楼下活动十五分钟','dào lóu xià huódòng shíwǔ fēnzhōng','descer e se movimentar por 15 min'],['开会两个小时','kāihuì liǎng ge xiǎoshí','reunião de 2 horas'],['提前回家','tíqián huí jiā','ir para casa mais cedo']], ok:0 },
+          { q:'星期三有什么活动？', qp:'Xīngqīsān yǒu shénme huódòng?', qt:'O que acontece na quarta?', opts:[['太极拳课','tàijíquán kè','aula de taijiquan'],['医生教锻炼方法','yīshēng jiāo duànliàn fāngfǎ','médico ensina exercícios'],['去公园跑步','qù gōngyuán pǎobù','corrida no parque']], ok:1 },
+          { q:'太极拳课是什么时候？', qp:'Tàijíquán kè shì shénme shíhou?', qt:'Quando é a aula de taijiquan?', opts:[['星期三下午','xīngqīsān xiàwǔ','quarta à tarde'],['星期一早上','xīngqīyī zǎoshang','segunda de manhã'],['星期五早上','xīngqīwǔ zǎoshang','sexta de manhã']], ok:2 }] },
+      { title:'太极与阴阳',
+        lines:[
+          ['太极是中国古代哲学的重要概念。','Tàijí shì Zhōngguó gǔdài zhéxué de zhòngyào gàiniàn.'],
+          ['古代人认为，太极是宇宙的本原。','Gǔdài rén rènwéi, tàijí shì yǔzhòu de běnyuán.'],
+          ['阴阳的思想影响了中医的理论。','Yīnyáng de sīxiǎng yǐngxiǎng le zhōngyī de lǐlùn.'],
+          ['太极拳把这种理念和武术结合在一起。','Tàijíquán bǎ zhè zhǒng lǐniàn hé wǔshù jiéhé zài yìqǐ.'],
+          ['所以有人说，太极拳既是运动，又是艺术。','Suǒyǐ yǒu rén shuō, tàijíquán jì shì yùndòng, yòu shì yìshù.']],
+        pt:'Taiji é um conceito importante da filosofia da China antiga. Os antigos consideravam o taiji a origem primordial do universo. O pensamento do yin-yang influenciou a teoria da medicina chinesa. O taijiquan combina esses princípios com a arte marcial. Por isso dizem que o taijiquan é ao mesmo tempo exercício e arte.',
+        qs:[
+          { q:'古代人认为太极是什么？', qp:'Gǔdài rén rènwéi tàijí shì shénme?', qt:'O que os antigos consideravam o taiji?', opts:[['宇宙的本原','yǔzhòu de běnyuán','a origem do universo'],['一种运动','yì zhǒng yùndòng','um tipo de exercício'],['一种药','yì zhǒng yào','um tipo de remédio']], ok:0 },
+          { q:'阴阳的思想影响了什么？', qp:'Yīnyáng de sīxiǎng yǐngxiǎng le shénme?', qt:'O que o yin-yang influenciou?', opts:[['西方哲学','xīfāng zhéxué','a filosofia ocidental'],['中医的理论','zhōngyī de lǐlùn','a teoria da medicina chinesa'],['现代艺术','xiàndài yìshù','a arte moderna']], ok:1 },
+          { q:'为什么说太极拳也是艺术？', qp:'Wèishénme shuō tàijíquán yě shì yìshù?', qt:'Por que o taijiquan também é arte?', opts:[['因为速度很快','yīnwèi sùdù hěn kuài','porque é veloz'],['因为很难学','yīnwèi hěn nán xué','porque é difícil'],['它把理念和武术结合在一起','tā bǎ lǐniàn hé wǔshù jiéhé zài yìqǐ','une princípios filosóficos e arte marcial']], ok:2 }] },
+      { title:'你怎么没来上课？（短信）',
+        lines:[
+          ['小美，你今天怎么没来上课？','Xiǎo Měi, nǐ jīntiān zěnme méi lái shàngkè?'],
+          ['我感冒了，头疼，还有点儿发烧。','Wǒ gǎnmào le, tóu téng, hái yǒudiǎnr fāshāo.'],
+          ['严重吗？看医生了没有？','Yánzhòng ma? Kàn yīshēng le méiyǒu?'],
+          ['看了，大夫说不严重，吃了药在家休息。','Kàn le, dàifu shuō bù yánzhòng, chī le yào zài jiā xiūxi.'],
+          ['好好休息，笔记我第一时间发给你。','Hǎohǎo xiūxi, bǐjì wǒ dì-yī shíjiān fā gěi nǐ.']],
+        pt:'— Xiao Mei, por que você não veio à aula hoje? — Estou resfriada, com dor de cabeça e um pouco de febre. — É grave? Foi ao médico? — Fui; o médico disse que não é grave. Tomei o remédio e estou descansando em casa. — Descanse bem, mando as anotações para você imediatamente.',
+        qs:[
+          { q:'小美为什么没来上课？', qp:'Xiǎo Měi wèishénme méi lái shàngkè?', qt:'Por que Xiao Mei faltou?', opts:[['她感冒了','tā gǎnmào le','está resfriada'],['她去旅游了','tā qù lǚyóu le','foi viajar'],['她睡过头了','tā shuì guòtóu le','dormiu demais']], ok:0 },
+          { q:'大夫说病情怎么样？', qp:'Dàifu shuō bìngqíng zěnmeyàng?', qt:'O que o médico disse?', opts:[['很严重','hěn yánzhòng','é grave'],['不严重','bù yánzhòng','não é grave'],['需要住院','xūyào zhùyuàn','precisa internar']], ok:1 },
+          { q:'朋友要给小美发什么？', qp:'Péngyou yào gěi Xiǎo Měi fā shénme?', qt:'O que a amiga vai mandar?', opts:[['药','yào','remédio'],['吃的','chī de','comida'],['笔记','bǐjì','as anotações']], ok:2 }] },
+      { title:'饭后百步走',
+        lines:[
+          ['中国有一句老话：饭后百步走，活到九十九。','Zhōngguó yǒu yí jù lǎohuà: fàn hòu bǎi bù zǒu, huó dào jiǔshíjiǔ.'],
+          ['意思是：吃完饭散散步，对健康很有好处。','Yìsi shì: chī wán fàn sànsan bù, duì jiànkāng hěn yǒu hǎochù.'],
+          ['散步既简单，又不需要花钱。','Sànbù jì jiǎndān, yòu bù xūyào huā qián.'],
+          ['很多夫妻喜欢晚饭后一起散步聊天。','Hěnduō fūqī xǐhuan wǎnfàn hòu yìqǐ sànbù liáotiān.'],
+          ['这样不仅锻炼了身体，还加深了感情。','Zhèyàng bùjǐn duànliàn le shēntǐ, hái jiāshēn le gǎnqíng.']],
+        pt:'Há um velho ditado chinês: "cem passos após a refeição, e viverás até os noventa e nove". Significa que caminhar depois de comer faz muito bem à saúde. Caminhar é simples e não custa dinheiro. Muitos casais gostam de caminhar e conversar juntos após o jantar. Assim, não apenas exercitam o corpo, como também aprofundam o afeto.',
+        qs:[
+          { q:'“饭后百步走”是什么意思？', qp:'"Fàn hòu bǎi bù zǒu" shì shénme yìsi?', qt:'O que significa o ditado?', opts:[['吃完饭散步对健康好','chī wán fàn sànbù duì jiànkāng hǎo','caminhar após comer faz bem'],['吃饭要走着吃','chīfàn yào zǒuzhe chī','comer andando'],['走一百步再吃饭','zǒu yìbǎi bù zài chīfàn','andar antes de comer']], ok:0 },
+          { q:'散步有什么特点？', qp:'Sànbù yǒu shénme tèdiǎn?', qt:'Qual a característica de caminhar?', opts:[['很贵','hěn guì','é caro'],['简单，不花钱','jiǎndān, bù huā qián','simples e gratuito'],['需要老师','xūyào lǎoshī','precisa de professor']], ok:1 },
+          { q:'夫妻一起散步有什么好处？', qp:'Fūqī yìqǐ sànbù yǒu shénme hǎochù?', qt:'Qual o benefício para o casal?', opts:[['省钱','shěng qián','economizar'],['能减肥','néng jiǎn féi','só emagrecer'],['锻炼身体，加深感情','duànliàn shēntǐ, jiāshēn gǎnqíng','exercita o corpo e aprofunda o afeto']], ok:2 }] }
+    ];
+    // ---------- LIÇÃO 7: DIÁLOGOS E CULTURA ----------
+    DIALOGS[7]=[
+      { a:'你怎么了？脸色不太好。', ap:'Nǐ zěnme le? Liǎnsè bú tài hǎo.', at:'O que houve? Você não está com boa cara.', opts:[['我有点儿头疼，可能感冒了。','Wǒ yǒudiǎnr tóu téng, kěnéng gǎnmào le.','Estou com dor de cabeça, devo estar resfriado.'],['这条裙子很好看。','Zhè tiáo qúnzi hěn hǎokàn.','Esta saia é bonita.'],['明天是我的生日。','Míngtiān shì wǒ de shēngrì.','Amanhã é meu aniversário.']], ok:0 },
+      { a:'大夫，我最近总是觉得很累。', ap:'Dàifu, wǒ zuìjìn zǒngshì juéde hěn lèi.', at:'Doutor, ando sempre muito cansado.', opts:[['你可以去商场逛逛。','Nǐ kěyǐ qù shāngchǎng guàngguang.','Você pode passear no shopping.'],['你要注意休息，多运动，别在电脑前坐太久。','Nǐ yào zhùyì xiūxi, duō yùndòng, bié zài diànnǎo qián zuò tài jiǔ.','Descanse, exercite-se e não fique tanto tempo no computador.'],['这个手机值五千块。','Zhège shǒujī zhí wǔqiān kuài.','Este celular vale cinco mil.']], ok:1 },
+      { a:'走，吃完饭去散散步？', ap:'Zǒu, chī wán fàn qù sànsan bù?', at:'Vamos caminhar depois de comer?', opts:[['我不喜欢吃西红柿。','Wǒ bù xǐhuan chī xīhóngshì.','Não gosto de tomate.'],['那本小说很感人。','Nà běn xiǎoshuō hěn gǎnrén.','Aquele romance é comovente.'],['好啊，正好换换空气。','Hǎo a, zhènghǎo huànhuan kōngqì.','Boa, aproveitamos para renovar o ar.']], ok:2 },
+      { a:'听说你开始练太极拳了？', ap:'Tīngshuō nǐ kāishǐ liàn tàijíquán le?', at:'Soube que você começou taijiquan?', opts:[['对，动作柔和，很适合我。','Duì, dòngzuò róuhé, hěn shìhé wǒ.','Sim, os movimentos são suaves e combinam comigo.'],['我的钱包丢了。','Wǒ de qiánbāo diū le.','Perdi minha carteira.'],['那家饭馆的菜很好吃。','Nà jiā fànguǎn de cài hěn hǎochī.','A comida daquele restaurante é boa.']], ok:0 }
+    ];
+    CULTURE[7]=[
+      { q:'Por que os chineses bebem tanta água QUENTE (热水)?', opts:['Pela tradição da medicina chinesa: bebidas geladas "esfriam" o corpo e prejudicam o equilíbrio','Porque a água fria é proibida','Porque não existe gelo na China'], ok:0, note:'O hábito do 喝热水 vem do equilíbrio yin-yang do 中医: o quente protege o "qi" do estômago. Até em restaurantes serve-se água morna — e "beba mais água quente" (多喝热水) é o conselho clássico para quem está doente.' },
+      { q:'O que é o famoso 广场舞 (dança de praça)?', opts:['Uma competição profissional de dança','Grupos (sobretudo de senhoras) que dançam juntos em praças ao anoitecer, como exercício e vida social','Um festival que ocorre uma vez ao ano'], ok:1, note:'Assim como o taijiquan de manhã, o 广场舞 à noite faz parte da rotina de exercício dos mais velhos: música alta, coreografia em grupo e muita socialização nas praças e parques.' },
+      { q:'Na medicina chinesa (中医), a saúde é vista principalmente como...', opts:['a ausência total de bactérias','tomar remédios fortes rapidamente','o equilíbrio entre yin e yang no corpo'], ok:2, note:'O 中医 trata o corpo como um todo: alimentação, sono, emoções e estações do ano influenciam o equilíbrio 阴阳. Chás, acupuntura e exercícios como o taijiquan servem para restaurar esse equilíbrio.' },
+      { q:'O ditado 饭后百步走，活到九十九 recomenda...', opts:['caminhar cem passos depois das refeições para viver até os 99 anos','correr uma maratona por ano','dormir logo depois de comer'], ok:0, note:'É um dos conselhos de saúde mais citados pelas famílias chinesas — e explica por que, ao anoitecer, ruas e parques se enchem de gente caminhando depois do jantar.' }
+    ];
+
 
     </script>
 </body>
