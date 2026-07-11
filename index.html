@@ -236,7 +236,7 @@
         body.dark .dlg-bubble { background:linear-gradient(135deg, rgba(30,41,59,0.8), rgba(30,41,59,0.55)); border-color:rgba(148,163,184,0.2); }
         /* ==================== TEMA ESCURO ==================== */
         body, .glass-inner, .glass-panel, .lesson-card, .folder-container, .practice-card, .word-block, .practice-btn, .list-item-glass, .glass-btn, .modal-sheet, .stat-card, .badge, .tgl, .hub-item, .reading-box { transition: background-color .35s ease, color .35s ease, border-color .35s ease; }
-        body.dark { background-color:#0a0f1e; background-image:
+        body.dark { --text-main:#e8edf5; --text-accent:#7fb2ff; background-color:#0a0f1e; background-image:
             radial-gradient(at 20% 0%, hsla(230,60%,32%,0.55) 0px, transparent 50%),
             radial-gradient(at 80% 10%, hsla(265,55%,34%,0.5) 0px, transparent 50%),
             radial-gradient(at 90% 90%, hsla(190,55%,26%,0.55) 0px, transparent 50%),
@@ -277,6 +277,16 @@
         body.dark .text-teal-900 { color:#5eead4!important; } body.dark .text-rose-900 { color:#fecdd3!important; }
         body.dark .border-teal-200 { border-color: rgba(45,212,191,0.4)!important; } body.dark .border-rose-200 { border-color: rgba(251,113,133,0.4)!important; }
         body.dark input { background: rgba(30,41,59,0.6) !important; color:#e8edf5 !important; border-color: rgba(148,163,184,0.25) !important; }
+        /* --- Tema escuro: quadro de traços, tabela de traços e lista de conteúdo --- */
+        body.dark .drawing-board-container { background: linear-gradient(135deg, rgba(30,41,59,0.85), rgba(30,41,59,0.6)) !important; border-color: rgba(148,163,184,0.3) !important; box-shadow: 0 8px 26px rgba(0,0,0,0.35); }
+        body.dark .grid-bg-standard { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280"><rect x="15" y="15" width="250" height="250" fill="none" stroke="%23aab7c9" stroke-width="1.5" stroke-opacity="0.4" rx="8"/><line x1="15" y1="15" x2="265" y2="265" stroke="%23aab7c9" stroke-width="1" stroke-dasharray="4,4" opacity="0.35"/><line x1="265" y1="15" x2="15" y2="265" stroke="%23aab7c9" stroke-width="1" stroke-dasharray="4,4" opacity="0.35"/><line x1="140" y1="15" x2="140" y2="265" stroke="%23aab7c9" stroke-width="1" stroke-dasharray="4,4" opacity="0.35"/><line x1="15" y1="140" x2="265" y2="140" stroke="%23aab7c9" stroke-width="1" stroke-dasharray="4,4" opacity="0.35"/></svg>') !important; }
+        body.dark .list-item-glass.active { background: linear-gradient(135deg, rgba(51,65,85,0.92), rgba(51,65,85,0.68)) !important; border-color: rgba(148,163,184,0.4) !important; }
+        body.dark .list-item-glass:hover { background: linear-gradient(135deg, rgba(51,65,85,0.75), rgba(51,65,85,0.5)) !important; }
+        body.dark .mode-tab:hover { background: rgba(148,163,184,0.15); }
+        body.dark .cat-header { color:#c2ccd9; }
+        body.dark .cat-header:hover { color:#7fb2ff; }
+        body.dark input:focus { background: rgba(30,41,59,0.85) !important; box-shadow: 0 0 0 3px rgba(127,178,255,0.25); }
+        body.dark input::placeholder { color:#93a1b5; }
 
         /* ==================== VIDRO ESTILO iOS 27 (chapado, linha fina) ==================== */
         .glass-panel { background: rgba(255,255,255,0.44); border: 1px solid rgba(255,255,255,0.62); box-shadow: 0 14px 40px rgba(0,0,0,0.06); }
@@ -2217,8 +2227,12 @@
             document.getElementById('btn-practice').classList.remove('pulse-light');
             target.innerHTML = '';
 
-            // Cores base requisitadas para a Prática (Azul e Lilás/Roxo)
-            let drawColor = '#0066cc', radColor = '#a855f7';
+            // Cores sensíveis ao tema (claro/escuro) para manter a guia de traços sempre visível
+            const isDark = document.body.classList.contains('dark');
+            let drawColor = isDark ? '#5aa2ff' : '#0066cc', radColor = isDark ? '#c084fc' : '#a855f7';
+            const strokeTeal = isDark ? '#2dd4bf' : '#0d9488';
+            const outlineStrokes = isDark ? 'rgba(226,232,240,0.4)' : '#e5e5ea';
+            const outlineNormal = isDark ? 'rgba(203,213,225,0.35)' : 'rgba(134, 134, 139, 0.2)';
 
             target.className = 'drawing-board-container grid-bg-standard';
             target.style.backgroundImage = '';
@@ -2229,13 +2243,13 @@
                 padding: 15,
                 strokeAnimationSpeed: 1.5,
                 // Se for modo Tabela de Traços: Teal. Se for Prática Normal: Azul/Lilás.
-                strokeColor: (currentMode==='strokes' ? '#0d9488' : drawColor),
-                radicalColor: (currentMode==='strokes' ? '#0d9488' : radColor),
-                outlineColor: (currentMode==='strokes' ? '#e5e5ea' : 'rgba(134, 134, 139, 0.2)'),
+                strokeColor: (currentMode==='strokes' ? strokeTeal : drawColor),
+                radicalColor: (currentMode==='strokes' ? strokeTeal : radColor),
+                outlineColor: (currentMode==='strokes' ? outlineStrokes : outlineNormal),
                 // No modo de traços mantemos os outros escondidos, exibindo apenas o contorno
                 showCharacter: currentMode !== 'strokes',
                 showOutline: true,
-                drawingColor: '#1d1d1f',
+                drawingColor: isDark ? '#e8edf5' : '#1d1d1f',
                 drawingWidth: 16
             });
 
@@ -2285,14 +2299,14 @@
     //  PRÁTICA DE CONTEÚDO — motor de exercícios do HSK 4
     //  (não altera nada da prática de caracteres nem do conteúdo)
     // ============================================================
-    const APP_VERSION = '2026-07-06.1';
+    const APP_VERSION = '2026-07-11.1';
     // ---------- PREFERÊNCIAS (tema + recursos de prática) ----------
     const PREFS_KEY = 'hsk4_prefs_v1';
     let prefs = { theme:'light', pinyin:true, trad:true, autoAudio:true, slow:false, effects:true };
     function loadPrefs(){ try{ const p=JSON.parse(localStorage.getItem(PREFS_KEY)); if(p) prefs=Object.assign(prefs,p); }catch(e){} }
     function savePrefs(){ try{ localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); }catch(e){} }
     function applyTheme(){ document.body.classList.toggle('dark', prefs.theme==='dark'); try{ const m=document.querySelector('meta[name="theme-color"]'); if(m) m.setAttribute('content', prefs.theme==='dark'?'#0a0f1e':'#cfe8ff'); }catch(e){} }
-    function setTheme(t){ prefs.theme=t; savePrefs(); applyTheme(); renderSettings(); }
+    function setTheme(t){ prefs.theme=t; savePrefs(); applyTheme(); renderSettings(); try{ if(typeof initBoard==='function' && typeof activeCharStr!=='undefined' && activeCharStr && document.getElementById('character-target')) initBoard(activeCharStr); }catch(e){} }
     function togglePref(k){ prefs[k]=!prefs[k]; savePrefs(); renderSettings(); }
     // ---------- PROGRESSO (XP, dias seguidos, conquistas) ----------
     const PROGRESS_KEY = 'hsk4_progress_v1';
